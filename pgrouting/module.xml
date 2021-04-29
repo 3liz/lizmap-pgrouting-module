@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://jelix.org/ns/module/1.0">
+    <info id="pgrouting3liz.com" name="pgrouting" createdate="2021-04-29">
+        <version date="2021-04-29">0.1pre</version>
+        <label lang="en_US">pgrouting</label>
+        <description lang="en_US" />
+        <license URL="">All rights reserved</license>
+        <copyright>2011-2020 3liz</copyright>
+        <creator name="your name" email="your-email@yourwebsite.undefined" />
+        <!--<contributor name="hisname" email="hisemail@yoursite.undefined"  since="" role=""/>-->
+        <homepageURL>http://3liz.com</homepageURL>
+    </info>
+    <dependencies>
+        <jelix minversion="1.6.34-pre" maxversion="1.6.*"/>
+    </dependencies>
+</module>
