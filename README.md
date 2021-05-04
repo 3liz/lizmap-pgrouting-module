@@ -1,4 +1,7 @@
-# lizmap-pgrouting-module
+# Lizmap pgRouting Module
 
-pgRouting module for Lizmap.
 Funded by CRIGE PACA
+
+## For developers
+
+Follow instructions [here](tests#readme) to run the pgRouting module with Lizmap.
