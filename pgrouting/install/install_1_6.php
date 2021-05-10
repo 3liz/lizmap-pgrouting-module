@@ -12,13 +12,15 @@
 class pgroutingModuleInstaller extends jInstallerModule {
 
     function install() {
-        //if ($this->firstDbExec())
-        //    $this->execSQLScript('sql/install');
-
-        /*if ($this->firstExec('acl2')) {
-            jAcl2DbManager::addSubject('my.subject', 'pgrouting~acl.my.subject', 'subject.group.id');
-            jAcl2DbManager::addRight('admins', 'my.subject'); // for admin group
+        if ($this->firstDbExec()) {
+            $sqlPath = $this->path . 'install/sql/install.pgsql.sql';
+            $sqlTpl = jFile::read( $sqlPath );
+            $tpl = new jTpl();
+            $srid = $this->getParameter('srid');
+            $tpl->assign('srid', $srid);
+            $sql = $tpl->fetchFromString($sqlTpl, 'text');
+            $db = $this->dbConnection();
+            $db->exec($sql);
         }
-        */
     }
 }
