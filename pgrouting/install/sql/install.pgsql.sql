@@ -14,6 +14,19 @@ CREATE TABLE IF NOT EXISTS pgrouting.edges(
     geom geometry('LINESTRING', {$srid})
 );
 
+CREATE TABLE IF NOT EXISTS pgrouting.edges_info(
+id integer PRIMARY KEY,
+label text,
+length double precision
+);
+
+ALTER TABLE pgrouting.edges_info
+DROP CONSTRAINT IF EXISTS edges_id_fkey;
+
+ALTER TABLE pgrouting.edges_info
+ADD CONSTRAINT IF EXISTS edges_id_fkey FOREIGN KEY (id)
+REFERENCES pgrouting.edges(id);
+
 ALTER TABLE pgrouting.edges
 DROP CONSTRAINT IF EXISTS edges_source_fkey;
 
