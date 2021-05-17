@@ -1,5 +1,16 @@
 version: '3'
 services:
+  pgsql:
+    image: 3liz/postgis:${POSTGIS_VERSION_TAG}
+    container_name: "lizmap_pgrouting_module_postgis"
+    environment:
+      POSTGRES_DB: lizmap
+      POSTGRES_USER: lizmap
+      POSTGRES_PASSWORD: lizmap1234!
+    volumes:
+      - postgis-volume:/var/lib/postgresql/data
+    ports:
+      - ${LZMPGPORT}:5432
   lizmap:
     image: 3liz/lizmap-web-client:${LIZMAP_VERSION_TAG}
     container_name: "lizmap_pgrouting_module_php"
@@ -10,6 +21,8 @@ services:
       LIZMAP_HOME: /srv/lizmap
       LIZMAP_USER: ${LIZMAP_USER_ID}
       LIZMAP_WMSSERVERURL: http://map:8080/ows/
+      PGSERVICEFILE: /srv/etc/pg_service.conf
+      PGPASSFILE: /srv/etc/pgpass.conf
     volumes:
       - ${LIZMAP_DIR}/instances:/srv/projects
       - ${LIZMAP_DIR}/var/lizmap-theme-config:/www/lizmap/var/lizmap-theme-config
@@ -56,4 +69,5 @@ services:
       - ${LIZMAP_PORT}:8080
     depends_on:
       - lizmap
-
+volumes:
+  postgis-volume:
