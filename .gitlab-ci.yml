@@ -1,0 +1,25 @@
+variables:
+  POSTGRES_DB: "lizmap"
+  POSTGRES_USER: "lizmap"
+  POSTGRES_PASSWORD: "lizmap1234!"
+  POSTGRES_HOST: "db"
+
+stages:
+- Tests 🎳
+
+sql:
+  stage: Tests 🎳
+  parallel:
+    matrix:
+      - PG_VERSION: [11-2.5, 13-3]
+  services:
+    - name: registry.snap.lizlan:5000/postgis:${PG_VERSION}
+      alias: db
+  image:
+    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+  before_script:
+    - cd tests/sql
+  script:
+    - python -m unittest -v
+  tags:
+    - factory-plain
