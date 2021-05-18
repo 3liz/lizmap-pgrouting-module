@@ -15,11 +15,10 @@ sql:
   services:
     - name: registry.snap.lizlan:5000/postgis:${PG_VERSION}
       alias: db
-  image:
-    name: registry.snap.lizlan:5000/infra/ci-tools:latest
   before_script:
+    - pip3 install --user psycopg2-binary
     - cd tests/sql
   script:
     - python -m unittest -v
   tags:
-    - factory-plain
+    - factory
