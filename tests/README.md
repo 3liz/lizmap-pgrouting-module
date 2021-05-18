@@ -6,7 +6,12 @@ Steps:
 make run
 ```
 
-Add `pgrouting.access=2` and `pgrouting.installparam="srid=2154"` in `[modules]` section of `lizmap/var/lizmap-config/localconfig.ini.php`
+Add in `[modules]` section of `lizmap/var/lizmap-config/localconfig.ini.php`
+
+```ini
+pgrouting.access=2
+pgrouting.installparam="srid=2154"
+```
 
 Add in `lizmap/var/lizmap-config/profiles.ini.php`
 

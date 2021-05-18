@@ -19,6 +19,7 @@ class pgroutingModuleInstaller extends jInstallerModule {
             $srid = $this->getParameter('srid');
             $tpl->assign('srid', $srid);
             $sql = $tpl->fetchFromString($sqlTpl, 'text');
+            $this->useDbProfile('pgrouting');
             $db = $this->dbConnection();
             $db->exec($sql);
         }
