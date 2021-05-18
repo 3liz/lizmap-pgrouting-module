@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS pgrouting;
 
-CREATE TABLE pgrouting.nodes(
+CREATE TABLE IF NOT EXISTS pgrouting.nodes(
     id serial primary key,
     geom geometry('POINT', {$srid})
 );

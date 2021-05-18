@@ -4,11 +4,10 @@ services:
     image: 3liz/postgis:${POSTGIS_VERSION_TAG}
     container_name: "lizmap_pgrouting_module_postgis"
     environment:
-      POSTGRES_DB: lizmap
-      POSTGRES_USER: lizmap
       POSTGRES_PASSWORD: lizmap1234!
     volumes:
       - postgis-volume:/var/lib/postgresql/data
+      - ${LIZMAP_DIR}/initdb.d:/docker-entrypoint-initdb.d
     ports:
       - ${LZMPGPORT}:5432
   lizmap:
@@ -36,6 +35,8 @@ services:
     command:
       - php-fpm
     restart: unless-stopped
+    depends_on:
+      - pgsql
   map:
     image: 3liz/qgis-map-server:${QGIS_VERSION_TAG}
     container_name: "lizmap_pgrouting_module_qgis"
