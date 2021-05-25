@@ -129,7 +129,7 @@ CREATE OR REPLACE FUNCTION pgrouting.create_temporary_edges(
 	point_a text,
 	point_b text,
 	crs integer)
-    RETURNS TABLE(id integer, source integer, target integer, cost double precision, reverse_cost double precision, geom geometry, ref_edge_id integer) 
+    RETURNS TABLE(id integer, source integer, target integer, cost double precision, reverse_cost double precision, geom geometry('LINESTRING', {$srid}), ref_edge_id integer) 
     LANGUAGE 'plpgsql'
 
     COST 100
@@ -300,9 +300,13 @@ DROP FUNCTION IF EXISTS pgrouting.create_roadmap;
 CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
 	point_a text, point_b text, crs integer)
     RETURNS TABLE (
-		geom geometry('LINESTRING', {$srid}),
+		seq integer,
+		edge integer,
+		geom text,
 		label text,
-		length double precision
+		dist double precision,
+		cost double precision,
+		agg_cost double precision
 	)
     LANGUAGE 'plpgsql'
 
@@ -316,29 +320,29 @@ BEGIN
 		FROM pgrouting.edges e, pgrouting.edges_info ei
 		WHERE e.id=ei.id
 		UNION ALL 
-		SELECT d.id, d.source, d.target, d.cost, d.reverse_cost, d.geom,
+		SELECT te.id, te.source, te.target, te.cost, te.reverse_cost, te.geom,
 		CASE 
-			WHEN d.id = -6 OR d.id = -1 THEN
+			WHEN te.id = -6 OR te.id = -1 THEN
 				'Accès à la voie'
 			ELSE ei.label  
 		END AS label,
 		CASE 
-			WHEN d.id = -6 OR d.id = -1 THEN
-				ST_length(d.geom)
+			WHEN te.id = -6 OR te.id = -1 THEN
+				ST_length(te.geom)
 			ELSE ei.length
 		END AS length
 		FROM pgrouting.create_temporary_edges(
 				point_a, point_b, crs
-		) AS d,
+		) AS te,
 		pgrouting.edges_info ei
-		WHERE d.ref_edge_id = ei.id
+		WHERE te.ref_edge_id = ei.id
 	)
-	SELECT e.geom, e.label, e.length 
+	SELECT d.seq, d.edge, ST_AsText(ST_Transform(e.geom, 4326)), e.label, e.length, d.cost, d.agg_cost
 	FROM pgr_dijkstra(
 		(SELECT pgrouting.route_request(point_a, point_b, crs)), -4, -1, FALSE
 	) AS d,
 	edges e
 	WHERE d.edge = e.id AND node <> -1
-	ORDER BY path_seq;
+	ORDER BY d.seq;
 END;
 $BODY$;

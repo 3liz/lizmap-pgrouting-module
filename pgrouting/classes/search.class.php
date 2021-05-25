@@ -1,8 +1,8 @@
 <?php
 
 class search {
-    protected $request_list = array(
-        'get_short_path' = 'SELECT * FROM pgrouting.create_roadmap(\'$1\', \'$2\', $3);'
+    protected $sql = array(
+        'get_short_path' => 'SELECT * FROM pgrouting.create_roadmap($1, $2, $3);'
     );
 
     protected function getSql($option)
@@ -14,29 +14,62 @@ class search {
         return null;
     }
 
-    public function query($sql, $filterParams, $profile = 'pgrouting')
+    public function query($sql, $filterParams, $profile)
     {
-        $cnx = jDb::getConnection($profile);
-        $resultset = $cnx->prepare($sql);
+        if ($profile) {
+            $cnx = jDb::getConnection($profile);
+        } else {
+            // Default connection
+            $cnx = jDb::getConnection();
+        }
 
-        $resultset->execute($filterParams);
+        $resultset = $cnx->prepare($sql);
+        if (empty($filterParams)) {
+            $resultset->execute();
+        } else {
+            $resultset->execute($filterParams);
+        }
 
         return $resultset;
     }
-    
-    public function getData($repository, $project, $layer, $filterParams, $option)
-    {
-        // Need to create profile pgrouting
-        $profile = 'pgrouting';
-        $this->repository = $repository;
-        $this->project = $project;
 
+    /**
+     * Get data from the SQL query.
+     *
+     * @param mixed $profile
+     * @param mixed $filterParams
+     * @param mixed $option
+     */
+    public function getData($option = 'get_short_path', $filterParams = array(), $profile = null)
+    {
         // Run query
         $sql = $this->getSql($option);
         if (!$sql) {
-            return null;
+            return array(
+                'status' => 'error',
+                'message' => 'No SQL found for '.$option,
+            );
         }
 
-        return $this->query($sql, $filterParams, $profile);
+        try {
+            $result = $this->query($sql, $filterParams, $profile);
+        } catch (Exception $e) {
+            return array(
+                'status' => 'error',
+                'message' => 'Error at the query concerning '.$option,
+            );
+        }
+
+        if (!$result) {
+            return array(
+                'status' => 'error',
+                'message' => 'Error at the query concerning '.$option,
+            );
+        }
+
+        return array(
+            'status' => 'success',
+            'data' => $result->fetchAll(),
+        );
     }
 }
