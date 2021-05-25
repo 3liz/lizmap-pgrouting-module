@@ -24,7 +24,7 @@ ALTER TABLE pgrouting.edges_info
 DROP CONSTRAINT IF EXISTS edges_id_fkey;
 
 ALTER TABLE pgrouting.edges_info
-ADD CONSTRAINT IF EXISTS edges_id_fkey FOREIGN KEY (id)
+ADD CONSTRAINT edges_id_fkey FOREIGN KEY (id)
 REFERENCES pgrouting.edges(id);
 
 ALTER TABLE pgrouting.edges
