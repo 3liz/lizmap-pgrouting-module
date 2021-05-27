@@ -2,7 +2,6 @@ version: '3'
 services:
   pgsql:
     image: 3liz/postgis:${POSTGIS_VERSION_TAG}
-    container_name: "lizmap_pgrouting_module_postgis"
     environment:
       POSTGRES_PASSWORD: lizmap1234!
     volumes:
@@ -12,7 +11,6 @@ services:
       - ${LZMPGPORT}:5432
   lizmap:
     image: 3liz/lizmap-web-client:${LIZMAP_VERSION_TAG}
-    container_name: "lizmap_pgrouting_module_php"
     environment:
       LIZMAP_CACHEREDISDB: '1'
       LIZMAP_CACHEREDISHOST: redis
@@ -20,6 +18,7 @@ services:
       LIZMAP_HOME: /srv/lizmap
       LIZMAP_USER: ${LIZMAP_USER_ID}
       LIZMAP_WMSSERVERURL: http://map:8080/ows/
+      LIZMAP_CONFIG_INCLUDE: /srv/etc/conf
       PGSERVICEFILE: /srv/etc/pg_service.conf
       PGPASSFILE: /srv/etc/pgpass.conf
     volumes:
@@ -29,7 +28,6 @@ services:
       - ${LIZMAP_DIR}/var/lizmap-db:/www/lizmap/var/db
       - ${LIZMAP_DIR}/www:/www/lizmap/www
       - ${LIZMAP_DIR}/var/lizmap-log:/www/lizmap/var/log
-      - ${LIZMAP_DIR}/var/lizmap-temp:/www/temp/lizmap
       - ${LIZMAP_DIR}/etc:/srv/etc:ro
       - ${PGROUTING_MODULE_SRC}/pgrouting:/www/lizmap/lizmap-modules/pgrouting
     command:
@@ -39,7 +37,6 @@ services:
       - pgsql
   map:
     image: 3liz/qgis-map-server:${QGIS_VERSION_TAG}
-    container_name: "lizmap_pgrouting_module_qgis"
     environment:
       QGSRV_CACHE_ROOTDIR: /srv/projects
       QGSRV_CACHE_SIZE: '20'
@@ -57,13 +54,12 @@ services:
     restart: unless-stopped
   redis:
     image: redis:5-alpine
-    container_name: "lizmap_pgrouting_module_redis"
   web:
     image: nginx:1
-    container_name: "lizmap_pgrouting_module_nginx"
+    user: ${LIZMAP_USER_ID}:${LIZMAP_USER_ID}
     volumes:
       - ${LIZMAP_DIR}/etc/nginx.conf:/etc/nginx/nginx.conf
-      - ${LIZMAP_DIR}/var/nginx-log/nginx:/var/log/nginx
+      - ${LIZMAP_DIR}/var/log/nginx:/var/log/nginx
       - ${LIZMAP_DIR}/var/nginx-cache:/var/cache/nginx
       - ${LIZMAP_DIR}:/srv/lizmap
     ports:
