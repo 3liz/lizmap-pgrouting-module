@@ -62,6 +62,7 @@ CREATE INDEX nodes_index_spatial
 -- Create Functions
 
 -- Fonction de création de nodes
+DROP FUNCTION IF EXISTS pgrouting.create_node;
 CREATE OR REPLACE FUNCTION pgrouting.create_node(
 	geom_val geometry('POINT', {$srid}))
     RETURNS integer
@@ -86,6 +87,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de création des edges
+DROP FUNCTION IF EXISTS pgrouting.create_edge;
 CREATE OR REPLACE FUNCTION pgrouting.create_edge(
 	geom_val geometry('LINESTRING', {$srid}), cost_val float, reverse_cost_val float)
     RETURNS integer
@@ -122,6 +124,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de création des edges temporaires à partir de A et B
+DROP FUNCTION IF EXISTS pgrouting.create_temporary_edges;
 CREATE OR REPLACE FUNCTION pgrouting.create_temporary_edges(
 	point_a text,
 	point_b text,
@@ -252,7 +255,8 @@ DECLARE
   END;
 $BODY$;
 
--- Fonction de création de la requête 
+-- Fonction de création de la requête
+DROP FUNCTION IF EXISTS pgrouting.route_request;
 CREATE OR REPLACE FUNCTION pgrouting.route_request(
 	point_a text, point_b text, crs integer)
     RETURNS text
@@ -292,6 +296,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de la RoadMap
+DROP FUNCTION IF EXISTS pgrouting.create_roadmap;
 CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
 	point_a text, point_b text, crs integer)
     RETURNS TABLE (
