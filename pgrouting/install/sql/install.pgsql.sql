@@ -62,7 +62,7 @@ CREATE INDEX nodes_index_spatial
 -- Create Functions
 
 -- Fonction de création de nodes
-DROP FUNCTION IF EXISTS pgrouting.create_node;
+DROP FUNCTION IF EXISTS pgrouting.create_node(geometry);
 CREATE OR REPLACE FUNCTION pgrouting.create_node(
 	geom_val geometry('POINT', {$srid}))
     RETURNS integer
@@ -87,9 +87,9 @@ DECLARE
 $BODY$;
 
 -- Fonction de création des edges
-DROP FUNCTION IF EXISTS pgrouting.create_edge;
+DROP FUNCTION IF EXISTS pgrouting.create_edge(geometry, double precision, double precision);
 CREATE OR REPLACE FUNCTION pgrouting.create_edge(
-	geom_val geometry('LINESTRING', {$srid}), cost_val float, reverse_cost_val float)
+	geom_val geometry('LINESTRING', {$srid}), cost_val double precision, reverse_cost_val double precision)
     RETURNS integer
     LANGUAGE 'plpgsql'
 
@@ -124,7 +124,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de création des edges temporaires à partir de A et B
-DROP FUNCTION IF EXISTS pgrouting.create_temporary_edges;
+DROP FUNCTION IF EXISTS pgrouting.create_temporary_edges(text,text,integer);
 CREATE OR REPLACE FUNCTION pgrouting.create_temporary_edges(
 	point_a text,
 	point_b text,
@@ -256,7 +256,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de création de la requête
-DROP FUNCTION IF EXISTS pgrouting.route_request;
+DROP FUNCTION IF EXISTS pgrouting.route_request(text,text,integer);
 CREATE OR REPLACE FUNCTION pgrouting.route_request(
 	point_a text, point_b text, crs integer)
     RETURNS text
@@ -296,7 +296,7 @@ DECLARE
 $BODY$;
 
 -- Fonction de la RoadMap
-DROP FUNCTION IF EXISTS pgrouting.create_roadmap;
+DROP FUNCTION IF EXISTS pgrouting.create_roadmap(text,text,integer);
 CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
 	point_a text, point_b text, crs integer)
     RETURNS TABLE (
