@@ -301,7 +301,7 @@ CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
 	point_a text, point_b text, crs integer)
     RETURNS TABLE (
 		seq integer,
-		edge integer,
+		edge bigint,
 		geom text,
 		label text,
 		dist double precision,
