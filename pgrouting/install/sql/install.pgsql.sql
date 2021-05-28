@@ -302,7 +302,7 @@ CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
     RETURNS TABLE (
 		seq integer,
 		edge bigint,
-		geom text,
+		geom geometry('LINESTRING', 4326),
 		label text,
 		dist double precision,
 		cost double precision,
@@ -337,12 +337,70 @@ BEGIN
 		pgrouting.edges_info ei
 		WHERE te.ref_edge_id = ei.id
 	)
-	SELECT d.seq, d.edge, ST_AsText(ST_Transform(e.geom, 4326)), e.label, e.length, d.cost, d.agg_cost
+	SELECT d.seq, d.edge, ST_Transform(e.geom, 4326), e.label, e.length, d.cost, d.agg_cost
 	FROM pgr_dijkstra(
 		(SELECT pgrouting.route_request(point_a, point_b, crs)), -4, -1, FALSE
 	) AS d,
 	edges e
 	WHERE d.edge = e.id AND node <> -1
 	ORDER BY d.seq;
+END;
+$BODY$;
+
+-- Fonction de récupération de la RoadMap en GeoJson
+DROP FUNCTION IF EXISTS pgrouting.get_geojson_roadmap(text, text, integer);
+CREATE OR REPLACE FUNCTION pgrouting.get_geojson_roadmap(
+	point_a text,
+	point_b text,
+	crs integer)
+    RETURNS TABLE(
+		geojson_roadmap json
+	)
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+AS $BODY$
+DECLARE
+	geojson text;
+BEGIN
+ RETURN QUERY WITH source AS (
+ SELECT "seq", "edge", "geom", "label", "dist", "cost", "agg_cost"
+ FROM pgrouting.create_roadmap(point_a,point_b, crs)
+),
+extent as (
+SELECT ST_Extent(ST_Union(ARRAY(SELECT geom FROM source))) AS bbox
+)
+SELECT row_to_json(fc, True) as geojson_roadmap
+FROM (
+SELECT
+       'FeatureCollection' As type,
+	   -- ST_AsGeoJSON(ST_Union(ARRAY(SELECT geom FROM source)))::json AS total_path,
+	   (select array[ST_XMin(bbox) , ST_YMin(bbox), ST_XMax(bbox), ST_YMax(bbox)] from extent) AS bbox,
+	   json_build_object(
+		   'total_length', (SELECT SUM( dist) FROM source), 
+		   'total_cost', (SELECT SUM( cost) FROM source)
+	   ) AS routing,
+       array_to_json(array_agg(f)) As features
+-- SELECT row_to_json(f, True) AS geojson
+    FROM (
+        SELECT
+            'Feature' AS type,
+ Concat(
+    'pgrouting',
+    '.',
+    "seq") AS id,
+                ST_AsGeoJSON(lg.geom)::json As geometry,
+    
+            row_to_json(
+                ( SELECT l FROM
+                    (
+                        SELECT "seq", "edge", "label", "dist", "cost", "agg_cost"
+                    ) As l
+                )
+            ) As properties
+        FROM source As lg
+    ) As f
+) As fc;
 END;
 $BODY$;

@@ -81,6 +81,15 @@ class defaultCtrl extends jController {
             return $rep;
         }
 
+        $layer = $p->getLayer($l->id);
+
+        // Check if layer is a PostgreSQL layer
+        if (!($layer->getProvider() == 'postgres')) {
+            $rep->data = array('status' => 'error', 'message' => 'Layer '.$layername.' is not a PostgreSQL layer');
+
+            return $rep;
+        }
+
         $l = $p->findLayerByName('nodes');
         if (!$l) {
             $rep->data = array('status' => 'error', 'message' => 'Layer '.$l->name.' does not exist');
@@ -117,8 +126,9 @@ class defaultCtrl extends jController {
 
             return $rep;
         }
-
-        $rep->data = $result['data'];
+        $data = $result['data'][0]->geojson_roadmap;
+        $data = json_decode($data);
+        $rep->data = $data;
         return $rep;
     }
 }

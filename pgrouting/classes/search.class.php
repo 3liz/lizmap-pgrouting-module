@@ -2,7 +2,7 @@
 
 class search {
     protected $sql = array(
-        'get_short_path' => 'SELECT * FROM pgrouting.create_roadmap($1, $2, $3);'
+        'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3);'
     );
 
     protected function getSql($option)
