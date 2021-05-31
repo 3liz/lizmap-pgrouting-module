@@ -67,9 +67,14 @@ class search {
             );
         }
 
+        // Marche pour la requete de récupération du geojson
+        // Il faudra surement modifier si d'autres requêtes
+        $data = $result->fetchAll();
+        $data = $data[0]->geojson_roadmap;
+        $data = json_decode($data);
         return array(
             'status' => 'success',
-            'data' => $result->fetchAll(),
+            'data' => $data,
         );
     }
 }
