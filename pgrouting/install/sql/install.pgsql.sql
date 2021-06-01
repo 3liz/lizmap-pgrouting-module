@@ -269,9 +269,9 @@ DECLARE
 $BODY$;
 
 -- Fonction de création de la requête
-DROP FUNCTION IF EXISTS pgrouting.route_request(text,text,integer);
+DROP FUNCTION IF EXISTS pgrouting.route_request(text,text,integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.route_request(
-	point_a text, point_b text, crs integer)
+	point_a text, point_b text, crs integer, opt text)
     RETURNS text
     LANGUAGE 'plpgsql'
 
@@ -295,23 +295,38 @@ DECLARE
 	SELECT e.id into edge_id_b FROM pgrouting.edges e ORDER BY ST_distance(geom_b, e.geom) LIMIT 1;
 	
 	-- request to get all edges in buffer around the points
-	edge_query = CONCAT('
-	SELECT d.id, d.source, d.target, d.cost, d.reverse_cost
-	FROM pgrouting.create_temporary_edges(''',point_a,''',''',point_b,''',',crs,') AS d
-	UNION ALL
-	SELECT e.id, e.source, e.target, e.cost, e.reverse_cost
-	FROM pgrouting.edges e
-	WHERE e.id NOT IN (', edge_id_a::text,',', edge_id_b::text,') 
-	AND ST_intersects(ST_Buffer(ST_Envelope(ST_Collect(''',geom_a::text,''',''',geom_b::text,''')), 1000), e.geom);');
+	IF opt = 'dijkstra' THEN
+		edge_query = CONCAT('
+		SELECT d.id, d.source, d.target, d.cost, d.reverse_cost
+		FROM pgrouting.create_temporary_edges(''',point_a,''',''',point_b,''',',crs,') AS d
+		UNION ALL
+		SELECT e.id, e.source, e.target, e.cost, e.reverse_cost
+		FROM pgrouting.edges e
+		WHERE e.id NOT IN (', edge_id_a::text,',', edge_id_b::text,') 
+		AND ST_intersects(ST_Buffer(ST_Envelope(ST_Collect(''',geom_a::text,''',''',geom_b::text,''')), 1000), e.geom);');
+	ELSIF opt = 'astar' THEN
+		edge_query = CONCAT('
+		SELECT d.id, d.source, d.target, d.cost, d.reverse_cost, 
+			ST_XMin(d.geom) as x1, ST_YMin(d.geom) as y1,
+			ST_XMax(d.geom) as x2, ST_YMax(d.geom) as y2
+		FROM pgrouting.create_temporary_edges(''',point_a,''',''',point_b,''',',crs,') AS d
+		UNION ALL
+		SELECT e.id, e.source, e.target, e.cost, e.reverse_cost,
+			ST_XMin(e.geom) as x1, ST_YMin(e.geom) as y1,
+			ST_XMax(e.geom) as x2, ST_YMax(e.geom) as y2
+		FROM pgrouting.edges e
+		WHERE e.id NOT IN (', edge_id_a::text,',', edge_id_b::text,') 
+		AND ST_intersects(ST_Buffer(ST_Envelope(ST_Collect(''',geom_a::text,''',''',geom_b::text,''')), 1000), e.geom);');
+	END IF;
   
 	RETURN edge_query;
   END;
 $BODY$;
 
 -- Fonction de la RoadMap
-DROP FUNCTION IF EXISTS pgrouting.create_roadmap(text,text,integer);
+DROP FUNCTION IF EXISTS pgrouting.create_roadmap(text,text,integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
-	point_a text, point_b text, crs integer)
+	point_a text, point_b text, crs integer, opt text)
     RETURNS TABLE (
 		seq integer,
 		edge bigint,
@@ -351,9 +366,7 @@ BEGIN
 		WHERE te.ref_edge_id = ei.id
 	)
 	SELECT d.seq, d.edge, ST_Transform(e.geom, 4326), e.label, e.length, d.cost, d.agg_cost
-	FROM pgr_dijkstra(
-		(SELECT pgrouting.route_request(point_a, point_b, crs)), -4, -1, FALSE
-	) AS d,
+	FROM (SELECT * FROM pgrouting.routing_alg(point_a, point_b, crs, opt)) AS d,
 	edges e
 	WHERE d.edge = e.id AND node <> -1
 	ORDER BY d.seq;
@@ -361,11 +374,12 @@ END;
 $BODY$;
 
 -- Fonction de récupération de la RoadMap en GeoJson
-DROP FUNCTION IF EXISTS pgrouting.get_geojson_roadmap(text, text, integer);
+DROP FUNCTION IF EXISTS pgrouting.get_geojson_roadmap(text, text, integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.get_geojson_roadmap(
 	point_a text,
 	point_b text,
-	crs integer)
+	crs integer,
+	opt text)
     RETURNS TABLE(
 		routing json,
 		poi json
@@ -380,7 +394,7 @@ DECLARE
 BEGIN
  RETURN QUERY WITH source AS (
  SELECT "seq", "edge", "geom", "label", "dist", "cost", "agg_cost"
- FROM pgrouting.create_roadmap(point_a,point_b, crs)
+ FROM pgrouting.create_roadmap(point_a,point_b, crs, opt)
 ),
 extent as (
 SELECT ST_Extent(ST_Union(ARRAY(SELECT geom FROM source))) AS bbox
@@ -439,5 +453,37 @@ point_interest as (
 )
 SELECT row_to_json(fc, True) as routing, row_to_json(point_interest, True) as poi
 FROM fc, point_interest;
+END;
+$BODY$;
+
+DROP FUNCTION IF EXISTS pgrouting.routing_alg(text,text,integer,text);
+CREATE OR REPLACE FUNCTION pgrouting.routing_alg(
+	point_a text, point_b text, crs integer, opt text)
+    RETURNS TABLE (
+		seq integer,
+		path_seq integer,
+		node bigint,
+		edge bigint,
+		cost double precision,
+		agg_cost double precision
+	)
+    LANGUAGE 'plpgsql'
+
+    COST 100
+    VOLATILE 
+AS $BODY$
+DECLARE
+BEGIN
+	IF opt = 'dijkstra' THEN
+		RETURN QUERY SELECT *
+		FROM pgr_dijkstra(
+			(SELECT pgrouting.route_request(point_a, point_b, crs, opt)), -4, -1, FALSE
+		);
+	ELSIF opt = 'astar' THEN
+		RETURN QUERY SELECT *
+		FROM pgr_astar(
+			(SELECT pgrouting.route_request(point_a, point_b, crs, opt)), -4, -1, FALSE
+		);
+	END IF;
 END;
 $BODY$;

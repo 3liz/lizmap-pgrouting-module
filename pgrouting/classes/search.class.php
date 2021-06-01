@@ -2,7 +2,7 @@
 
 class search {
     protected $sql = array(
-        'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3);'
+        'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3, $4);'
     );
 
     protected function getSql($option)
@@ -56,7 +56,7 @@ class search {
         } catch (Exception $e) {
             return array(
                 'status' => 'error',
-                'message' => 'Error at the query concerning '.$option,
+                'message' => $e->getMessage(),
             );
         }
 

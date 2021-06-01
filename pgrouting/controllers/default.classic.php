@@ -203,6 +203,7 @@ class defaultCtrl extends jController
         $filterParams[] = $origin;
         $filterParams[] = $destination;
         $filterParams[] = $crs;
+        $filterParams[] = 'dijkstra';
 
         $search = jClasses::getService('pgrouting~search');
 
