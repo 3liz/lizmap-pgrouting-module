@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS pgrouting.edges(
     geom geometry('LINESTRING', {$srid})
 );
 
+CREATE TABLE IF NOT EXISTS pgrouting.routing_poi(
+    id serial PRIMARY key,
+    label text,
+    type text,
+    description text,
+    geom geometry('POINT', {$srid})
+);
+
 -- Adding constarints
 
 CREATE TABLE IF NOT EXISTS pgrouting.edges_info(
@@ -57,6 +65,11 @@ CREATE INDEX edges_index_spatial
 DROP INDEX IF EXISTS nodes_index_spatial;
 CREATE INDEX nodes_index_spatial
   ON pgrouting.nodes
+  USING GIST (geom);
+
+DROP INDEX IF EXISTS routing_poi_index_spatial;
+CREATE INDEX routing_poi_index_spatial
+  ON pgrouting.routing_poi
   USING GIST (geom);
 
 -- Create Functions
@@ -354,7 +367,8 @@ CREATE OR REPLACE FUNCTION pgrouting.get_geojson_roadmap(
 	point_b text,
 	crs integer)
     RETURNS TABLE(
-		geojson_roadmap json
+		routing json,
+		poi json
 	)
     LANGUAGE 'plpgsql'
 
@@ -370,10 +384,9 @@ BEGIN
 ),
 extent as (
 SELECT ST_Extent(ST_Union(ARRAY(SELECT geom FROM source))) AS bbox
-)
-SELECT row_to_json(fc, True) as geojson_roadmap
-FROM (
-SELECT
+),
+fc as (
+	SELECT
        'FeatureCollection' As type,
 	   -- ST_AsGeoJSON(ST_Union(ARRAY(SELECT geom FROM source)))::json AS total_path,
 	   (select array[ST_XMin(bbox) , ST_YMin(bbox), ST_XMax(bbox), ST_YMax(bbox)] from extent) AS bbox,
@@ -382,25 +395,49 @@ SELECT
 		   'total_cost', (SELECT SUM( cost) FROM source)
 	   ) AS routing,
        array_to_json(array_agg(f)) As features
--- SELECT row_to_json(f, True) AS geojson
+	-- SELECT row_to_json(f, True) AS geojson
     FROM (
         SELECT
             'Feature' AS type,
- Concat(
-    'pgrouting',
-    '.',
-    "seq") AS id,
-                ST_AsGeoJSON(lg.geom)::json As geometry,
-    
-            row_to_json(
-                ( SELECT l FROM
-                    (
-                        SELECT "seq", "edge", "label", "dist", "cost", "agg_cost"
-                    ) As l
-                )
-            ) As properties
-        FROM source As lg
-    ) As f
-) As fc;
+			Concat(
+				'pgrouting',
+				'.',
+				"seq") AS id,
+			ST_AsGeoJSON(lg.geom)::json As geometry,		
+			row_to_json(
+				( SELECT l FROM
+					(
+						SELECT "seq", "edge", "label", "dist", "cost", "agg_cost"
+					) As l
+				)
+			) As properties
+		FROM source As lg
+	) AS f
+),
+point_interest as (
+	SELECT
+       'FeatureCollection' As type,
+       array_to_json(array_agg(f)) As features
+    FROM (
+        SELECT
+            'Feature' AS type,
+			Concat(
+				'poi',
+				'.',
+				"id") AS id,
+			ST_AsGeoJSON(ST_Transform(lg.geom, 4326))::json As geometry,		
+			row_to_json(
+				( SELECT l FROM
+					(
+						SELECT "id", lg.label, "type", "description"
+					) As l
+				)
+			) As properties
+		FROM pgrouting.routing_poi As lg, source as s
+		WHERE ST_DWithin(s.geom, ST_Transform(lg.geom, 4326), 1)
+	) AS f
+)
+SELECT row_to_json(fc, True) as routing, row_to_json(point_interest, True) as poi
+FROM fc, point_interest;
 END;
 $BODY$;

@@ -70,11 +70,16 @@ class search {
         // Marche pour la requete de récupération du geojson
         // Il faudra surement modifier si d'autres requêtes
         $data = $result->fetchAll();
-        $data = $data[0]->geojson_roadmap;
-        $data = json_decode($data);
+        $routing = $data[0]->routing;
+        $poi = $data[0]->poi;
+        $routing = json_decode($routing);
+        $poi = json_decode($poi);
         return array(
             'status' => 'success',
-            'data' => $data,
+            'data' => array(
+                'routing' => $routing,
+                'poi' => $poi
+            ),
         );
     }
 }
