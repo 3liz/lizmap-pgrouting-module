@@ -12,6 +12,11 @@
 class pgroutingModuleInstaller extends jInstallerModule {
 
     function install() {
+        // Copy CSS and JS assets
+        $this->copyDirectoryContent('../www/css', jApp::wwwPath('pgrouting/css'));
+        $this->copyDirectoryContent('../www/js', jApp::wwwPath('pgrouting/js'));
+
+        // SQL
         if ($this->firstDbExec()) {
             $sqlPath = $this->path . 'install/sql/install.pgsql.sql';
             $sqlTpl = jFile::read( $sqlPath );

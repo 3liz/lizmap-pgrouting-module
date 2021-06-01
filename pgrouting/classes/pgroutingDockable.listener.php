@@ -6,14 +6,14 @@
             $bp = jApp::config()->urlengine['basePath'];
 
             // dock
-            $content = '<div class="menu-content"><p>Draw start and end points.</p></div>';
+            $content = '<div class="menu-content"><p>Draw origin and destination points.</p></div>';
             $dock = new lizmapMapDockItem(
                 'pgrouting',
                 'pgRouting',
                 $content,
                 99,
-                null,
-                $bp.'assets/js/pgrouting.js'
+                $bp.'assets/pgrouting/pgrouting.css',
+                $bp.'assets/pgrouting/pgrouting.js'
             );
             $event->add($dock);
         }
