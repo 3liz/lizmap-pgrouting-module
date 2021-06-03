@@ -443,12 +443,14 @@ point_interest as (
 			row_to_json(
 				( SELECT l FROM
 					(
-						SELECT "id", lg.label, "type", "description"
+						SELECT MIN(s.seq) AS seq, lg.id, lg.label, lg.type, lg.description
 					) As l
 				)
 			) As properties
 		FROM pgrouting.routing_poi As lg, source as s
 		WHERE ST_DWithin(s.geom, ST_Transform(lg.geom, 4326), 1)
+		GROUP BY lg.id, lg.label, lg.type, lg.description
+		ORDER BY seq
 	) AS f
 )
 SELECT row_to_json(fc, True) as routing, row_to_json(point_interest, True) as poi
