@@ -1,5 +1,22 @@
 CREATE SCHEMA IF NOT EXISTS pgrouting;
 
+-- metadata table
+CREATE TABLE pgrouting.qgis_plugin (
+    id integer PRIMARY KEY NOT NULL,
+    version text NOT NULL,
+    version_date date NOT NULL,
+    status smallint NOT NULL
+);
+
+COMMENT ON TABLE pgrouting.qgis_plugin IS 'Metadata of the schema structure, related to the version of the QGIS plugin. This is used for scripts to migrate the structure between 2 versions.';
+
+COMMENT ON COLUMN pgrouting.qgis_plugin.id IS 'Unique identifier.';
+COMMENT ON COLUMN pgrouting.qgis_plugin.version IS 'Version of the current state of the database structure.';
+COMMENT ON COLUMN pgrouting.qgis_plugin.version_date IS 'Date of implementation of the current version of the structure.';
+COMMENT ON COLUMN pgrouting.qgis_plugin.status IS 'of the current version.';
+
+INSERT INTO pgrouting.qgis_plugin VALUES(1, '0.1.0', NOW(),1);
+
 CREATE TABLE IF NOT EXISTS pgrouting.nodes(
     id serial primary key,
     geom geometry('POINT', {$srid})
