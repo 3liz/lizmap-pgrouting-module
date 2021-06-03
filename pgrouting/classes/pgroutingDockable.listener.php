@@ -12,8 +12,9 @@
                 'pgRouting',
                 $content,
                 99,
-                $bp.'assets/pgrouting/pgrouting.css',
-                $bp.'assets/pgrouting/pgrouting.js'
+                $bp.'assets/pgrouting/css/pgrouting.css',
+                $bp.'assets/pgrouting/js/pgrouting.js',
+                ['type' => 'module']
             );
             $event->add($dock);
         }
