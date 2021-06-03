@@ -77,9 +77,9 @@ class pgRouting {
                     lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
                 }
 
-                if (json) {
+                if (json && json.routing) {
                     const width = 8;
-                    this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json, undefined, [
+                    this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
                         new Style({
                             stroke: new Stroke({
                                 color: 'white',
@@ -94,7 +94,7 @@ class pgRouting {
                         })
                     ]);
                 } else {
-                    lizMap.addMessage('Route is outside data extent.', 'error', true)
+                    lizMap.addMessage('No route have been found.', 'error', true)
                 }
             });
     }
