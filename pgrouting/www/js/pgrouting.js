@@ -1,5 +1,5 @@
-import { transform } from './node_modules/ol/proj.js';
-import { Circle as CircleStyle, Fill, Stroke, Style } from './node_modules/ol/style.js';
+import { transform } from 'https://cdn.jsdelivr.net/npm/ol@6.5.0/proj.js';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.5.0/style.js';
 
 class pgRouting {
 
