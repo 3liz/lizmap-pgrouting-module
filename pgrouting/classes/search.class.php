@@ -1,8 +1,9 @@
 <?php
 
-class search {
+class search
+{
     protected $sql = array(
-        'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3, $4);'
+        'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3, $4);',
     );
 
     protected function getSql($option)
@@ -74,11 +75,12 @@ class search {
         $poi = $data[0]->poi;
         $routing = json_decode($routing);
         $poi = json_decode($poi);
+
         return array(
             'status' => 'success',
             'data' => array(
                 'routing' => $routing,
-                'poi' => $poi
+                'poi' => $poi,
             ),
         );
     }

@@ -1,4 +1,5 @@
 <?php
+
     class pgroutingDockableListener extends jEventListener
     {
         public function onmapDockable($event)
@@ -15,7 +16,7 @@
                     99,
                     $bp.'assets/pgrouting/css/pgrouting.css',
                     $bp.'assets/pgrouting/js/pgrouting.js',
-                    ['type' => 'module']
+                    array('type' => 'module')
                 );
                 $event->add($dock);
             }
