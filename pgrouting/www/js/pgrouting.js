@@ -78,6 +78,7 @@ class pgRouting {
                 }
 
                 if (json && json.routing) {
+                    // Display route
                     const width = 8;
                     this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
                         new Style({
@@ -93,6 +94,34 @@ class pgRouting {
                             })
                         })
                     ]);
+
+                    // Display roadmap
+                    const contentElement = document.querySelector('#pgrouting .menu-content');
+
+                    // Merge road with same label when sibling
+                    let mergedRoads = [];
+                    let previousLabel = '';
+
+                    for (const feature of json.routing.features) {
+                        const label = feature.properties.label;
+                        const distance = feature.properties.dist;
+
+                        if (label !== previousLabel) {
+                            mergedRoads.push({ label: label, distance: distance });
+                        } else {
+                            mergedRoads[mergedRoads.length - 1] = { label: label, distance: distance + mergedRoads[mergedRoads.length - 1].distance }
+                        }
+                        previousLabel = label;
+                    }
+
+                    let roadMap = `<dl>`;
+
+                    for (const road of mergedRoads) {
+                        roadMap += `<dt>${road.label}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
+                    }
+                    roadMap += `</dl>`;
+
+                    contentElement.innerHTML = roadMap;
                 } else {
                     lizMap.addMessage('No route have been found.', 'error', true)
                 }
