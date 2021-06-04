@@ -52,6 +52,18 @@ class pgRouting {
                         );
                     }
                 });
+
+                // Show mouse pointer when hovering origin or destination points
+                lizMap.mainLizmap.map.on('pointermove', (e) => {
+                    if (e.dragging) {
+                        return;
+                    }
+                    const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
+                    const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
+                    const featureHover = featuresAtPixel.some(feature => lizMap.mainLizmap.draw.features.includes(feature));
+
+                    lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
+                });
             },
             dockopened: (evt) => {
                 if (evt.id === "pgrouting") {
