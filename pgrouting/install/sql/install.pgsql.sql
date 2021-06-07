@@ -465,7 +465,7 @@ point_interest as (
 				)
 			) As properties
 		FROM pgrouting.routing_poi As lg, source as s
-		WHERE ST_DWithin(s.geom, ST_Transform(lg.geom, 4326), 1)
+		WHERE ST_DWithin(ST_Transform(s.geom, {$srid}), lg.geom, 1)
 		GROUP BY s.seq, lg.id, lg.label, lg.type, lg.description
 		ORDER BY s.seq
 	) AS f
