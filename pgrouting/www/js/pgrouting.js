@@ -134,7 +134,7 @@ class pgRouting {
                         previousLabel = label;
                     }
 
-                    let roadMap = `<h4>Roadmap</h4><dl>`;
+                    let roadMap = `<h4>Parcours</h4><dl>`;
 
                     for (const road of mergedRoads) {
                         roadMap += `<dt>${road.label}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
@@ -144,7 +144,7 @@ class pgRouting {
                     // Display POI
                     let POIList = '';
                     if (json.poi && json.poi.features) {
-                        POIList += `<h4>POI</h4><dl>`;
+                        POIList += `<h4>Point sur le parcours</h4><dl>`;
                         for (const feature of json.poi.features) {
                             const label = feature.properties.label;
                             const description = feature.properties.description;
