@@ -74,17 +74,17 @@ DROP CONSTRAINT IF EXISTS edges_route_id_fkey;
 
 --Adding spatial index
 
-DROP INDEX IF EXISTS edges_index_spatial;
+DROP INDEX IF EXISTS pgrouting.edges_index_spatial;
 CREATE INDEX edges_index_spatial
   ON pgrouting.edges
   USING GIST (geom);
 
-DROP INDEX IF EXISTS nodes_index_spatial;
+DROP INDEX IF EXISTS pgrouting.nodes_index_spatial;
 CREATE INDEX nodes_index_spatial
   ON pgrouting.nodes
   USING GIST (geom);
 
-DROP INDEX IF EXISTS routing_poi_index_spatial;
+DROP INDEX IF EXISTS pgrouting.routing_poi_index_spatial;
 CREATE INDEX routing_poi_index_spatial
   ON pgrouting.routing_poi
   USING GIST (geom);
