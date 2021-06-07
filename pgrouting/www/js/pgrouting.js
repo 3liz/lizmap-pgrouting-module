@@ -46,9 +46,11 @@ class pgRouting {
                 lizMap.mainLizmap.draw._modifyInteraction.on('modifyend', () => {
                     const features = lizMap.mainLizmap.draw.features;
                     if (features.length === 2) {
+                        const origin = features.find(feature => feature.getId() === 0);
+                        const destination = features.find(feature => feature.getId() === 1);
                         this._getRoute(
-                            transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                            transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                            transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                            transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
                         );
                     }
                 });
