@@ -128,14 +128,28 @@ class pgRouting {
                         previousLabel = label;
                     }
 
-                    let roadMap = `<dl>`;
+                    let roadMap = `<h4>Roadmap</h4><dl>`;
 
                     for (const road of mergedRoads) {
                         roadMap += `<dt>${road.label}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
                     }
                     roadMap += `</dl>`;
 
-                    contentElement.innerHTML = roadMap;
+                    // Display POI
+                    let POIList = '';
+                    if (json.poi && json.poi.features) {
+                        POIList += `<h4>POI</h4><dl>`;
+                        for (const feature of json.poi.features) {
+                            const label = feature.properties.label;
+                            const description = feature.properties.description;
+                            const type = feature.properties.type;
+
+                            POIList += `<dt>${label}</dt><dd>${description}</dd><dd>${type}</dd>`;
+                        }
+                        POIList += `</dl>`;
+                    }
+
+                    contentElement.innerHTML = roadMap + POIList;
                 } else {
                     lizMap.addMessage('No route have been found.', 'error', true)
                 }
