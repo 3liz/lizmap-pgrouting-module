@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS pgrouting;
 
 -- metadata table
-CREATE TABLE pgrouting.qgis_plugin (
+CREATE TABLE IF NOT EXISTS pgrouting.qgis_plugin (
     id integer PRIMARY KEY NOT NULL,
     version text NOT NULL,
     version_date date NOT NULL,
@@ -15,7 +15,7 @@ COMMENT ON COLUMN pgrouting.qgis_plugin.version IS 'Version of the current state
 COMMENT ON COLUMN pgrouting.qgis_plugin.version_date IS 'Date of implementation of the current version of the structure.';
 COMMENT ON COLUMN pgrouting.qgis_plugin.status IS 'of the current version.';
 
-INSERT INTO pgrouting.qgis_plugin VALUES(1, '0.1.0', NOW(),1);
+INSERT INTO pgrouting.qgis_plugin VALUES(1, '0.0.1', NOW(),1) ON CONFLICT (id) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS pgrouting.nodes(
     id serial primary key,
