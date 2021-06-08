@@ -4,6 +4,19 @@ import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr
 class pgRouting {
 
     constructor() {
+        // Get locales
+        this._locales = '';
+
+        fetch(`${lizUrls.basepath}index.php/pgrouting/translate/`)
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                if (json) {
+                    this._locales = JSON.parse(json);
+                }
+            });
+
         lizMap.events.on({
             uicreated: () => {
                 // Init draw with 2 points and hide layer
@@ -134,7 +147,7 @@ class pgRouting {
                         previousLabel = label;
                     }
 
-                    let roadMap = `<div class="roadmap"><h4>Parcours</h4><dl>`;
+                    let roadMap = `<div class="roadmap"><h4>${this._locales['roadmap.title']}</h4><dl>`;
 
                     for (const road of mergedRoads) {
                         roadMap += `<dt>${road.label}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
@@ -144,7 +157,7 @@ class pgRouting {
                     // Display POI
                     let POIList = '';
                     if (json.poi && json.poi.features) {
-                        POIList += `<div class="poi"><h4>Point sur le parcours</h4><dl>`;
+                        POIList += `<div class="poi"><h4>${this._locales['poi.title']}</h4><dl>`;
                         for (const feature of json.poi.features) {
                             const label = feature.properties.label;
                             const description = feature.properties.description;
@@ -157,7 +170,7 @@ class pgRouting {
 
                     contentElement.innerHTML = `<div class="pgrouting">${roadMap}${POIList}</div>`;
                 } else {
-                    lizMap.addMessage('No route have been found.', 'error', true)
+                    lizMap.addMessage(this._locales['route.error'], 'error', true)
                 }
             });
     }
