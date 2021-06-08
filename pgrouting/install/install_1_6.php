@@ -20,7 +20,7 @@ class pgroutingModuleInstaller extends jInstallerModule {
         $result = $db->prepare($sql);
         $result->execute();
         $data = $result->fetchall();
-        if (count($data) == 2) {
+        if (!count($data) == 2) {
             throw new jException('pgrouting~db.query.ext.bad');
         }
     }
