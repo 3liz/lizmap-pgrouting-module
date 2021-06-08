@@ -1,0 +1,50 @@
+<?php
+/**
+ * Service to provide translation dictionnary.
+ *
+ * @author    3liz
+ * @copyright 2021 3liz
+ *
+ * @see      https://3liz.com
+ *
+ * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class translateCtrl extends jController
+{
+    /**
+     * Get json containing all translation for the dictionnary.
+     *
+     * @param string $lang Language. Ex: fr_FR (optional)
+     *
+     * @return json
+     */
+    public function index()
+    {
+        $resp = $this->getResponse('json');
+
+        $lang = $this->param('lang');
+
+        if (!$lang) {
+            $lang = \jLocale::getCurrentLang().'_'.\jLocale::getCurrentCountry();
+        }
+
+        $data = array();
+        $path = \jApp::getModulePath('pgrouting').'/locales/en_US/dictionnary.UTF-8.properties';
+
+        if (file_exists($path)) {
+            $lines = file($path);
+            foreach ($lines as $lineContent) {
+                if (!empty($lineContent) and $lineContent != '\n') {
+                    $exp = explode('=', trim($lineContent));
+                    if (!empty($exp[0])) {
+                        $data[$exp[0]] = \jLocale::get('pgrouting~dictionnary.'.$exp[0], null, $lang);
+                    }
+                }
+            }
+        }
+
+        $resp->data = json_encode($data);
+
+        return $resp;
+    }
+}
