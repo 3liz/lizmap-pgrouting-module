@@ -1,4 +1,6 @@
 variables:
+  FACTORY_PRODUCT_NAME: pgrouting
+  FACTORY_PACKAGE_TYPE: module
   POSTGRES_DB: "lizmap"
   POSTGRES_USER: "lizmap"
   POSTGRES_PASSWORD: "lizmap1234!"
@@ -6,6 +8,7 @@ variables:
 
 stages:
 - Tests 🎳
+# - Release 🚀
 
 sql:
   stage: Tests 🎳
@@ -22,3 +25,14 @@ sql:
     - python -m unittest -v
   tags:
     - factory
+
+#tickets:
+#  stage: Release 🚀
+#  only:
+#    - tags
+#  image:
+#    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+#  script:
+#    - create_ticket.py
+#  tags:
+#    - factory-plain
