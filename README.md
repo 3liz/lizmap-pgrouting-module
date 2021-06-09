@@ -2,6 +2,4 @@
 
 Funded by CRIGE PACA
 
-![pgrouting](resources/pgrouting.gif)
-
-
+![pgrouting](docs/media/pgrouting.gif)
