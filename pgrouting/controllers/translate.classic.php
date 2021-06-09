@@ -1,6 +1,6 @@
 <?php
 /**
- * Service to provide translation dictionnary.
+ * Service to provide translation dictionary.
  *
  * @author    3liz
  * @copyright 2021 3liz
@@ -12,7 +12,7 @@
 class translateCtrl extends jController
 {
     /**
-     * Get json containing all translation for the dictionnary.
+     * Get json containing all translation for the dictionary.
      *
      * @param string $lang Language. Ex: fr_FR (optional)
      *
@@ -29,7 +29,7 @@ class translateCtrl extends jController
         }
 
         $data = array();
-        $path = \jApp::getModulePath('pgrouting').'/locales/en_US/dictionnary.UTF-8.properties';
+        $path = \jApp::getModulePath('pgrouting').'/locales/en_US/dictionary.UTF-8.properties';
 
         if (file_exists($path)) {
             $lines = file($path);
@@ -37,7 +37,7 @@ class translateCtrl extends jController
                 if (!empty($lineContent) and $lineContent != '\n') {
                     $exp = explode('=', trim($lineContent));
                     if (!empty($exp[0])) {
-                        $data[$exp[0]] = \jLocale::get('pgrouting~dictionnary.'.$exp[0], null, $lang);
+                        $data[$exp[0]] = \jLocale::get('pgrouting~dictionary.'.$exp[0], null, $lang);
                     }
                 }
             }
