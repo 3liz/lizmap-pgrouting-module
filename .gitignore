@@ -9,6 +9,9 @@
 .venv
 venv
 
+# PHP
+.php_cs.cache
+
 factory.manifest
 
 .ignore

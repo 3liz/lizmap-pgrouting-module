@@ -4,9 +4,9 @@
         <version date="2021-04-29">0.1pre</version>
         <label lang="en_US">pgrouting</label>
         <description lang="en_US" />
-        <license URL="">All rights reserved</license>
-        <copyright>2011-2020 3liz</copyright>
-        <creator name="your name" email="your-email@yourwebsite.undefined" />
+        <license URL="">Mozilla Public License : http://www.mozilla.org/MPL/</license>
+        <copyright>2021 3Liz</copyright>
+        <creator name="3Liz" email="info@3liz.com" />
         <!--<contributor name="hisname" email="hisemail@yoursite.undefined"  since="" role=""/>-->
         <homepageURL>http://3liz.com</homepageURL>
     </info>

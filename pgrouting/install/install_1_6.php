@@ -1,17 +1,16 @@
 <?php
 /**
-* @package   lizmap
-* @subpackage pgrouting
-* @author    your name
-* @copyright 2011-2020 3liz
-* @link      http://3liz.com
-* @license    All rights reserved
-*/
-
-
-class pgroutingModuleInstaller extends jInstallerModule {
-
-    function preInstall(){
+ * @author    3Liz
+ * @copyright 2021 3Liz
+ *
+ * @see       https://3liz.com
+ *
+ * @license   Mozilla Public License : http://www.mozilla.org/MPL/
+ */
+class pgroutingModuleInstaller extends jInstallerModule
+{
+    public function preInstall()
+    {
         // Check if all extensions was install
         $this->useDbProfile('pgrouting');
         $db = $this->dbConnection();
@@ -25,24 +24,24 @@ class pgroutingModuleInstaller extends jInstallerModule {
         }
     }
 
-    function install() {
+    public function install()
+    {
         // Copy CSS and JS assets
         $this->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
         $this->copyDirectoryContent('../www/js', jApp::wwwPath('assets/pgrouting/js'));
 
         // SQL
         if ($this->firstDbExec()) {
-
             $this->useDbProfile('pgrouting');
             $db = $this->dbConnection();
 
-            $sqlPath = $this->path . 'install/sql/install.pgsql.sql';
-            $sqlTpl = jFile::read( $sqlPath );
+            $sqlPath = $this->path.'install/sql/install.pgsql.sql';
+            $sqlTpl = jFile::read($sqlPath);
             $tpl = new jTpl();
             $srid = $this->getParameter('srid');
             $tpl->assign('srid', $srid);
             $sql = $tpl->fetchFromString($sqlTpl, 'text');
-            
+
             $db->exec($sql);
         }
     }

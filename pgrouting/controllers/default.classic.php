@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @author    your name
- * @copyright 2011-2020 3liz
+ * @author    3Liz
+ * @copyright 2021 3Liz
  *
- * @see      http://3liz.com
+ * @see       https://3liz.com
  *
- * @license    All rights reserved
+ * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
 class defaultCtrl extends jController
 {

@@ -1,5 +1,12 @@
 <?php
-
+    /**
+     * @author    3Liz
+     * @copyright 2021 3Liz
+     *
+     * @see       https://3liz.com
+     *
+     * @license   Mozilla Public License : http://www.mozilla.org/MPL/
+     */
     class pgroutingDockableListener extends jEventListener
     {
         public function onmapDockable($event)

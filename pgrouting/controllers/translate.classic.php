@@ -2,12 +2,12 @@
 /**
  * Service to provide translation dictionary.
  *
- * @author    3liz
- * @copyright 2021 3liz
+ * @author    3Liz
+ * @copyright 2021 3Liz
  *
- * @see      https://3liz.com
+ * @see       https://3liz.com
  *
- * @license    Mozilla Public License : http://www.mozilla.org/MPL/
+ * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
 class translateCtrl extends jController
 {
