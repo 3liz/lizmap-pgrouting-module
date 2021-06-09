@@ -1,13 +1,19 @@
 # OSX garbage
 .DS_Store
+
+# IDE
 .idea/
 
+# Python SQL tests
 *.pyc
+.venv
+venv
 
 factory.manifest
 
 .ignore
 
+# Tests
 tests/lizmap/www
 tests/lizmap/var
 tests/.env
