@@ -75,8 +75,8 @@ class search
             );
         }
 
-        // Marche pour la requete de récupération du geojson
-        // Il faudra surement modifier si d'autres requêtes
+        // Work for geojson retrieval request
+        // It will probably be necessary to modify if other requests
         $data = $result->fetchAll();
         $routing = $data[0]->routing;
         $poi = $data[0]->poi;

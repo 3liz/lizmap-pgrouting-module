@@ -91,7 +91,7 @@ CREATE INDEX routing_poi_index_spatial
 
 -- Create Functions
 
--- Fonction de création de nodes
+-- Function to create nodes
 DROP FUNCTION IF EXISTS pgrouting.create_node(geometry);
 CREATE OR REPLACE FUNCTION pgrouting.create_node(
 	geom_val geometry('POINT', {$srid}))
@@ -116,7 +116,7 @@ DECLARE
   END;
 $BODY$;
 
--- Fonction de création des edges
+-- Function to create edges
 DROP FUNCTION IF EXISTS pgrouting.create_edge(geometry, double precision, double precision);
 CREATE OR REPLACE FUNCTION pgrouting.create_edge(
 	geom_val geometry('LINESTRING', {$srid}), cost_val double precision, reverse_cost_val double precision)
@@ -153,7 +153,7 @@ DECLARE
   END;
 $BODY$;
 
--- Fonction de création des edges temporaires à partir de A et B
+-- Function to create temporary edges with the origin and destination points
 DROP FUNCTION IF EXISTS pgrouting.create_temporary_edges(text,text,integer);
 CREATE OR REPLACE FUNCTION pgrouting.create_temporary_edges(
 	point_a text,
@@ -285,7 +285,7 @@ DECLARE
   END;
 $BODY$;
 
--- Fonction de création de la requête
+-- Function to generate pgrouting alg query
 DROP FUNCTION IF EXISTS pgrouting.route_request(text,text,integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.route_request(
 	point_a text, point_b text, crs integer, opt text)
@@ -340,7 +340,7 @@ DECLARE
   END;
 $BODY$;
 
--- Fonction de la RoadMap
+-- Function to make the RoadMap
 DROP FUNCTION IF EXISTS pgrouting.create_roadmap(text,text,integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.create_roadmap(
 	point_a text, point_b text, crs integer, opt text)
@@ -390,7 +390,7 @@ BEGIN
 END;
 $BODY$;
 
--- Fonction de récupération de la RoadMap en GeoJson
+-- Function to get roadmap in GeoJson
 DROP FUNCTION IF EXISTS pgrouting.get_geojson_roadmap(text, text, integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.get_geojson_roadmap(
 	point_a text,
@@ -475,6 +475,7 @@ FROM fc, point_interest;
 END;
 $BODY$;
 
+-- FUnction to choose the pgrouting
 DROP FUNCTION IF EXISTS pgrouting.routing_alg(text,text,integer,text);
 CREATE OR REPLACE FUNCTION pgrouting.routing_alg(
 	point_a text, point_b text, crs integer, opt text)

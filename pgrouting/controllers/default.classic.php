@@ -15,7 +15,7 @@ class defaultCtrl extends jController
         $resp = $this->getResponse('json');
         $filterParams = array();
 
-        // vérifier que les paramètres repository, project, geom, srid sont non null ou vide
+        // check that the repository, project, geom, srid parameters are not null or empty
 
         $project = $this->param('project');
         $repository = $this->param('repository');
@@ -53,12 +53,12 @@ class defaultCtrl extends jController
             $crs = 4326;
         }
 
-        // test des valeur X,Y des points
+        // test of the X, Y values of the points
         $xy = explode(',', $origin);
         if (count($xy) != 2) {
             $resp->data = array(
                 'status' => 'error',
-                'message' => 'Le point d\'origine doit être composé que de 2 valeurs uniquements représentant x et y',
+                'message' => 'The origin point must be composed of only 2 values representing x and y',
             );
 
             return $resp;
@@ -67,7 +67,7 @@ class defaultCtrl extends jController
             if (!is_numeric($xy[$i])) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'La valeur du point d\'origine n\'est pas du numérique',
+                    'message' => 'The value of the origin point is not numeric',
                 );
 
                 return $resp;
@@ -79,7 +79,7 @@ class defaultCtrl extends jController
             if ($xy[0] < -180 || $xy[0] > 180) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'La valeur X du point d\'origine doit être comprise entre -180 et 180 '.$xy[0],
+                    'message' => 'The X value of the origin point must be between -180 and 180',
                 );
 
                 return $resp;
@@ -88,7 +88,7 @@ class defaultCtrl extends jController
             if ($xy[1] < -90 || $xy[1] > 90) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'La valeur Y du point d\'origine doit être comprise entre -90 et 90',
+                    'message' => 'The Y value of the origin point must be between -90 and 90',
                 );
 
                 return $resp;
@@ -99,7 +99,7 @@ class defaultCtrl extends jController
         if (count($xy_dest) != 2) {
             $resp->data = array(
                 'status' => 'error',
-                'message' => 'Le point de destination doit être composé que de 2 valeurs uniquements représentant x et y',
+                'message' => 'The destination point must be composed of only 2 values representing x and y',
             );
 
             return $resp;
@@ -107,7 +107,10 @@ class defaultCtrl extends jController
 
         for ($i = 0; $i < count($xy_dest); ++$i) {
             if (!is_numeric($xy_dest[$i])) {
-                $resp->data = array('status' => 'error', 'message' => 'La valeur du point d\'arrivé n\'est pas du numérique');
+                $resp->data = array(
+                    'status' => 'error',
+                    'message' => 'The value of the destination point is not numeric'
+                );
 
                 return $resp;
             }
@@ -118,7 +121,7 @@ class defaultCtrl extends jController
             if ($xy_dest[0] < -180 || $xy_dest[0] > 180) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'La valeur X du point de destination doit être comprise entre -180 et 180',
+                    'message' => 'The X value of the destination point must be between -180 and 180',
                 );
 
                 return $resp;
@@ -127,7 +130,7 @@ class defaultCtrl extends jController
             if ($xy_dest[1] < -90 || $xy_dest[1] > 90) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'La valeur Y du point de destination doit être comprise entre -90 et 90',
+                    'message' => 'The X value of the destination point must be between -90 and 90',
                 );
 
                 return $resp;
