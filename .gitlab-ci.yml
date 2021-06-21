@@ -8,7 +8,7 @@ variables:
 
 stages:
 - Tests 🎳
-# - Release 🚀
+- Release 🚀
 
 sql:
   stage: Tests 🎳
@@ -26,13 +26,13 @@ sql:
   tags:
     - factory
 
-#tickets:
-#  stage: Release 🚀
-#  only:
-#    - tags
-#  image:
-#    name: registry.snap.lizlan:5000/infra/ci-tools:latest
-#  script:
-#    - create_ticket.py
-#  tags:
-#    - factory-plain
+tickets:
+  stage: Release 🚀
+  only:
+    - tags
+  image:
+    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+  script:
+    - create_ticket.py
+  tags:
+    - factory-plain
