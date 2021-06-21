@@ -1,0 +1,41 @@
+{
+    "name": "lizmap/lizmap-pgrouting-module",
+    "type": "jelix-module",
+    "description": "Jelix module for Lizmap, which adds tools to manage routes",
+    "keywords": [
+        "module",
+        "jelix",
+        "lizmap",
+        "routing",
+        "pgrouting"
+    ],
+    "homepage": "http://3liz.com",
+    "license": "MPL-2.0",
+    "authors": [
+        {
+            "name": "Pierre DRILLIN",
+            "email": "pdrillin@3liz.com"
+        },
+        {
+            "name": "Nicolas BOISTEAULT",
+            "email": "nboisteault@3liz.com"
+        }
+    ],
+    "require": {},
+    "minimum-stability": "stable",
+    "extra": {
+        "jelix": {
+            "modules": [
+                "pgrouting/"
+            ],
+            "autoconfig-access-16": {
+                "lizmap@3liz.com": {
+                    "pgrouting": {
+                        "__global": 1,
+                        "index": 2
+                    }
+                }
+            }
+        }
+    }
+}
