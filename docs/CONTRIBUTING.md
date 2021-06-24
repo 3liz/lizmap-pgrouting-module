@@ -1,1 +1,0 @@
-/home/etienne/dev/lizmap/pgrouting/CONTRIBUTING.md

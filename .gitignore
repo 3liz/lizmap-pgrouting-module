@@ -16,6 +16,8 @@ factory.manifest
 
 # MkDocs
 build/
+docs/CONTRIBUTING.md
+docs/CHANGELOG.md
 
 .ignore
 
