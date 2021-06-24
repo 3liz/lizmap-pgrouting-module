@@ -14,6 +14,9 @@ venv
 
 factory.manifest
 
+# MkDocs
+build/
+
 .ignore
 
 # Tests
