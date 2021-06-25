@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://docs.3liz.org/lizmap-pgrouting-module/installation/">
       
       <link rel="icon" href="../media/logo.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.8">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
@@ -68,7 +68,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#installation" class="md-skip">
+        <a href="#requirements" class="md-skip">
           Skip to content
         </a>
       
@@ -341,39 +341,9 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Installation
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
         Installation
       </a>
-      
-        
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#manual-installation-into-lizmap-35-only-without-composer" class="md-nav__link">
-    Manual installation into lizmap 3.5 only without Composer
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
       
     </li>
   
@@ -428,21 +398,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#manual-installation-into-lizmap-35-only-without-composer" class="md-nav__link">
-    Manual installation into lizmap 3.5 only without Composer
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -458,7 +413,11 @@
                   </a>
                 
                 
-                <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
+                <h1 id="requirements">requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h1>
+<ul>
+<li>a Postgresql database with the pgrouting extension</li>
+</ul>
+<h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
 <p>Before install the module you need to configure a profile in your config Lizmap.
 You need to add in <code>lizmap/var/config/profiles.ini.php</code>:</p>
 <p><strong>Only replace host, database, user and password values.</strong></p>
@@ -469,10 +428,12 @@ You need to add in <code>lizmap/var/config/profiles.ini.php</code>:</p>
 <span class="normal">5</span>
 <span class="normal">6</span>
 <span class="normal">7</span>
-<span class="normal">8</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[jdb:pgrouting]</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">[jdb:pgrouting]</span>
 
 <span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span>
 <span class="na">host</span><span class="o">=</span><span class="s">pgsql</span>
+<span class="na">port</span><span class="o">=</span><span class="s">5432</span>
 <span class="na">database</span><span class="o">=</span><span class="s">lizmap</span>
 <span class="na">user</span><span class="o">=</span><span class="s">lizmap</span>
 <span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span>
@@ -510,7 +471,7 @@ You can replace 2154 by another SRID that you use.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">May 12, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 25, 2021</span>
       
     
   </small>
@@ -643,10 +604,10 @@ You can replace 2154 by another SRID that you use.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.b0710199.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.76f349be.min.js"></script>
+      <script src="../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
       
