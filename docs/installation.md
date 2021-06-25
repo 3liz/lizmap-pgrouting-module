@@ -1,3 +1,7 @@
+# requirements
+
+- a Postgresql database with the pgrouting extension
+
 # Installation
 
 Before install the module you need to configure a profile in your config Lizmap.
@@ -10,6 +14,7 @@ You need to add in `lizmap/var/config/profiles.ini.php`:
 
 driver=pgsql
 host=pgsql
+port=5432
 database=lizmap
 user=lizmap
 password="yourpassword"
