@@ -50,7 +50,7 @@ FROM myschema.point_of_interest poi;
 
 ### Configure QGIS project
 
-To use the cadastre module in **Lizmap Web Client** you must first configure
+To use the pgrouting module in **Lizmap Web Client** you must first configure
 a **QGIS project**:
 
 We offer you [here](../tests/lizmap/instances/pgrouting) a basic project which contains
