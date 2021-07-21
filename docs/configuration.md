@@ -59,6 +59,7 @@ only the layers required and configured for Lizmap.
 If you want create your project or use another existing project to use this module:
 
 * Add the Edges and Nodes layers
+* The QGIS project must be called `pgrouting.qgs`
 
 ![pgrouting_layers](media/pgrouting_layers.jpg)
 
