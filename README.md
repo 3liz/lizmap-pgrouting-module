@@ -9,3 +9,9 @@
 * Funded by [CRIGE PACA](https://www.crige-paca.org/) in France
 
 ![pgrouting](docs/media/pgrouting.gif)
+
+## Getting help
+* Send an email to the Lizmap mailing list at https://lists.osgeo.org/pipermail/lizmap/
+* Join us on IRC , #lizmap on https://libera.chat
+* Open a Github tickets on https://github.com/3liz/lizmap-adresse-module/issues
+* Commercial support through 3liz , [Contact Us](mailto:info@3liz.com?subject=CommercialSupportRequest)
