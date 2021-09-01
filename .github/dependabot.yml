@@ -5,6 +5,8 @@ updates:
     directory: "/requirements"
     schedule:
       interval: "monthly"
+    assignees:
+      - "Gustry"
 
   - package-ecosystem: "composer"
     directory: "/"
@@ -20,3 +22,5 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    assignees:
+      - "Gustry"
