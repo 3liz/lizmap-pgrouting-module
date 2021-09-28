@@ -1,4 +1,3 @@
-import { transform } from 'https://cdn.jsdelivr.net/npm/ol@6.5.0/proj.js';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.5.0/style.js';
 
 class pgRouting {
@@ -48,8 +47,8 @@ class pgRouting {
                     if (features.length === 2) {
                         features[1].setId(1);
                         this._getRoute(
-                            transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                            transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                            lizMap.mainLizmap.transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                            lizMap.mainLizmap.transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
                         );
                     }
                 }, ['draw.addFeature']
@@ -62,8 +61,8 @@ class pgRouting {
                         const origin = features.find(feature => feature.getId() === 0);
                         const destination = features.find(feature => feature.getId() === 1);
                         this._getRoute(
-                            transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                            transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                            lizMap.mainLizmap.transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                            lizMap.mainLizmap.transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
                         );
                     }
                 });
