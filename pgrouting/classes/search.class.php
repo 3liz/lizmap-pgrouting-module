@@ -11,6 +11,8 @@ class search
 {
     protected $sql = array(
         'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3, $4);',
+        'check_ext' => 'SELECT extname FROM pg_extension WHERE extname = \'postgis\' OR extname = \'pgrouting\';',
+        'check_schema' => 'SELECT schema_name FROM information_schema.schemata WHERE schema_name = \'pgrouting\'',
     );
 
     protected function getSql($option)
@@ -78,24 +80,17 @@ class search
         // Work for geojson retrieval request
         // It will probably be necessary to modify if other requests
         $data = $result->fetchAll();
-        if (!is_object(data[0]) || data[0] == null) {
-            jLog::log('Request result is Null', 'warning');
+        if ($data[0] == null) {
+            jLog::log('Request routing result is Null', 'warning');
             return array(
                 'status' => 'error',
                 'message' => 'Request result is Null',
             );
         }
-        $routing = $data[0]->routing;
-        $poi = $data[0]->poi;
-        $routing = json_decode($routing);
-        $poi = json_decode($poi);
-
+        
         return array(
             'status' => 'success',
-            'data' => array(
-                'routing' => $routing,
-                'poi' => $poi,
-            ),
+            'data' => $data,
         );
     }
 }

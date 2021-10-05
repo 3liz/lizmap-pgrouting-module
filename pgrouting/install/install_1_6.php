@@ -20,6 +20,7 @@ class pgroutingModuleInstaller extends jInstallerModule
         $result->execute();
         $data = $result->fetchall();
         if (!count($data) == 2) {
+            jLog::log("Extension missing in database, pgrouting or postgis", "error");
             throw new jException('pgrouting~db.query.ext.bad');
         }
     }
