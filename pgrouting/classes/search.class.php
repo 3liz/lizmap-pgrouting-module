@@ -78,6 +78,13 @@ class search
         // Work for geojson retrieval request
         // It will probably be necessary to modify if other requests
         $data = $result->fetchAll();
+        if (!is_object(data[0]) || data[0] == null) {
+            jLog::log('Request result is Null', 'warning');
+            return array(
+                'status' => 'error',
+                'message' => 'Request result is Null',
+            );
+        }
         $routing = $data[0]->routing;
         $poi = $data[0]->poi;
         $routing = json_decode($routing);
