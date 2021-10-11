@@ -49,6 +49,8 @@ class search
      * @param mixed $profile
      * @param mixed $filterParams
      * @param mixed $option
+     *
+     * @return array Result of the query as an array ready for conversion into JSON
      */
     public function getData($option = 'get_short_path', $filterParams = array(), $profile = null)
     {
@@ -87,7 +89,7 @@ class search
                 'message' => 'Request result is Null',
             );
         }
-        
+
         return array(
             'status' => 'success',
             'data' => $data,
