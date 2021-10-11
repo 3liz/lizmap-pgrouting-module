@@ -13,6 +13,24 @@ Steps:
 
 For more information, refer to the [docker-compose documentation](https://docs.docker.com/compose/)
 
+## Access to the dockerized PostgreSQL instance
+
+You can access the database by configuring a [service file](https://docs.qgis.org/3.16/fr/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file). The service file can be stored in your user home `~/.pg_service.conf` and should contains this section
+
+```ini
+[lizmap-pgrouting]
+dbname=lizmap
+host=pgsql
+user=lizmap
+password=lizmap1234!
+```
+
+Then you can use any PostgreSQL client (psql, QGIS, PgAdmin, DBeaver) and use the `service` instead of the other credentials (host, port, dabase name, user and password).
+
+```bash
+psql service=lizmap-pgrouting
+```
+
 ## SQL Tests
 
 To run SQL based tests, you need to call `pytest` :
