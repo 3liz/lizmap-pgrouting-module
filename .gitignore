@@ -30,3 +30,6 @@ tests/sql/.pytest_cache
 tests/lizmap/www
 tests/lizmap/var
 tests/.env
+
+# VSCode ou Codium
+*.code-workspace

@@ -1,48 +1,24 @@
-# Configuration
-
-## Data integration
-
-Once the module is installed, you have to fill the tables with your data, for example from a road table containing linestrings.
-
-* `pgrouting.nodes`: nodes of the routing graph, for example the start and end nodes of the linestrings,
-* `pgrouting.edges`: edges of the graph, which mean the links between the nodes, characterized by their source and target nodes,
-* `pgrouring.routing_poi`: optional points of interests along the roads (point geometries)
-
-### Import the road data into PgRouting graph (nodes and edges)
-
-Here is an example of import based on the French **IGN BDTopo** road layer loaded in a table `bdtopo.troncon_de_route`.
-
-Depending on your source layer, you might not have the same field names. Here, `geom` is
-the geometry field, `sens` is the direction field, `nom_1_g` is the road name field.
-
-```sql
 BEGIN;
 
 -- Copy data from the route source table
--- For example: bdtopo.troncon_de_route
+-- bdtopo.troncon_de_route
 -- to create the temporary edges
 -- with added start and end point point geometries.
 DROP TABLE IF EXISTS temp_edges;
 CREATE TABLE temp_edges AS
 WITH source AS (
     SELECT
-        -- Stores the original data inside a JSON field
         to_jsonb(t.*) AS raw_data,
-        -- Move the geometries nodes to a grid
         ST_SnapToGrid(ST_geometryN(geom, 1), 0.1) AS geom
-    -- bdtopo.troncon_de_route is the source road table
     FROM bdtopo.troncon_de_route AS t
     WHERE TRUE
 )
 SELECT
     source.*,
-    -- get the start point
     ST_StartPoint(geom) AS start_point,
-    -- get the end point
     ST_EndPoint(geom) AS end_point
 FROM source
 ;
--- Create the needed indexes
 CREATE INDEX ON temp_edges USING GIST (geom);
 CREATE INDEX ON temp_edges USING GIST (start_point);
 CREATE INDEX ON temp_edges USING GIST (end_point);
@@ -126,39 +102,3 @@ COMMIT;
 -- VACUUM and analyse
 VACUUM ANALYSE pgrouting.nodes;
 VACUUM ANALYSE pgrouting.edges;
-
-```
-
-### Import data in the POI tables (optional)
-
-Here is an example based on a points of interest layer loaded in `myschema.point_of_interest`.
-
-This query fill the `pgrouting.routing_poi` table. In the `SELECT` you can replace the fields by
-your fields of your point of interest layer.
-
-```sql
-INSERT INTO pgrouting.routing_poi (label, type, description, geom)
-SELECT poi.label, poi.type, poi.description, poi.geom
-FROM your_schema.point_of_interest AS poi;
-```
-
-## In QGIS
-
-### Configure the QGIS project
-
-To use the pgrouting module in **Lizmap Web Client** you must first configure
-a **QGIS project**:
-
-We offer you [here](../tests/lizmap/instances/pgrouting) a basic project which contains
-only the layers required and configured for Lizmap.
-
-If you want create your project or use another existing project to use this module:
-
-* Add the **Edges** and **Nodes** layers
-* The QGIS project must be called `pgrouting.qgs`
-
-![pgrouting_layers](media/pgrouting_layers.jpg)
-
-* You must then create a configuration for Lizmap with the **Lizmap plugin**. No specific
-  configuration is needed for the module. You can configure like you want or just click on the
-  apply button.
