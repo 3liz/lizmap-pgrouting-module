@@ -7,7 +7,7 @@ def pytest_report_header(config):
         f"  Host : {os.getenv('POSTGRES_HOST', 'localhost')}\n"
         f"  Name : {os.getenv('POSTGRES_DB')}\n"
         f"  Port : {os.getenv('POSTGRES_PORT', '5432')}\n"
-        f"  Username :{os.getenv('POSTGRES_USER')}\n"
+        f"  Username : {os.getenv('POSTGRES_USER')}\n"
         f"  Password : {os.getenv('POSTGRES_PASSWORD')}"
     )
     return msg

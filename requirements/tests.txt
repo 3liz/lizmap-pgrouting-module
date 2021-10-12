@@ -1,2 +1,2 @@
 pytest
-psycopg2-binary
+psycopg==3.0b1

@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-import psycopg2
+import psycopg
 import unittest
 
 
@@ -26,17 +26,16 @@ class TestSql(unittest.TestCase):
         password = os.getenv("POSTGRES_PASSWORD")
         port = os.getenv("POSTGRES_PORT", "5432")
         host = os.getenv("POSTGRES_HOST", "localhost")
-        self.connection = psycopg2.connect(
-            user=username, password=password, host=host, port=port, database=database
+        self.connection = psycopg.connect(
+            f"host={host} user={username} password={password} port={port} dbname={database}"
         )
         self.cursor = self.connection.cursor()
-
-        self.connection.cursor().execute("DROP SCHEMA IF EXISTS pgrouting CASCADE;")
-        self.connection.cursor().execute(self.sql_install)
+        self.cursor.execute("DROP SCHEMA IF EXISTS pgrouting CASCADE;")
+        self.cursor.execute(self.sql_install)
 
     def tearDown(self) -> None:
-        self.connection.cursor().execute("DROP SCHEMA pgrouting CASCADE;")
-        self.cursor.close()
+        self.cursor.execute("DROP SCHEMA pgrouting CASCADE;")
+        self.connection.commit()
         self.connection.close()
 
     def test_create_edge_1(self):

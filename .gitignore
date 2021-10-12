@@ -26,6 +26,7 @@ docs/CHANGELOG.md
 .ignore
 
 # Tests
+tests/sql/.pytest_cache
 tests/lizmap/www
 tests/lizmap/var
 tests/.env
