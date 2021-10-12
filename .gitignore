@@ -12,6 +12,10 @@ venv
 # PHP
 .php_cs.cache
 
+# PHP Doc
+output/
+.phpdoc
+
 factory.manifest
 
 # MkDocs
