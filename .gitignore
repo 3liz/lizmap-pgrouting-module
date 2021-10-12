@@ -33,3 +33,7 @@ tests/.env
 
 # VSCode ou Codium
 *.code-workspace
+
+# hidden files
+*.bak
+*~

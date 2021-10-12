@@ -8,9 +8,44 @@ Once the module is installed, you have to fill the tables with your data, for ex
 * `pgrouting.edges`: edges of the graph, which mean the links between the nodes, characterized by their source and target nodes,
 * `pgrouring.routing_poi`: optional points of interests along the roads (point geometries)
 
-### Import the road data into PgRouting graph (nodes and edges)
+We presented below an example of data import based on the French **IGN BDTopo** road layer loaded in a table `bdtopo.troncon_de_route`.
 
-Here is an example of import based on the French **IGN BDTopo** road layer loaded in a table `bdtopo.troncon_de_route`.
+* The first step is to import the data to your PostgreSQL database. We recommend to use another schema, such as `bdtopo`.
+* The second step is to add data in the pgrouting `nodes` and `edges` tables, taken from the source table.
+
+### Import your source data in PostgreSQL
+
+Your source data must be **topological**, which means roads must be cut at each physical intersection and do not overlap other roads.
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    A-->E;
+    B-->D;
+    B-->C;
+    C-->D;
+    C-->E;
+    D-->E;
+```
+
+You can use `ogr2ogr` to import your data in batch, for example with
+
+```bash
+ogr2ogr -progress --config PG_USE_COPY YES -f PostgreSQL PG:'service=lizmap-pgrouting active_schema=bdtopo' -lco DIM=2 -append -lco GEOMETRY_NAME=geom -lco FID=gid -nln bdtopo.troncon_de_route -t_srs EPSG:2154 -nlt PROMOTE_TO_MULTI "TRONCON_DE_ROUTE.shp"
+```
+
+In the example above, the `-append` option allows to import several SHP inside the same table if needed. This command will add a `gid` column as the primary key.
+
+Be careful to delete the duplicate geometries, for example when you import data from multiple
+source files with overlapping data (such as in the French IGN BDTOPO "département" extracts).
+You can use this kind of query to remove the duplicates based on the primary key `gid` and the IGN BDTOPO key `id`:
+
+```sql
+DELETE FROM bdtopo.troncon_de_route AS a USING bdtopo.troncon_de_route AS b WHERE a.gid < b.gid AND a.id = b.id;
+```
+
+### Import the road data into PgRouting graph (nodes and edges)
 
 Depending on your source layer, you might not have the same field names. Here, `geom` is
 the geometry field, `sens` is the direction field, `nom_1_g` is the road name field.
@@ -131,7 +166,7 @@ VACUUM ANALYSE pgrouting.edges;
 
 ### Import data in the POI tables (optional)
 
-Here is an example based on a points of interest layer loaded in `myschema.point_of_interest`.
+Here is an example based on a points of interest layer loaded in a table called `your_schema.point_of_interest`.
 
 This query fill the `pgrouting.routing_poi` table. In the `SELECT` you can replace the fields by
 your fields of your point of interest layer.
