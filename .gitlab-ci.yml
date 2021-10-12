@@ -21,6 +21,7 @@ sql:
   image:
     name: registry.snap.lizlan:5000/python:3.9
   before_script:
+    - export PATH=/root/.local/bin:$PATH
     - pip3 install --user -r requirements/tests.txt
     - cd tests/sql
   script:
