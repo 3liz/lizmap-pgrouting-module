@@ -15,11 +15,14 @@ For more information, refer to the [docker-compose documentation](https://docs.d
 
 ## SQL Tests
 
-To run SQL based tests, you need to call `unitest` :
+To run SQL based tests, you need to call `pytest` :
 
 ```bash
+# In a venv, it's better, but this is out of scope
+pip install -r requirements/tests.txt
 cd tests/sql
-pytest -v
+pytest
+pytest -s -v
 ```
 
 You must have set some environment variables for the database to use (either local or in docker) :
