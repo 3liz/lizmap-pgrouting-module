@@ -1,2 +1,2 @@
 pytest
-psycopg==3.0b1
+psycopg[binary]
