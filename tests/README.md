@@ -19,13 +19,15 @@ To run SQL based tests, you need to call `unitest` :
 
 ```bash
 cd tests/sql
-python -m unittest -v
+pytest -v
 ```
 
 You must have set some environment variables for the database to use (either local or in docker) :
 
+The CI will test against Docker images PostGIS 2 and 3 : `3liz/postgis:13-2.5` and `3liz/postgis:13-3`.
+
 ```bash
 docker run --rm -e POSTGRES_PASSWORD=docker -e POSTGRES_USER=docker -e POSTGRES_DB=gis -p 127.0.0.1:35432:5432 3liz/postgis:13-2.5
 cd tests/sql
-POSTGRES_DB=gis POSTGRES_USER=docker POSTGRES_PASSWORD=docker POSTGRES_PORT=35432 python -m unittest -v
+POSTGRES_DB=gis POSTGRES_USER=docker POSTGRES_PASSWORD=docker POSTGRES_PORT=35432 pytest -v
 ```

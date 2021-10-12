@@ -19,10 +19,10 @@ sql:
     - name: registry.snap.lizlan:5000/postgis:${PG_VERSION}
       alias: db
   before_script:
-    - pip3 install --user psycopg2-binary
+    - pip3 install --user -r requirements/tests.txt
     - cd tests/sql
   script:
-    - python -m unittest -v
+    - pytest -v
   tags:
     - factory
 
