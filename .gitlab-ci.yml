@@ -19,7 +19,7 @@ sql:
     - name: registry.snap.lizlan:5000/postgis:${PG_VERSION}
       alias: db
   image:
-    name: registry.snap.lizlan:5000/python:3.9
+    name: registry.snap.lizlan:5000/factory-ci-base:python-3.9
   before_script:
     - export PATH=/root/.local/bin:$PATH
     - pip3 install --user -r requirements/tests.txt
