@@ -26,7 +26,7 @@ sql:
   script:
     - pytest -v
   tags:
-    - factory-dnd
+    - factory-dind
 
 tickets:
   stage: Release 🚀
