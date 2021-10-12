@@ -4,6 +4,10 @@ Steps:
 
 - Launch Lizmap with docker-compose
     ```
+    # Clean previous versions (optional)
+    make clean
+
+    # Run the different services
     make run
     ```
 
@@ -15,21 +19,35 @@ For more information, refer to the [docker-compose documentation](https://docs.d
 
 ## Access to the dockerized PostgreSQL instance
 
-You can access the database by configuring a [service file](https://docs.qgis.org/3.16/fr/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file). The service file can be stored in your user home `~/.pg_service.conf` and should contains this section
+You can access the docker PostgreSQL test database `lizmap` from your host by configuring a
+[service file](https://docs.qgis.org/latest/en/docs/user_manual/managing_data_source/opening_data.html#postgresql-service-connection-file).
+The service file can be stored in your user home `~/.pg_service.conf` and should contains this section
 
 ```ini
 [lizmap-pgrouting]
 dbname=lizmap
-host=pgsql
+host=localhost
+port=9032
 user=lizmap
 password=lizmap1234!
 ```
 
-Then you can use any PostgreSQL client (psql, QGIS, PgAdmin, DBeaver) and use the `service` instead of the other credentials (host, port, dabase name, user and password).
+Then you can use any PostgreSQL client (psql, QGIS, PgAdmin, DBeaver) and use the `service`
+instead of the other credentials (host, port, database name, user and password).
 
 ```bash
 psql service=lizmap-pgrouting
 ```
+
+## Add the test data
+
+You can add some nodes and edges in your docker test PostgreSQL database by running the SQL `tests/sql/test_data.sql`.
+
+```bash
+psql service=lizmap-pgrouting -f tests/sql/test_data.sql
+```
+
+Then you can try the Lizmap test map.
 
 ## SQL Tests
 

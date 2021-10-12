@@ -12,7 +12,7 @@ class pgroutingModuleUpgrader_0_1_0__0_2_0 extends jInstallerModule {
     public $targetVersions = array(
         '0.2.0'
     );
-    public $date = '2021-10-08';
+    public $date = '2021-10-12';
 
     function install() {
         if( $this->firstDbExec() ) {

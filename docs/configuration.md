@@ -35,7 +35,8 @@ You can use `ogr2ogr` to import your data in batch, for example with
 ogr2ogr -progress --config PG_USE_COPY YES -f PostgreSQL PG:'service=lizmap-pgrouting active_schema=bdtopo' -lco DIM=2 -append -lco GEOMETRY_NAME=geom -lco FID=gid -nln bdtopo.troncon_de_route -t_srs EPSG:2154 -nlt PROMOTE_TO_MULTI "TRONCON_DE_ROUTE.shp"
 ```
 
-In the example above, the `-append` option allows to import several SHP inside the same table if needed. This command will add a `gid` column as the primary key.
+In the example above, the `-append` option allows to import several SHP inside the same table if needed.
+This command will add a `gid` column as the primary key.
 
 Be careful to delete the duplicate geometries, for example when you import data from multiple
 source files with overlapping data (such as in the French IGN BDTOPO "département" extracts).

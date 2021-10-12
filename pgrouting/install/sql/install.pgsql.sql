@@ -16,7 +16,7 @@ COMMENT ON COLUMN pgrouting.qgis_plugin.version_date IS 'Date of implementation 
 COMMENT ON COLUMN pgrouting.qgis_plugin.status IS 'of the current version.';
 
 INSERT INTO pgrouting.qgis_plugin (id, version, version_date, status)
-VALUES (1, '0.2.0', '2021-10-08', 1)
+VALUES (1, '0.2.0', '2021-10-12', 1)
 ON CONFLICT (id)
 DO UPDATE
 SET (version, version_date, status) = (EXCLUDED.version, EXCLUDED.version_date, EXCLUDED.status)

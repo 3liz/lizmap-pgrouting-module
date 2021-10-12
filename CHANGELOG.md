@@ -2,8 +2,6 @@
 
 ## Unreleased
 
-## 0.2.0 - 2021-10-11
-
 * Add some check for SQL query results
 * Add a class to check the configuration (database extension and structure, required QGIS project layers)
 * Improve the import script example for French IGN BdTopo
