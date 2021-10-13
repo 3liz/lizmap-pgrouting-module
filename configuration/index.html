@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://docs.3liz.org/lizmap-pgrouting-module/configuration/">
       
       <link rel="icon" href="../media/logo.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.1">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.3">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.1c75ef36.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.5143246d.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -365,6 +365,33 @@
     Data integration
   </a>
   
+    <nav class="md-nav" aria-label="Data integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-your-source-data-in-postgresql" class="md-nav__link">
+    Import your source data in PostgreSQL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-the-road-data-into-pgrouting-graph-nodes-and-edges" class="md-nav__link">
+    Import the road data into PgRouting graph (nodes and edges)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-data-in-the-poi-tables-optional" class="md-nav__link">
+    Import data in the POI tables (optional)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -376,8 +403,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#configure-qgis-project" class="md-nav__link">
-    Configure QGIS project
+  <a href="#configure-the-qgis-project" class="md-nav__link">
+    Configure the QGIS project
   </a>
   
 </li>
@@ -470,6 +497,33 @@
     Data integration
   </a>
   
+    <nav class="md-nav" aria-label="Data integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-your-source-data-in-postgresql" class="md-nav__link">
+    Import your source data in PostgreSQL
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-the-road-data-into-pgrouting-graph-nodes-and-edges" class="md-nav__link">
+    Import the road data into PgRouting graph (nodes and edges)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-data-in-the-poi-tables-optional" class="md-nav__link">
+    Import data in the POI tables (optional)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -481,8 +535,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#configure-qgis-project" class="md-nav__link">
-    Configure QGIS project
+  <a href="#configure-the-qgis-project" class="md-nav__link">
+    Configure the QGIS project
   </a>
   
 </li>
@@ -511,77 +565,290 @@
                 
                 <h1 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">#</a></h1>
 <h2 id="data-integration">Data integration<a class="headerlink" href="#data-integration" title="Permanent link">#</a></h2>
-<p>Once the module is installed, you have to fill the tables with your data.</p>
-<p>Here is an example based on the French IGN BDTopo route layer loaded in <code>myschema.bdtopo</code>.
-In this query the function <code>pgrouting.create_edge</code> is used. It allows to create edges and 
-creating the nodes at the start and end of the edge. This function required some parameters
-like:</p>
+<p>Once the module is installed, you have to fill the tables with your data, for example from a road table containing linestrings.</p>
 <ul>
-<li><strong>geom</strong>, it's the geometry retrieved from your layer</li>
-<li><strong>cost</strong>, currently calculated according to the direction of travel of the road</li>
-<li><strong>reverse_cost</strong>, currently calculated according to the direction of travel of the road</li>
+<li><code>pgrouting.nodes</code>: nodes of the routing graph, for example the start and end nodes of the linestrings,</li>
+<li><code>pgrouting.edges</code>: edges of the graph, which mean the links between the nodes, characterized by their source and target nodes,</li>
+<li><code>pgrouring.routing_poi</code>: optional points of interests along the roads (point geometries)</li>
 </ul>
-<p>The edges table contains all road with some field required for pgrouting.
-Depending on your source layer, you might not have the same field names. Here, <code>bd.geom</code> is 
-the geometry field, <code>bd.sens</code> is the direction field, <code>bd.nom_1_g</code> is the road name filed.
-For these fields, <code>bd</code> is the alias of the table, so you only need to modify the part after 
-the point.</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges_info</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="n">label</span><span class="p">,</span><span class="k">length</span><span class="p">)</span>
-<span class="k">SELECT</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">create_edge</span><span class="p">(</span>
-        <span class="n">ST_geometryN</span><span class="p">(</span><span class="n">bd</span><span class="p">.</span><span class="n">geom</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
-        <span class="k">CASE</span> <span class="k">WHEN</span> <span class="n">bd</span><span class="p">.</span><span class="n">sens</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span> <span class="k">THEN</span>
-            <span class="n">ST_length</span><span class="p">(</span><span class="n">bd</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">END</span><span class="p">,</span>
-        <span class="k">CASE</span> <span class="k">WHEN</span> <span class="n">bd</span><span class="p">.</span><span class="n">sens</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span> <span class="k">THEN</span>
-            <span class="n">ST_length</span><span class="p">(</span><span class="n">bd</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">END</span>
-    <span class="p">),</span> 
-    <span class="n">bd</span><span class="p">.</span><span class="n">nom_1_g</span><span class="p">,</span> 
-    <span class="n">ST_length</span><span class="p">(</span><span class="n">bd</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-<span class="k">FROM</span> <span class="n">myschema</span><span class="p">.</span><span class="n">bdtopo</span> <span class="n">bd</span><span class="p">;</span>
+<p>We presented below an example of data import based on the French <strong>IGN BDTopo</strong> road layer loaded in a table <code>bdtopo.troncon_de_route</code>.</p>
+<ul>
+<li>The first step is to import the data to your PostgreSQL database. We recommend to use another schema, such as <code>bdtopo</code>.</li>
+<li>The second step is to add data in the pgrouting <code>nodes</code> and <code>edges</code> tables, taken from the source table.</li>
+</ul>
+<h3 id="import-your-source-data-in-postgresql">Import your source data in PostgreSQL<a class="headerlink" href="#import-your-source-data-in-postgresql" title="Permanent link">#</a></h3>
+<p>Your source data must be <strong>topological</strong>, which means roads must be cut at each physical intersection and do not overlap other roads.</p>
+<div class="mermaid">graph TD;
+    A--&gt;B;
+    A--&gt;C;
+    A--&gt;E;
+    B--&gt;D;
+    B--&gt;C;
+    C--&gt;D;
+    C--&gt;E;
+    D--&gt;E;</div>
+<p>You can use <code>ogr2ogr</code> to import your data in batch, for example with</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code>ogr2ogr -progress --config PG_USE_COPY YES -f PostgreSQL PG:<span class="s1">&#39;service=lizmap-pgrouting active_schema=bdtopo&#39;</span> -lco <span class="nv">DIM</span><span class="o">=</span><span class="m">2</span> -append -lco <span class="nv">GEOMETRY_NAME</span><span class="o">=</span>geom -lco <span class="nv">FID</span><span class="o">=</span>gid -nln bdtopo.troncon_de_route -t_srs EPSG:2154 -nlt PROMOTE_TO_MULTI <span class="s2">&quot;TRONCON_DE_ROUTE.shp&quot;</span>
 </code></pre></div>
 </td></tr></table>
-<p>Here is an example based on point of interest layer loaded in <code>myschema.point_of_interest</code>.
-This query refill the <code>pgrouting.routing_poi</code> table. In the select you can replace the fields by 
-your fields on your point of interest layer.
+<p>In the example above, the <code>-append</code> option allows to import several SHP inside the same table if needed.
+This command will add a <code>gid</code> column as the primary key.</p>
+<p>Be careful to delete the duplicate geometries, for example when you import data from multiple
+source files with overlapping data (such as in the French IGN BDTOPO "département" extracts).
+You can use this kind of query to remove the duplicates based on the primary key <code>gid</code> and the IGN BDTOPO key <code>id</code>:</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">a</span> <span class="k">USING</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">b</span> <span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">gid</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">.</span><span class="n">gid</span> <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</code></pre></div>
+</td></tr></table>
+<h3 id="import-the-road-data-into-pgrouting-graph-nodes-and-edges">Import the road data into PgRouting graph (nodes and edges)<a class="headerlink" href="#import-the-road-data-into-pgrouting-graph-nodes-and-edges" title="Permanent link">#</a></h3>
+<p>Depending on your source layer, you might not have the same field names. Here, <code>geom</code> is
+the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</code> is the road name field.</p>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
+<span class="normal">  2</span>
+<span class="normal">  3</span>
+<span class="normal">  4</span>
+<span class="normal">  5</span>
+<span class="normal">  6</span>
+<span class="normal">  7</span>
+<span class="normal">  8</span>
+<span class="normal">  9</span>
+<span class="normal"> 10</span>
+<span class="normal"> 11</span>
+<span class="normal"> 12</span>
+<span class="normal"> 13</span>
+<span class="normal"> 14</span>
+<span class="normal"> 15</span>
+<span class="normal"> 16</span>
+<span class="normal"> 17</span>
+<span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+
+<span class="c1">-- Copy data from the route source table</span>
+<span class="c1">-- For example: bdtopo.troncon_de_route</span>
+<span class="c1">-- to create the temporary edges</span>
+<span class="c1">-- with added start and end point point geometries.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_edges</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_edges</span> <span class="k">AS</span>
+<span class="k">WITH</span> <span class="k">source</span> <span class="k">AS</span> <span class="p">(</span>
+    <span class="k">SELECT</span>
+        <span class="c1">-- Stores the original data inside a JSON field</span>
+        <span class="n">to_jsonb</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">raw_data</span><span class="p">,</span>
+        <span class="c1">-- Move the geometries nodes to a grid</span>
+        <span class="n">ST_SnapToGrid</span><span class="p">(</span><span class="n">ST_geometryN</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">)</span> <span class="k">AS</span> <span class="n">geom</span>
+    <span class="c1">-- bdtopo.troncon_de_route is the source road table</span>
+    <span class="k">FROM</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">t</span>
+    <span class="k">WHERE</span> <span class="k">TRUE</span>
+<span class="p">)</span>
+<span class="k">SELECT</span>
+    <span class="k">source</span><span class="p">.</span><span class="o">*</span><span class="p">,</span>
+    <span class="c1">-- get the start point</span>
+    <span class="n">ST_StartPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">start_point</span><span class="p">,</span>
+    <span class="c1">-- get the end point</span>
+    <span class="n">ST_EndPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">end_point</span>
+<span class="k">FROM</span> <span class="k">source</span>
+<span class="p">;</span>
+<span class="c1">-- Create the needed indexes</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">start_point</span><span class="p">);</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">end_point</span><span class="p">);</span>
+
+<span class="c1">-- Create the temporary nodes from the start and end points</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_nodes</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_nodes</span> <span class="k">AS</span>
+<span class="k">WITH</span>
+<span class="n">union_start_end</span> <span class="k">AS</span> <span class="p">(</span>
+    <span class="k">SELECT</span> <span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span> <span class="k">NULL</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span> <span class="n">start_point</span> <span class="k">AS</span> <span class="n">geom</span>
+    <span class="k">FROM</span> <span class="n">temp_edges</span>
+    <span class="k">UNION</span> <span class="k">ALL</span>
+    <span class="k">SELECT</span> <span class="k">NULL</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span> <span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span> <span class="n">end_point</span> <span class="k">AS</span> <span class="n">geom</span>
+    <span class="k">FROM</span> <span class="n">temp_edges</span>
+<span class="p">),</span>
+<span class="n">distinct_nodes</span> <span class="k">AS</span> <span class="p">(</span>
+    <span class="k">SELECT</span>
+        <span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">start_of</span><span class="p">)</span> <span class="n">FILTER</span> <span class="p">(</span><span class="k">WHERE</span> <span class="n">start_of</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span>
+        <span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">end_of</span><span class="p">)</span> <span class="n">FILTER</span> <span class="p">(</span><span class="k">WHERE</span> <span class="n">end_of</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span>
+        <span class="n">geom</span>
+    <span class="k">FROM</span> <span class="n">union_start_end</span>
+    <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">geom</span>
+<span class="p">)</span>
+<span class="k">SELECT</span> <span class="o">*</span>
+<span class="k">FROM</span> <span class="n">distinct_nodes</span>
+<span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_nodes</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
+
+<span class="c1">-- Insert them in the pgrouting.nodes table</span>
+<span class="k">TRUNCATE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">RESTART</span> <span class="k">IDENTITY</span> <span class="k">CASCADE</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="p">(</span><span class="n">geom</span><span class="p">)</span>
+<span class="k">SELECT</span> <span class="n">geom</span>
+<span class="k">FROM</span> <span class="n">temp_nodes</span>
+<span class="p">;</span>
+
+<span class="c1">-- Insert the temporary edges into the pgrouting.edges table</span>
+<span class="c1">-- with additional information about nodes, costs, etc.</span>
+<span class="k">TRUNCATE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span> <span class="k">RESTART</span> <span class="k">IDENTITY</span> <span class="k">CASCADE</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="k">length</span><span class="p">,</span> <span class="k">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">reverse_cost</span><span class="p">,</span> <span class="n">source_data</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span>
+    <span class="c1">-- label of the edge</span>
+    <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;nom_1_g&#39;</span> <span class="k">AS</span> <span class="n">label</span><span class="p">,</span>
+    <span class="c1">-- length</span>
+    <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="ss">&quot;length&quot;</span><span class="p">,</span>
+    <span class="c1">-- start and end nodes id</span>
+    <span class="n">ns</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ne</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+    <span class="c1">-- cost based on the length</span>
+    <span class="k">CASE</span>
+        <span class="k">WHEN</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span>
+            <span class="k">THEN</span> <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
+        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">END</span> <span class="k">AS</span> <span class="n">cost</span><span class="p">,</span>
+    <span class="c1">-- reverse cost based on the length</span>
+    <span class="k">CASE</span>
+        <span class="k">WHEN</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span>
+            <span class="k">THEN</span> <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
+        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">END</span> <span class="k">AS</span> <span class="n">reverse_cost</span><span class="p">,</span>
+    <span class="c1">-- Keep some useful columns from the source table</span>
+    <span class="n">jsonb_build_object</span><span class="p">(</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;nature&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;nature&#39;</span><span class="p">,</span> <span class="s1">&#39;importance&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;etat&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;etat&#39;</span><span class="p">,</span> <span class="s1">&#39;largeur&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span> <span class="s1">&#39;prive&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;prive&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sens&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;sens&#39;</span><span class="p">,</span> <span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span> <span class="s1">&#39;acces_vl&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;acces_vl&#39;</span>
+    <span class="p">)</span> <span class="k">AS</span> <span class="n">source_data</span><span class="p">,</span>
+    <span class="c1">-- geometry. Needed for the astar route engine</span>
+    <span class="n">e</span><span class="p">.</span><span class="n">geom</span>
+<span class="k">FROM</span> <span class="n">temp_edges</span> <span class="k">AS</span> <span class="n">e</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">AS</span> <span class="n">ns</span>
+    <span class="c1">-- = is faster than ST_Equals</span>
+    <span class="k">ON</span> <span class="n">ns</span><span class="p">.</span><span class="n">geom</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">start_point</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">AS</span> <span class="n">ne</span>
+    <span class="k">ON</span> <span class="n">ne</span><span class="p">.</span><span class="n">geom</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">end_point</span>
+<span class="p">;</span>
+
+<span class="c1">-- Drop the temporary tables</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_nodes</span><span class="p">;</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_edges</span><span class="p">;</span>
+
+<span class="k">COMMIT</span><span class="p">;</span>
+
+<span class="c1">-- VACUUM and analyse</span>
+<span class="k">VACUUM</span> <span class="k">ANALYSE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="p">;</span>
+<span class="k">VACUUM</span> <span class="k">ANALYSE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="p">;</span>
+</code></pre></div>
+</td></tr></table>
+<h3 id="import-data-in-the-poi-tables-optional">Import data in the POI tables (optional)<a class="headerlink" href="#import-data-in-the-poi-tables-optional" title="Permanent link">#</a></h3>
+<p>Here is an example based on a points of interest layer loaded in a table called <code>your_schema.point_of_interest</code>.</p>
+<p>This query fill the <code>pgrouting.routing_poi</code> table. In the <code>SELECT</code> you can replace the fields by
+your fields of your point of interest layer.</p>
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">routing_poi</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">routing_poi</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
 <span class="k">SELECT</span> <span class="n">poi</span><span class="p">.</span><span class="n">label</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="k">type</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="n">description</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="n">geom</span>
-<span class="k">FROM</span> <span class="n">myschema</span><span class="p">.</span><span class="n">point_of_interest</span> <span class="n">poi</span><span class="p">;</span>
+<span class="k">FROM</span> <span class="n">your_schema</span><span class="p">.</span><span class="n">point_of_interest</span> <span class="k">AS</span> <span class="n">poi</span><span class="p">;</span>
 </code></pre></div>
-</td></tr></table></p>
+</td></tr></table>
 <h2 id="in-qgis">In QGIS<a class="headerlink" href="#in-qgis" title="Permanent link">#</a></h2>
-<h3 id="configure-qgis-project">Configure QGIS project<a class="headerlink" href="#configure-qgis-project" title="Permanent link">#</a></h3>
+<h3 id="configure-the-qgis-project">Configure the QGIS project<a class="headerlink" href="#configure-the-qgis-project" title="Permanent link">#</a></h3>
 <p>To use the pgrouting module in <strong>Lizmap Web Client</strong> you must first configure
 a <strong>QGIS project</strong>:</p>
 <p>We offer you <a href="../tests/lizmap/instances/pgrouting">here</a> a basic project which contains
 only the layers required and configured for Lizmap.</p>
 <p>If you want create your project or use another existing project to use this module:</p>
 <ul>
-<li>Add the Edges and Nodes layers</li>
+<li>Add the <strong>Edges</strong> and <strong>Nodes</strong> layers</li>
 <li>The QGIS project must be called <code>pgrouting.qgs</code></li>
 </ul>
 <p><img alt="pgrouting_layers" src="../media/pgrouting_layers.jpg" /></p>
 <ul>
-<li>You must then create configuration for Lizmap with the Lizmap plugin. No specific 
-  configuration was needed for the module. You can configure like you want or just click on
+<li>You must then create a configuration for Lizmap with the <strong>Lizmap plugin</strong>. No specific
+  configuration is needed for the module. You can configure like you want or just click on the
   apply button.</li>
 </ul>
                 
@@ -592,7 +859,7 @@ only the layers required and configured for Lizmap.</p>
 <div class="md-source-date">
   <small>
     
-      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 21, 2021</span>
+      Last update: <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 12, 2021</span>
       
     
   </small>
@@ -728,10 +995,10 @@ only the layers required and configured for Lizmap.</p>
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.e99e714c.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.tabs", "navigation.tabs.sticky", "navigation.top"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.c7d1b464.min.js"></script>
+      <script src="../assets/javascripts/bundle.f89c2efe.min.js"></script>
       
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js"></script>
       
