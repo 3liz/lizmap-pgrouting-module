@@ -214,24 +214,26 @@ class defaultCtrl extends jController
             return $resp;
         }
 
-        if (!is_object($result)){
+        if (!is_array($result['data'])){
             jLog::log('Request routing result error format', 'warning');
             return array(
                 'status' => 'error',
                 'message' => 'Result request error format',
             );
         }
-        $routing = $result[0]->routing;
-        $poi = $result[0]->poi;
+        $routing_result = $result['data'][0];
+        $routing = $routing_result->routing;
+        $poi = $routing_result->poi;
         $routing = json_decode($routing);
         $poi = json_decode($poi);
 
-        return array(
+        $result = array(
             'status' => 'success',
-            'data' => array(
-                'routing' => $routing,
-                'poi' => $poi,
-            ),
+            'routing' => $routing,
+            'poi' => $poi,
         );
+        $resp->data = $result;
+
+        return $resp;
     }
 }

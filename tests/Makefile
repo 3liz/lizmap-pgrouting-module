@@ -27,9 +27,9 @@ main:
 		Commandes:
 			run:   initialise environnement and run stack
 			stop:  stop docker and remove containers
-			clean: reset containers and remove lizmap configuration 
-			
-			Note: Un fichier d'environment pour docker-compose  
+			clean: reset containers and remove lizmap configuration
+
+			Note: Un fichier d'environment pour docker-compose
 			est crée à chaque invocation de 'run'.
 			Cela permet d'utiliser les commandes 'docker-compose'
 			sans passer par le Makefile
@@ -59,11 +59,13 @@ run: stop env
 	docker-compose up
 
 stop:
-	docker-compose rm -f || true
+	docker-compose down || true
 
 clean: stop
+	docker-compose rm -f
 	rm -rf $(LIZMAP_DIR)/www/*
 	rm -rf $(LIZMAP_DIR)/var/*
+	docker volume rm tests_postgis-volume
 
 # Pull images from github 3liz
 pull:

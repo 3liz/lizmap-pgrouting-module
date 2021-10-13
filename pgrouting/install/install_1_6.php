@@ -36,12 +36,17 @@ class pgroutingModuleInstaller extends jInstallerModule
             $this->useDbProfile('pgrouting');
             $db = $this->dbConnection();
 
-            $sqlPath = $this->path.'install/sql/install.pgsql.sql';
-            $sqlTpl = jFile::read($sqlPath);
+            // Get SQL template file
+            $sql_file = $this->path.'install/sql/install.pgsql.sql';
+            $sqlTpl = jFile::read($sql_file);
             $tpl = new jTpl();
-            $srid = $this->getParameter('srid');
-            $tpl->assign('srid', $srid);
             $sql = $tpl->fetchFromString($sqlTpl, 'text');
+
+            // Replace 2154 by given SRID if defined
+            $srid = $this->getParameter('srid');
+            if (is_int($srid) && $srid != '2154') {
+                $sql = str_replace('2154', $srid, $sql);
+            }
 
             $db->exec($sql);
         }

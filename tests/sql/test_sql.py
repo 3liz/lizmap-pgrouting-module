@@ -18,7 +18,7 @@ class TestSql(unittest.TestCase):
         sql_install = module_path.joinpath('install/sql/install.pgsql.sql')
         with open(sql_install, "r") as f:
             sql_install = f.read()
-        self.sql_install = sql_install.replace("{$srid}", "2154")
+        self.sql_install = sql_install
 
     def setUp(self) -> None:
         database = os.getenv("POSTGRES_DB")
@@ -30,39 +30,46 @@ class TestSql(unittest.TestCase):
             f"host={host} user={username} password={password} port={port} dbname={database}"
         )
         self.cursor = self.connection.cursor()
+
         self.cursor.execute("DROP SCHEMA IF EXISTS pgrouting CASCADE;")
+        self.cursor.execute("CREATE EXTENSION IF NOT EXISTS pgrouting;")
         self.cursor.execute(self.sql_install)
+
+        # Import test data
+        self.import_test_data()
+
+    def import_test_data(self):
+        test_path = Path(__file__)
+        sql_data = test_path.parent.joinpath('test_data.sql')
+        with open(sql_data, "r") as f:
+            sql_data = f.read()
+        sql = 'TRUNCATE pgrouting.nodes RESTART IDENTITY CASCADE;'
+        sql += 'TRUNCATE pgrouting.edges RESTART IDENTITY CASCADE;'
+        sql += sql_data
+        self.cursor.execute(sql)
+        self.connection.commit()
 
     def tearDown(self) -> None:
         self.cursor.execute("DROP SCHEMA pgrouting CASCADE;")
         self.connection.commit()
         self.connection.close()
 
-    def test_create_edge_1(self):
-        self.cursor.execute(
-            "SELECT pgrouting.create_edge(ST_GeomFromText('LINESTRING(1 5, 2 7, 1 9, 14 12)',2154), 1, -1);")
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.nodes;")
-        self.assertEqual(2, self.cursor.fetchone()[0])
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.edges;")
-        self.assertEqual(1, self.cursor.fetchone()[0])
+    def test_get_closest_edge_id(self):
+        sql = 'SELECT pgrouting.get_closest_edge_id(ST_SetSRID(ST_MakePoint(829667, 6288540), 2154));'
+        self.cursor.execute(sql)
+        self.assertEqual(327, self.cursor.fetchone()[0])
 
-    @unittest.expectedFailure
-    def test_create_edge_2(self):
-        self.cursor.execute(
-            "SELECT pgrouting.create_edge(ST_Reverse(ST_GeomFromText('LINESTRING(1 5, 2 7, 1 9, 14 12)',2154)), 1, -1);")
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.nodes;")
-        self.assertEqual(2, self.cursor.fetchone()[0])
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.edges;")
-        self.assertEqual(2, self.cursor.fetchone()[0])
-
-    @unittest.expectedFailure
-    def test_create_edge_3(self):
-        self.cursor.execute(
-            "SELECT pgrouting.create_edge(ST_GeomFromText('LINESTRING(1 5, 2 9, 14 12)',2154), 1, -1);")
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.nodes;")
-        self.assertEqual(2, self.cursor.fetchone()[0])
-        self.cursor.execute("SELECT COUNT(*) FROM pgrouting.edges;")
-        self.assertEqual(3, self.cursor.fetchone()[0])
+    def test_route_dijkstra(self):
+        point_a = 'POINT(4.607761 43.684038)'
+        point_b = 'POINT(4.611381 43.685356)'
+        sql = "SELECT * FROM pgrouting.create_roadmap('{}', '{}', 4326, 'dijkstra')".format(
+            point_a,
+            point_b
+        )
+        self.cursor.execute(sql)
+        ids = [a[1] for a in self.cursor.fetchall()]
+        expected = [-6, -5, 322, 231, 224, 225, 223, 230, 579, 538, -3, -1]
+        self.assertEqual(ids, expected)
 
 
 if __name__ == "__main__":

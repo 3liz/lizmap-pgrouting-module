@@ -149,7 +149,7 @@ class pgRouting {
                     let roadMap = `<div class="roadmap"><h4>${this._locales['roadmap.title']}</h4><dl>`;
 
                     for (const road of mergedRoads) {
-                        roadMap += `<dt>${road.label}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
+                        roadMap += `<dt>${road.label ? road.label : this._locales['road.label.missing']}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
                     }
                     roadMap += `</dl></div>`;
 
