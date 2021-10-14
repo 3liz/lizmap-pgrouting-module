@@ -86,14 +86,6 @@ class pgRouting {
                         this._routeLayer.setVisible(true);
                     }
                 }
-            },
-            dockclosed: (evt) => {
-                if (evt.id === "pgrouting") {
-                    lizMap.mainLizmap.draw.visible = false;
-                    if (this._routeLayer) {
-                        this._routeLayer.setVisible(false);
-                    }
-                }
             }
         });
     }
