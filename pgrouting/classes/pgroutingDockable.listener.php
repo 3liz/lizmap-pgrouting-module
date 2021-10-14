@@ -33,7 +33,7 @@
                 if (strpos($event->project, 'pgrouting') !== false) {
                     $bp = jApp::config()->urlengine['basePath'];
                     // dock
-                    $content = '<div class="menu-content"><p>Draw origin and destination points.</p></div>';
+                    $content = '<lizmap-pgrouting></lizmap-pgrouting>';
                     $dock = new lizmapMapDockItem(
                         'pgrouting',
                         'pgRouting',

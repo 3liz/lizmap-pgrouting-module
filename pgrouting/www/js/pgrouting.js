@@ -1,10 +1,45 @@
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.5.0/style.js';
+import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@2.0.1/lit-html.min.js';
 
-class pgRouting {
+class pgRouting extends HTMLElement {
 
     constructor() {
+        super();
+    }
+
+    connectedCallback() {
         // Get locales
         this._locales = '';
+
+        this._mergedRoads = [];
+        this._POIFeatures = [];
+
+        this._mainTemplate = () => html`
+            <div class="menu-content">
+                <p>${this._locales['draw.message']}</p>
+                <div class="commands">
+                    <button class="btn">reset</button><button class="btn">toggle</button>
+                </div>
+                <div class="pgrouting">
+                    ${this._mergedRoads.length > 0 ? html`
+                    <div class="roadmap">
+                        <h4>${this._locales['roadmap.title']}</h4>
+                        <dl>
+                            ${this._mergedRoads.map((road) => html`<dt>${road.label ? road.label : this._locales['road.label.missing']}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`)}
+                        </dl>
+                    </div>`: ''
+                    }
+                    ${this._POIFeatures.length > 0 ? html`
+                    <div class="poi">
+                        <h4>${this._locales['poi.title']}</h4>
+                        <dl>
+                            ${this._POIFeatures.map((feature) => html`<dt>${feature.properties.label}</dt><dd>${feature.properties.description}</dd><dd>${feature.properties.type}</dd>`)}
+                        </dl>
+                    </div>`: ''
+                    }
+                </div>
+            </div>`;
+
 
         fetch(`${lizUrls.basepath}index.php/pgrouting/translate/`)
             .then((response) => {
@@ -13,8 +48,11 @@ class pgRouting {
             .then((json) => {
                 if (json) {
                     this._locales = JSON.parse(json);
+                    render(this._mainTemplate(), this);
                 }
             });
+
+        render(this._mainTemplate(), this);
 
         lizMap.events.on({
             uicreated: () => {
@@ -90,6 +128,9 @@ class pgRouting {
         });
     }
 
+    disconnectedCallback() {
+    }
+
     _getRoute(origin, destination) {
         fetch(`${lizUrls.basepath}index.php/pgrouting/?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&origin=${origin[0]},${origin[1]}&destination=${destination[0]},${destination[1]}&crs=4326&option=get_short_path`)
             .then((response) => {
@@ -119,9 +160,7 @@ class pgRouting {
                         })
                     ]);
 
-                    // Display roadmap
-                    const contentElement = document.querySelector('#pgrouting .menu-content');
-
+                    // Get roadmap
                     // Merge road with same label when sibling
                     let mergedRoads = [];
                     let previousLabel = '';
@@ -138,28 +177,13 @@ class pgRouting {
                         previousLabel = label;
                     }
 
-                    let roadMap = `<div class="roadmap"><h4>${this._locales['roadmap.title']}</h4><dl>`;
+                    this._mergedRoads = mergedRoads;
 
-                    for (const road of mergedRoads) {
-                        roadMap += `<dt>${road.label ? road.label : this._locales['road.label.missing']}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`;
-                    }
-                    roadMap += `</dl></div>`;
+                    // Get POIs    
+                    this._POIFeatures = (json.poi && json.poi.features) ? json.poi.features : [];
 
-                    // Display POI
-                    let POIList = '';
-                    if (json.poi && json.poi.features) {
-                        POIList += `<div class="poi"><h4>${this._locales['poi.title']}</h4><dl>`;
-                        for (const feature of json.poi.features) {
-                            const label = feature.properties.label;
-                            const description = feature.properties.description;
-                            const type = feature.properties.type;
+                    render(this._mainTemplate(), this);
 
-                            POIList += `<dt>${label}</dt><dd>${description}</dd><dd>${type}</dd>`;
-                        }
-                        POIList += `</dl></div>`;
-                    }
-
-                    contentElement.innerHTML = `<div class="pgrouting">${roadMap}${POIList}</div>`;
                 } else {
                     lizMap.addMessage(this._locales['route.error'], 'error', true)
                 }
@@ -167,4 +191,4 @@ class pgRouting {
     }
 }
 
-lizMap.pgRouting = new pgRouting();
+window.customElements.define('lizmap-pgrouting', pgRouting);
