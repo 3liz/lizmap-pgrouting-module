@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2021-10-15
 
 * Add some check for SQL query results
 * Add a class to check the configuration (database extension and structure, required QGIS project layers)
