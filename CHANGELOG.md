@@ -7,6 +7,7 @@
 * Improve the import script example for French IGN BdTopo
 * Improve the spatial query performance
 * Add a default label 'unnamed road' in the pgRouting dock when the edge has no label
+* Add a button to reset start and end point
 
 ## 0.1.0 - 2021-06-22
 
