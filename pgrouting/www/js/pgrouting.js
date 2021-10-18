@@ -18,7 +18,7 @@ class pgRouting extends HTMLElement {
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn" @click=${ () => this.initDraw()}>
+                    <button class="btn" @click=${ () => this.restartDraw()}>
                         <svg width="18" height="18">
                             <use xlink:href="#refresh" />
                         </svg>
@@ -80,7 +80,52 @@ class pgRouting extends HTMLElement {
     }
 
     initDraw() {
-        if (this._routeLayer){
+
+        this.restartDraw();
+
+        lizMap.mainEventDispatcher.addListener(() => {
+            const features = lizMap.mainLizmap.draw.features;
+
+            // Add ids to identify origin and destination features for styling
+            if (features.length === 1) {
+                features[0].setId(0);
+            }
+            if (features.length === 2) {
+                features[1].setId(1);
+                this._getRoute(
+                    lizMap.mainLizmap.transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                    lizMap.mainLizmap.transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                );
+            }
+        }, ['draw.addFeature']);
+
+        lizMap.mainEventDispatcher.addListener(() => {
+            const features = lizMap.mainLizmap.draw.features;
+            if (features.length === 2) {
+                const origin = features.find(feature => feature.getId() === 0);
+                const destination = features.find(feature => feature.getId() === 1);
+                this._getRoute(
+                    lizMap.mainLizmap.transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                    lizMap.mainLizmap.transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                );
+            }
+        }, ['draw.modifyEnd']);
+
+        // Show mouse pointer when hovering origin or destination points
+        lizMap.mainLizmap.map.on('pointermove', (e) => {
+            if (e.dragging) {
+                return;
+            }
+            const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
+            const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
+            const featureHover = featuresAtPixel.some(feature => lizMap.mainLizmap.draw.features.includes(feature));
+
+            lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
+        });
+    }
+
+    restartDraw(){
+        if (this._routeLayer) {
             lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
         }
 
@@ -104,47 +149,6 @@ class pgRouting extends HTMLElement {
             });
         });
 
-        lizMap.mainEventDispatcher.addListener(() => {
-            const features = lizMap.mainLizmap.draw.features;
-
-            // Add ids to identify origin and destination features for styling
-            if (features.length === 1) {
-                features[0].setId(0);
-            }
-            if (features.length === 2) {
-                features[1].setId(1);
-                this._getRoute(
-                    lizMap.mainLizmap.transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
-                );
-            }
-        }, ['draw.addFeature']);
-
-        // TODO: add dispatch 'modifyend' event in Draw class
-        lizMap.mainLizmap.draw._modifyInteraction.on('modifyend', () => {
-            const features = lizMap.mainLizmap.draw.features;
-            if (features.length === 2) {
-                const origin = features.find(feature => feature.getId() === 0);
-                const destination = features.find(feature => feature.getId() === 1);
-                this._getRoute(
-                    lizMap.mainLizmap.transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
-                );
-            }
-        });
-
-        // Show mouse pointer when hovering origin or destination points
-        lizMap.mainLizmap.map.on('pointermove', (e) => {
-            if (e.dragging) {
-                return;
-            }
-            const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
-            const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
-            const featureHover = featuresAtPixel.some(feature => lizMap.mainLizmap.draw.features.includes(feature));
-
-            lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
-        });
-
         render(this._mainTemplate(), this);
     }
 
@@ -163,11 +167,14 @@ class pgRouting extends HTMLElement {
             })
             .then((json) => {
                 // Remove route if any and create new one
+                this._mergedRoads = [];
+                this._POIFeatures = [];
+
                 if (this._routeLayer) {
                     lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
                 }
 
-                if (json && json.routing) {
+                if (json?.routing?.features) {
                     // Display route
                     const width = 8;
                     this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
@@ -205,13 +212,12 @@ class pgRouting extends HTMLElement {
                     this._mergedRoads = mergedRoads;
 
                     // Get POIs    
-                    this._POIFeatures = (json.poi && json.poi.features) ? json.poi.features : [];
-
-                    render(this._mainTemplate(), this);
-
+                    this._POIFeatures = json?.poi?.features ?? [];
                 } else {
                     lizMap.addMessage(this._locales['route.error'], 'error', true)
                 }
+
+                render(this._mainTemplate(), this);
             });
     }
 }
