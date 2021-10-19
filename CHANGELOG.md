@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 - 2021-10-19
+
+* Fix: Drop previous roadmap when no routes found and display a message
+
 ## 0.2.0 - 2021-10-15
 
 * Add some check for SQL query results
