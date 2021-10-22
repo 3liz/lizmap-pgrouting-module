@@ -42,6 +42,7 @@ dirs:
 
 env: dirs
 	@cat <<- EOF > .env
+		COMPOSE_PROJECT_NAME=pgrouting
 		LIZMAP_DIR=$(LIZMAP_DIR)
 		LIZMAP_USER_ID=$(LIZMAP_USER_ID)
 		LIZMAP_USER_GID=$(LIZMAP_USER_GID)
@@ -62,10 +63,9 @@ stop:
 	docker-compose down || true
 
 clean: stop
-	docker-compose rm -f
+	docker-compose down -v
 	rm -rf $(LIZMAP_DIR)/www/*
 	rm -rf $(LIZMAP_DIR)/var/*
-	docker volume rm tests_postgis-volume
 
 # Pull images from github 3liz
 pull:
