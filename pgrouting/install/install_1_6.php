@@ -20,7 +20,8 @@ class pgroutingModuleInstaller extends jInstallerModule
         $result->execute();
         $data = $result->fetchall();
         if (!count($data) == 2) {
-            jLog::log("Extension missing in database, pgrouting or postgis", "error");
+            jLog::log('Extension missing in database, pgrouting or postgis', 'error');
+
             throw new jException('pgrouting~db.query.ext.bad');
         }
     }
@@ -37,7 +38,7 @@ class pgroutingModuleInstaller extends jInstallerModule
             $db = $this->dbConnection();
 
             // Get SQL template file
-            $sql_file = $this->path.'install/sql/install.pgsql.sql';
+            $sql_file = $this->path . 'install/sql/install.pgsql.sql';
             $sqlTpl = jFile::read($sql_file);
             $tpl = new jTpl();
             $sql = $tpl->fetchFromString($sqlTpl, 'text');

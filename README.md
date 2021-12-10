@@ -2,6 +2,7 @@
 
 [![Documentation 📚](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/publish-doc.yml/badge.svg)](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/publish-doc.yml)
 [![Tests 🎳](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/ci.yml/badge.svg)](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/ci.yml)
+[![Tests 🚨](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/php-lint.yml/badge.svg)](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/php-lint.yml)
 [![Packagist](https://img.shields.io/packagist/v/lizmap/lizmap-pgrouting-module)](https://packagist.org/packages/lizmap/lizmap-pgrouting-module)
 
 * Lizmap 3.5 minimum

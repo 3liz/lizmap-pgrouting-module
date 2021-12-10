@@ -109,7 +109,7 @@ class defaultCtrl extends jController
             if (!is_numeric($xy_dest[$i])) {
                 $resp->data = array(
                     'status' => 'error',
-                    'message' => 'The value of the destination point is not numeric'
+                    'message' => 'The value of the destination point is not numeric',
                 );
 
                 return $resp;
@@ -145,7 +145,7 @@ class defaultCtrl extends jController
 
         // check project
 
-        $p = lizmap::getProject($repository.'~'.$project);
+        $p = lizmap::getProject($repository . '~' . $project);
         if (!$p) {
             $resp->data = array('status' => 'error', 'message' => 'A problem occured while loading project with Lizmap');
 
@@ -162,7 +162,7 @@ class defaultCtrl extends jController
 
         $l = $p->findLayerByName('edges');
         if (!$l) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer '.$l->name.' does not exist');
+            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $l->name . ' does not exist');
 
             return $resp;
         }
@@ -171,14 +171,14 @@ class defaultCtrl extends jController
 
         // Check if layer is a PostgreSQL layer
         if (!($layer->getProvider() == 'postgres')) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer '.$layername.' is not a PostgreSQL layer');
+            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $layername . ' is not a PostgreSQL layer');
 
             return $resp;
         }
 
         $l = $p->findLayerByName('nodes');
         if (!$l) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer '.$l->name.' does not exist');
+            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $l->name . ' does not exist');
 
             return $resp;
         }
@@ -187,15 +187,15 @@ class defaultCtrl extends jController
 
         // Check if layer is a PostgreSQL layer
         if (!($layer->getProvider() == 'postgres')) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer '.$layername.' is not a PostgreSQL layer');
+            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $layername . ' is not a PostgreSQL layer');
 
             return $resp;
         }
 
         $profile = $layer->getDatasourceProfile();
 
-        $origin = 'POINT('.$origin.')';
-        $destination = 'POINT('.$destination.')';
+        $origin = 'POINT(' . $origin . ')';
+        $destination = 'POINT(' . $destination . ')';
         $origin = str_replace(',', ' ', $origin);
         $destination = str_replace(',', ' ', $destination);
 
@@ -214,8 +214,9 @@ class defaultCtrl extends jController
             return $resp;
         }
 
-        if (!is_array($result['data'])){
+        if (!is_array($result['data'])) {
             jLog::log('Request routing result error format', 'warning');
+
             return array(
                 'status' => 'error',
                 'message' => 'Result request error format',

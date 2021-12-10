@@ -59,7 +59,7 @@ class search
         if (!$sql) {
             return array(
                 'status' => 'error',
-                'message' => 'No SQL found for '.$option,
+                'message' => 'No SQL found for ' . $option,
             );
         }
 
@@ -75,7 +75,7 @@ class search
         if (!$result) {
             return array(
                 'status' => 'error',
-                'message' => 'Error at the query concerning '.$option,
+                'message' => 'Error at the query concerning ' . $option,
             );
         }
 
@@ -84,6 +84,7 @@ class search
         $data = $result->fetchAll();
         if ($data[0] == null) {
             jLog::log('Request routing result is Null', 'warning');
+
             return array(
                 'status' => 'error',
                 'message' => 'Request result is Null',

@@ -25,11 +25,11 @@ class translateCtrl extends jController
         $lang = $this->param('lang');
 
         if (!$lang) {
-            $lang = \jLocale::getCurrentLang().'_'.\jLocale::getCurrentCountry();
+            $lang = \jLocale::getCurrentLang() . '_' . \jLocale::getCurrentCountry();
         }
 
         $data = array();
-        $path = \jApp::getModulePath('pgrouting').'/locales/en_US/dictionary.UTF-8.properties';
+        $path = \jApp::getModulePath('pgrouting') . '/locales/en_US/dictionary.UTF-8.properties';
 
         if (file_exists($path)) {
             $lines = file($path);
@@ -37,7 +37,7 @@ class translateCtrl extends jController
                 if (!empty($lineContent) and $lineContent != '\n') {
                     $exp = explode('=', trim($lineContent));
                     if (!empty($exp[0])) {
-                        $data[$exp[0]] = \jLocale::get('pgrouting~dictionary.'.$exp[0], null, $lang);
+                        $data[$exp[0]] = \jLocale::get('pgrouting~dictionary.' . $exp[0], null, $lang);
                     }
                 }
             }
