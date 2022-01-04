@@ -600,7 +600,7 @@ This command will add a <code>gid</code> column as the primary key.</p>
 <p>Be careful to delete the duplicate geometries, for example when you import data from multiple
 source files with overlapping data (such as in the French IGN BDTOPO "département" extracts).
 You can use this kind of query to remove the duplicates based on the primary key <code>gid</code> and the IGN BDTOPO key <code>id</code>:</p>
-<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">a</span> <span class="k">USING</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">b</span> <span class="k">WHERE</span> <span class="n">a</span><span class="p">.</span><span class="n">gid</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">.</span><span class="n">gid</span> <span class="k">AND</span> <span class="n">a</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+<table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">gid</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">gid</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <h3 id="import-the-road-data-into-pgrouting-graph-nodes-and-edges">Import the road data into PgRouting graph (nodes and edges)<a class="headerlink" href="#import-the-road-data-into-pgrouting-graph-nodes-and-edges" title="Permanent link">#</a></h3>
@@ -715,116 +715,116 @@ the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</cod
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">BEGIN</span><span class="p">;</span><span class="w"></span>
 
 <span class="c1">-- Copy data from the route source table</span>
 <span class="c1">-- For example: bdtopo.troncon_de_route</span>
 <span class="c1">-- to create the temporary edges</span>
 <span class="c1">-- with added start and end point point geometries.</span>
-<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_edges</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_edges</span> <span class="k">AS</span>
-<span class="k">WITH</span> <span class="k">source</span> <span class="k">AS</span> <span class="p">(</span>
-    <span class="k">SELECT</span>
-        <span class="c1">-- Stores the original data inside a JSON field</span>
-        <span class="n">to_jsonb</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="o">*</span><span class="p">)</span> <span class="k">AS</span> <span class="n">raw_data</span><span class="p">,</span>
-        <span class="c1">-- Move the geometries nodes to a grid</span>
-        <span class="n">ST_SnapToGrid</span><span class="p">(</span><span class="n">ST_geometryN</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">)</span> <span class="k">AS</span> <span class="n">geom</span>
-    <span class="c1">-- bdtopo.troncon_de_route is the source road table</span>
-    <span class="k">FROM</span> <span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span> <span class="k">AS</span> <span class="n">t</span>
-    <span class="k">WHERE</span> <span class="k">TRUE</span>
-<span class="p">)</span>
-<span class="k">SELECT</span>
-    <span class="k">source</span><span class="p">.</span><span class="o">*</span><span class="p">,</span>
-    <span class="c1">-- get the start point</span>
-    <span class="n">ST_StartPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">start_point</span><span class="p">,</span>
-    <span class="c1">-- get the end point</span>
-    <span class="n">ST_EndPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="n">end_point</span>
-<span class="k">FROM</span> <span class="k">source</span>
-<span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">temp_edges</span><span class="p">;</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"> </span><span class="k">AS</span><span class="w"></span>
+<span class="k">WITH</span><span class="w"> </span><span class="k">source</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">        </span><span class="c1">-- Stores the original data inside a JSON field</span>
+<span class="w">        </span><span class="n">to_jsonb</span><span class="p">(</span><span class="n">t</span><span class="p">.</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">raw_data</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="c1">-- Move the geometries nodes to a grid</span>
+<span class="w">        </span><span class="n">ST_SnapToGrid</span><span class="p">(</span><span class="n">ST_geometryN</span><span class="p">(</span><span class="n">geom</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- bdtopo.troncon_de_route is the source road table</span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">t</span><span class="w"></span>
+<span class="w">    </span><span class="k">WHERE</span><span class="w"> </span><span class="k">TRUE</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"></span>
+<span class="w">    </span><span class="k">source</span><span class="p">.</span><span class="o">*</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- get the start point</span>
+<span class="w">    </span><span class="n">ST_StartPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_point</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- get the end point</span>
+<span class="w">    </span><span class="n">ST_EndPoint</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_point</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="k">source</span><span class="w"></span>
+<span class="p">;</span><span class="w"></span>
 <span class="c1">-- Create the needed indexes</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">start_point</span><span class="p">);</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_edges</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">end_point</span><span class="p">);</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIST</span><span class="w"> </span><span class="p">(</span><span class="n">geom</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIST</span><span class="w"> </span><span class="p">(</span><span class="n">start_point</span><span class="p">);</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIST</span><span class="w"> </span><span class="p">(</span><span class="n">end_point</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">-- Create the temporary nodes from the start and end points</span>
-<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_nodes</span><span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_nodes</span> <span class="k">AS</span>
-<span class="k">WITH</span>
-<span class="n">union_start_end</span> <span class="k">AS</span> <span class="p">(</span>
-    <span class="k">SELECT</span> <span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span> <span class="k">NULL</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span> <span class="n">start_point</span> <span class="k">AS</span> <span class="n">geom</span>
-    <span class="k">FROM</span> <span class="n">temp_edges</span>
-    <span class="k">UNION</span> <span class="k">ALL</span>
-    <span class="k">SELECT</span> <span class="k">NULL</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span> <span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span> <span class="n">end_point</span> <span class="k">AS</span> <span class="n">geom</span>
-    <span class="k">FROM</span> <span class="n">temp_edges</span>
-<span class="p">),</span>
-<span class="n">distinct_nodes</span> <span class="k">AS</span> <span class="p">(</span>
-    <span class="k">SELECT</span>
-        <span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">start_of</span><span class="p">)</span> <span class="n">FILTER</span> <span class="p">(</span><span class="k">WHERE</span> <span class="n">start_of</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AS</span> <span class="n">start_of</span><span class="p">,</span>
-        <span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">end_of</span><span class="p">)</span> <span class="n">FILTER</span> <span class="p">(</span><span class="k">WHERE</span> <span class="n">end_of</span> <span class="k">IS</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">)</span> <span class="k">AS</span> <span class="n">end_of</span><span class="p">,</span>
-        <span class="n">geom</span>
-    <span class="k">FROM</span> <span class="n">union_start_end</span>
-    <span class="k">GROUP</span> <span class="k">BY</span> <span class="n">geom</span>
-<span class="p">)</span>
-<span class="k">SELECT</span> <span class="o">*</span>
-<span class="k">FROM</span> <span class="n">distinct_nodes</span>
-<span class="p">;</span>
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="k">ON</span> <span class="n">temp_nodes</span> <span class="k">USING</span> <span class="n">GIST</span> <span class="p">(</span><span class="n">geom</span><span class="p">);</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">temp_nodes</span><span class="p">;</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">temp_nodes</span><span class="w"> </span><span class="k">AS</span><span class="w"></span>
+<span class="k">WITH</span><span class="w"></span>
+<span class="n">union_start_end</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">start_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"></span>
+<span class="w">    </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">end_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"></span>
+<span class="p">),</span><span class="w"></span>
+<span class="n">distinct_nodes</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"></span>
+<span class="w">        </span><span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">start_of</span><span class="p">)</span><span class="w"> </span><span class="n">FILTER</span><span class="w"> </span><span class="p">(</span><span class="k">WHERE</span><span class="w"> </span><span class="n">start_of</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">json_agg</span><span class="p">(</span><span class="k">DISTINCT</span><span class="w"> </span><span class="n">end_of</span><span class="p">)</span><span class="w"> </span><span class="n">FILTER</span><span class="w"> </span><span class="p">(</span><span class="k">WHERE</span><span class="w"> </span><span class="n">end_of</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">geom</span><span class="w"></span>
+<span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">union_start_end</span><span class="w"></span>
+<span class="w">    </span><span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">distinct_nodes</span><span class="w"></span>
+<span class="p">;</span><span class="w"></span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">temp_nodes</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">GIST</span><span class="w"> </span><span class="p">(</span><span class="n">geom</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">-- Insert them in the pgrouting.nodes table</span>
-<span class="k">TRUNCATE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">RESTART</span> <span class="k">IDENTITY</span> <span class="k">CASCADE</span><span class="p">;</span>
-<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="p">(</span><span class="n">geom</span><span class="p">)</span>
-<span class="k">SELECT</span> <span class="n">geom</span>
-<span class="k">FROM</span> <span class="n">temp_nodes</span>
-<span class="p">;</span>
+<span class="k">TRUNCATE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="w"> </span><span class="k">RESTART</span><span class="w"> </span><span class="k">IDENTITY</span><span class="w"> </span><span class="k">CASCADE</span><span class="p">;</span><span class="w"></span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="w"> </span><span class="p">(</span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">geom</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">temp_nodes</span><span class="w"></span>
+<span class="p">;</span><span class="w"></span>
 
 <span class="c1">-- Insert the temporary edges into the pgrouting.edges table</span>
 <span class="c1">-- with additional information about nodes, costs, etc.</span>
-<span class="k">TRUNCATE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span> <span class="k">RESTART</span> <span class="k">IDENTITY</span> <span class="k">CASCADE</span><span class="p">;</span>
-<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="k">length</span><span class="p">,</span> <span class="k">source</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">reverse_cost</span><span class="p">,</span> <span class="n">source_data</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
-<span class="k">SELECT</span> <span class="k">DISTINCT</span>
-    <span class="c1">-- label of the edge</span>
-    <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;nom_1_g&#39;</span> <span class="k">AS</span> <span class="n">label</span><span class="p">,</span>
-    <span class="c1">-- length</span>
-    <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span> <span class="k">AS</span> <span class="ss">&quot;length&quot;</span><span class="p">,</span>
-    <span class="c1">-- start and end nodes id</span>
-    <span class="n">ns</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ne</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
-    <span class="c1">-- cost based on the length</span>
-    <span class="k">CASE</span>
-        <span class="k">WHEN</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span>
-            <span class="k">THEN</span> <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="k">END</span> <span class="k">AS</span> <span class="n">cost</span><span class="p">,</span>
-    <span class="c1">-- reverse cost based on the length</span>
-    <span class="k">CASE</span>
-        <span class="k">WHEN</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span> <span class="k">in</span> <span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span> <span class="s1">&#39;Double sens&#39;</span><span class="p">,</span> <span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span>
-            <span class="k">THEN</span> <span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
-        <span class="k">ELSE</span> <span class="o">-</span><span class="mi">1</span>
-    <span class="k">END</span> <span class="k">AS</span> <span class="n">reverse_cost</span><span class="p">,</span>
-    <span class="c1">-- Keep some useful columns from the source table</span>
-    <span class="n">jsonb_build_object</span><span class="p">(</span>
-        <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;nature&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;nature&#39;</span><span class="p">,</span> <span class="s1">&#39;importance&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;etat&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;etat&#39;</span><span class="p">,</span> <span class="s1">&#39;largeur&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span> <span class="s1">&#39;prive&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;prive&#39;</span><span class="p">,</span>
-        <span class="s1">&#39;sens&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;sens&#39;</span><span class="p">,</span> <span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span> <span class="s1">&#39;acces_vl&#39;</span><span class="p">,</span> <span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;acces_vl&#39;</span>
-    <span class="p">)</span> <span class="k">AS</span> <span class="n">source_data</span><span class="p">,</span>
-    <span class="c1">-- geometry. Needed for the astar route engine</span>
-    <span class="n">e</span><span class="p">.</span><span class="n">geom</span>
-<span class="k">FROM</span> <span class="n">temp_edges</span> <span class="k">AS</span> <span class="n">e</span>
-<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">AS</span> <span class="n">ns</span>
-    <span class="c1">-- = is faster than ST_Equals</span>
-    <span class="k">ON</span> <span class="n">ns</span><span class="p">.</span><span class="n">geom</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">start_point</span>
-<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span> <span class="k">AS</span> <span class="n">ne</span>
-    <span class="k">ON</span> <span class="n">ne</span><span class="p">.</span><span class="n">geom</span> <span class="o">=</span> <span class="n">e</span><span class="p">.</span><span class="n">end_point</span>
-<span class="p">;</span>
+<span class="k">TRUNCATE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="w"> </span><span class="k">RESTART</span><span class="w"> </span><span class="k">IDENTITY</span><span class="w"> </span><span class="k">CASCADE</span><span class="p">;</span><span class="w"></span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="w"> </span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">length</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">cost</span><span class="p">,</span><span class="w"> </span><span class="n">reverse_cost</span><span class="p">,</span><span class="w"> </span><span class="n">source_data</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- label of the edge</span>
+<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;nom_1_g&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">label</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- length</span>
+<span class="w">    </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="ss">&quot;length&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- start and end nodes id</span>
+<span class="w">    </span><span class="n">ns</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- cost based on the length</span>
+<span class="w">    </span><span class="k">CASE</span><span class="w"></span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">THEN</span><span class="w"> </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">ELSE</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cost</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- reverse cost based on the length</span>
+<span class="w">    </span><span class="k">CASE</span><span class="w"></span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span><span class="w"></span>
+<span class="w">            </span><span class="k">THEN</span><span class="w"> </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="w">        </span><span class="k">ELSE</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span><span class="w"></span>
+<span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">reverse_cost</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- Keep some useful columns from the source table</span>
+<span class="w">    </span><span class="n">jsonb_build_object</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s1">&#39;etat&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;etat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;prive&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;prive&#39;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="s1">&#39;sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;acces_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;acces_vl&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">source_data</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- geometry. Needed for the astar route engine</span>
+<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">temp_edges</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">e</span><span class="w"></span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ns</span><span class="w"></span>
+<span class="w">    </span><span class="c1">-- = is faster than ST_Equals</span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">ns</span><span class="p">.</span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">start_point</span><span class="w"></span>
+<span class="k">LEFT</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">ne</span><span class="w"></span>
+<span class="w">    </span><span class="k">ON</span><span class="w"> </span><span class="n">ne</span><span class="p">.</span><span class="n">geom</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">end_point</span><span class="w"></span>
+<span class="p">;</span><span class="w"></span>
 
 <span class="c1">-- Drop the temporary tables</span>
-<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_nodes</span><span class="p">;</span>
-<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_edges</span><span class="p">;</span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">temp_nodes</span><span class="p">;</span><span class="w"></span>
+<span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">temp_edges</span><span class="p">;</span><span class="w"></span>
 
-<span class="k">COMMIT</span><span class="p">;</span>
+<span class="k">COMMIT</span><span class="p">;</span><span class="w"></span>
 
 <span class="c1">-- VACUUM and analyse</span>
-<span class="k">VACUUM</span> <span class="k">ANALYSE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="p">;</span>
-<span class="k">VACUUM</span> <span class="k">ANALYSE</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="p">;</span>
+<span class="k">VACUUM</span><span class="w"> </span><span class="k">ANALYSE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="p">;</span><span class="w"></span>
+<span class="k">VACUUM</span><span class="w"> </span><span class="k">ANALYSE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="p">;</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <h3 id="import-data-in-the-poi-tables-optional">Import data in the POI tables (optional)<a class="headerlink" href="#import-data-in-the-poi-tables-optional" title="Permanent link">#</a></h3>
@@ -833,9 +833,9 @@ the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</cod
 your fields of your point of interest layer.</p>
 <table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">pgrouting</span><span class="p">.</span><span class="n">routing_poi</span> <span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="k">type</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">geom</span><span class="p">)</span>
-<span class="k">SELECT</span> <span class="n">poi</span><span class="p">.</span><span class="n">label</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="k">type</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="n">description</span><span class="p">,</span> <span class="n">poi</span><span class="p">.</span><span class="n">geom</span>
-<span class="k">FROM</span> <span class="n">your_schema</span><span class="p">.</span><span class="n">point_of_interest</span> <span class="k">AS</span> <span class="n">poi</span><span class="p">;</span>
+<span class="normal">3</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><code><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">routing_poi</span><span class="w"> </span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">)</span><span class="w"></span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">poi</span><span class="p">.</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="n">poi</span><span class="p">.</span><span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="n">poi</span><span class="p">.</span><span class="n">description</span><span class="p">,</span><span class="w"> </span><span class="n">poi</span><span class="p">.</span><span class="n">geom</span><span class="w"></span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">your_schema</span><span class="p">.</span><span class="n">point_of_interest</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">poi</span><span class="p">;</span><span class="w"></span>
 </code></pre></div>
 </td></tr></table>
 <h2 id="in-qgis">In QGIS<a class="headerlink" href="#in-qgis" title="Permanent link">#</a></h2>
