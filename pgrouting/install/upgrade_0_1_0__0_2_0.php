@@ -27,13 +27,11 @@ class pgroutingModuleUpgrader_0_1_0__0_2_0 extends jInstallerModule
             // Reinstall from install SQL file
             // Get SQL template file
             $sql_file = $this->path . 'install/sql/install.pgsql.sql';
-            $sqlTpl = jFile::read($sql_file);
-            $tpl = new jTpl();
-            $sql = $tpl->fetchFromString($sqlTpl, 'text');
+            $sql = jFile::read($sql_file);
 
             // Replace 2154 by given SRID if defined
             $srid = $this->getParameter('srid');
-            if (is_int($srid) && $srid != '2154') {
+            if (is_numeric($srid) && $srid != '2154') {
                 $sql = str_replace('2154', $srid, $sql);
             }
 

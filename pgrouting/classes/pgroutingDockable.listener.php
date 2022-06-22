@@ -32,7 +32,7 @@
             } else {
                 // Project name must contains 'pgrouting' to enable the module
                 if (strpos($event->project, 'pgrouting') !== false) {
-                    $bp = jApp::config()->urlengine['basePath'];
+                    $bp = jApp::urlBasePath();
                     // dock
                     $content = '<lizmap-pgrouting></lizmap-pgrouting>';
                     $dock = new lizmapMapDockItem(
