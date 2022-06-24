@@ -35,7 +35,7 @@ pgrouting.access=2
 If you are using Lizmap 3.6 or higher, execute
 
 ```bash
-php lizmap/install/configurator.php
+php lizmap/install/configurator.php pgrouting
 ```
 
 It will ask you all parameters for the database access and the SRID you are using.
