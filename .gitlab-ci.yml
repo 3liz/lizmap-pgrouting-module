@@ -16,10 +16,10 @@ sql:
     matrix:
       - PG_VERSION: [11-2.5, 13-3]
   services:
-    - name: registry.snap.lizlan:5000/postgis:${PG_VERSION}
+    - name: $REGISTRY_URI/postgis:${PG_VERSION}
       alias: db
   image:
-    name: registry.snap.lizlan:5000/factory-ci-base:python-3.9
+    name: $REGISTRY_URI/factory-ci-base:python-3.9
   before_script:
     - export PATH=/root/.local/bin:$PATH
     - pip3 install --user -r requirements/tests.txt
@@ -34,7 +34,7 @@ tickets:
   only:
     - tags
   image:
-    name: registry.snap.lizlan:5000/infra/ci-tools:latest
+    name: $REGISTRY_URI/infra/ci-tools:latest
   script:
     - create_ticket.py
   tags:
