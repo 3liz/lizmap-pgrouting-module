@@ -18,8 +18,6 @@ LIZMAP_PORT:=127.0.0.1:9090
 OWS_PORT:=127.0.0.1:9091
 LZMPGPORT:=127.0.0.1:9032
 
-BASEDIR:=$(shell realpath ..)
-
 PGROUTING_MODULE_SRC:=$(shell realpath ..)
 
 main:
@@ -39,6 +37,9 @@ dirs:
 	@mkdir -p $(LIZMAP_DIR)/var/log/nginx \
 		      $(LIZMAP_DIR)/var/nginx-cache \
 		      $(LIZMAP_DIR)/qgis-server-plugins \
+		      $(LIZMAP_DIR)/local-python \
+		      $(LIZMAP_DIR)/cache-python \
+		      $(PGROUTING_MODULE_SRC)/tests/sql/.pytest_cache \
 		      $*
 
 env: dirs
@@ -62,6 +63,9 @@ run: stop env install-plugins
 
 stop:
 	docker compose down || true
+
+test: stop env install-plugins
+	docker compose up -d && docker compose run --rm pytest
 
 clean: stop
 	docker compose down -v

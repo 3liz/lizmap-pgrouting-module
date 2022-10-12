@@ -69,5 +69,32 @@ services:
       - ${LIZMAP_PORT}:8080
     depends_on:
       - lizmap
+  pytest:
+    image: python:3.10-slim
+    user: ${LIZMAP_USER_ID}:${LIZMAP_USER_ID}
+    command: "bash -c 'pip install -v --user -r /requirements/tests.txt && /.local/bin/pytest -v -s'"
+    profiles:
+      - "python"
+    working_dir: /usr/src/pgrouting/tests/python
+    environment:
+      POSTGRES_HOST: pgsql
+      POSTGRES_DB: lizmap
+      POSTGRES_USER: lizmap
+      POSTGRES_PASSWORD: lizmap1234!
+      POSTGRES_PORT: 5432
+      PIP_CACHE_DIR: "/.cache"
+    volumes:
+      # Python requirements folder
+      - ${PGROUTING_MODULE_SRC}/requirements:/requirements
+      # Python test folder
+      - ${PGROUTING_MODULE_SRC}/tests/sql/:/usr/src/pgrouting/tests/python
+      # Module folder
+      - ${PGROUTING_MODULE_SRC}/pgrouting:/usr/src/pgrouting/pgrouting
+      # Cache
+      - ${LIZMAP_DIR}/local-python:/.local
+      - ${LIZMAP_DIR}/cache-python:/.cache
+      - ${PGROUTING_MODULE_SRC}/tests/sql/.pytest_cache:/usr/src/pgrouting/tests/python/.pytest_cache
+    depends_on:
+      - pgsql
 volumes:
   postgis-volume:

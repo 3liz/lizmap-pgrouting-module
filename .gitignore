@@ -30,7 +30,10 @@ tests/sql/.pytest_cache
 tests/lizmap/www
 tests/lizmap/var
 tests/lizmap/qgis-server-plugins/
+tests/lizmap/local-python
+tests/lizmap/cache-python
 tests/.env
+.pytest_cache
 
 # VSCode ou Codium
 *.code-workspace

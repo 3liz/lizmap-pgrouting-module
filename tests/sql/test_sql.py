@@ -60,12 +60,11 @@ class TestSql(unittest.TestCase):
         self.assertEqual(327, self.cursor.fetchone()[0])
 
     def test_route_dijkstra(self):
-        point_a = 'POINT(4.607761 43.684038)'
-        point_b = 'POINT(4.611381 43.685356)'
-        sql = "SELECT * FROM pgrouting.create_roadmap('{}', '{}', 4326, 'dijkstra')".format(
-            point_a,
-            point_b
-        )
+        sql = """
+SELECT *
+FROM pgrouting.create_roadmap(
+    'POINT(4.607761 43.684038)', 'POINT(4.611381 43.685356)', 4326, 'dijkstra'
+)"""
         self.cursor.execute(sql)
         ids = [a[1] for a in self.cursor.fetchall()]
         expected = [-6, -5, 322, 231, 224, 225, 223, 230, 579, 538, -3, -1]

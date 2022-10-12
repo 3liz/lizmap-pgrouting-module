@@ -44,6 +44,16 @@ psql service=lizmap-pgrouting
 
 ## SQL Tests
 
+### Docker
+
+Inside the docker compose project :
+
+```bash
+docker compose run --rm pytest
+```
+
+### Local
+
 To run SQL based tests, you need to call `pytest` :
 
 ```bash
@@ -54,9 +64,11 @@ pytest
 pytest -s -v
 ```
 
-You must have set some environment variables for the database to use (either local or in docker) :
+```bash
+POSTGRES_DB=lizmap POSTGRES_USER=lizmap POSTGRES_PASSWORD=lizmap1234! POSTGRES_PORT=9032 pytest -s -v
+```
 
-The CI will test against Docker images PostGIS 2 and 3 : `3liz/postgis:13-2.5` and `3liz/postgis:13-3`.
+or
 
 ```bash
 docker run --rm -e POSTGRES_PASSWORD=docker -e POSTGRES_USER=docker -e POSTGRES_DB=gis -p 127.0.0.1:35432:5432 3liz/postgis:13-2.5
