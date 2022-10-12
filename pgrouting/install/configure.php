@@ -7,22 +7,20 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-use Jelix\Routing\UrlMapping\EntryPointUrlModifier;
-use \Jelix\Routing\UrlMapping\MapEntry\MapInclude;
-
-class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator {
-
+class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
+{
     public function getDefaultParameters()
     {
         return array(
-            'srid' => 2154
+            'srid' => 2154,
         );
     }
 
-    function configure(\Jelix\Installer\Module\API\ConfigurationHelpers $helpers)
+    public function configure(Jelix\Installer\Module\API\ConfigurationHelpers $helpers)
     {
         $this->parameters['srid'] = $helpers->cli()->askInformation(
-            'SRID your are using?', $this->parameters['srid']
+            'SRID your are using?',
+            $this->parameters['srid']
         );
 
         $profileSearchPathChanged = false;
@@ -31,17 +29,16 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator {
             list($profile, $realDefaultProfileName) = $helpers->findDbProfile('default');
             if (!isset($profile['driver']) || $profile['driver'] != 'pgsql') {
                 $profile = array(
-                    'driver'=>  'pgsql',
+                    'driver' => 'pgsql',
                     'host' => 'localhost',
                     'port' => 5432,
                     'database' => 'lizmap',
                     'user' => 'lizmap',
-                    'password' => "",
-                    'search_path' => 'pgrouting,public'
+                    'password' => '',
+                    'search_path' => 'pgrouting,public',
                 );
                 $realProfileName = 'pgrouting';
-            }
-            else {
+            } else {
                 $realProfileName = $realDefaultProfileName;
             }
         }
@@ -49,9 +46,8 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator {
         if (!isset($profile['search_path'])) {
             $profile['search_path'] = 'pgrouting,public';
             $profileSearchPathChanged = true;
-        }
-        else if (strpos($profile['search_path'], 'pgrouting') === false) {
-            $profile['search_path'] = 'pgrouting,'.$profile['search_path'];
+        } elseif (strpos($profile['search_path'], 'pgrouting') === false) {
+            $profile['search_path'] = 'pgrouting,' . $profile['search_path'];
             $profileSearchPathChanged = true;
         }
 
@@ -60,7 +56,7 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator {
             // if the user change some parameters, we create a new profile or
             // change the existing pgrouting profile
             $helpers->declareDbProfile('pgrouting', $profile, true);
-        } else if ($profileSearchPathChanged) {
+        } elseif ($profileSearchPathChanged) {
             // no change, except the search path we modified
             $helpers->declareDbProfile($realProfileName, $profile, true);
         }

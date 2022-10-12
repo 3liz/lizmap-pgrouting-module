@@ -16,10 +16,10 @@
             $repository = $event->repository;
             $project = $event->project;
 
-            //include class to check config
+            // include class to check config
             jClasses::inc('pgrouting~checkConfig');
 
-            //implement new object
+            // implement new object
             $checkConfig = new checkConfig($repository, $project, 'pgrouting');
 
             // check extension in database

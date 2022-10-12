@@ -28,7 +28,6 @@ class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
 
     public function install(Jelix\Installer\Module\API\InstallHelpers $helpers)
     {
-
         $helpers->database()->useDbProfile('pgrouting');
         $db = $helpers->database()->dbConnection();
 
