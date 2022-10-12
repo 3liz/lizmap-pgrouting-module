@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-* Experimental compatibility with Lizmap 3.6
+### Added
 
+* Experimental compatibility with Lizmap 3.6
 
 ## 0.2.1 - 2021-10-19
 
