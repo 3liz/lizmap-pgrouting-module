@@ -5,7 +5,7 @@
 [![Lint PHP 🚨](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/php-lint.yml/badge.svg)](https://github.com/3liz/lizmap-pgrouting-module/actions/workflows/php-lint.yml)
 [![Packagist](https://img.shields.io/packagist/v/lizmap/lizmap-pgrouting-module)](https://packagist.org/packages/lizmap/lizmap-pgrouting-module)
 
-* Lizmap 3.5 minimum
+* Lizmap 3.5.6 minimum
 * Documentation (installation, usage..) : https://docs.3liz.org/lizmap-pgrouting-module or see the docs/ directory
 * Funded by [CRIGE PACA](https://www.crige-paca.org/) in France
 

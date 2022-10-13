@@ -2,9 +2,15 @@
 
 ## Unreleased
 
+## 0.3.0 - 2022-10-13
+
 ### Added
 
 * Experimental compatibility with Lizmap 3.6
+
+### Fixed
+
+* The module is now compatible with Lizmap 3.5.6
 
 ## 0.2.1 - 2021-10-19
 
