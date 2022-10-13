@@ -1,4 +1,4 @@
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.6.1/style.js';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.15.1/style.js';
 import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@2.0.1/lit-html.min.js';
 
 class pgRouting extends HTMLElement {
