@@ -32,7 +32,7 @@ class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
         $db = $helpers->database()->dbConnection();
 
         // Get SQL template file
-        $sql_file = $this->path . 'install/sql/install.pgsql.sql';
+        $sql_file = $this->getPath() . 'install/sql/install.pgsql.sql';
         $sql = jFile::read($sql_file);
 
         // Replace 2154 by given SRID if defined

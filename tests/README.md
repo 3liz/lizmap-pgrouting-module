@@ -11,8 +11,22 @@ make clean
 # Run the different services
 make run
 
-# Import data and ACL into the database
+# Import data
 make import-data
+```
+
+- call these commands if you are using Lizmap <=3.5
+
+```
+make import-lizmap-acl-3-5
+```
+
+- else call these commands if you are using Lizmap >=3.6
+
+```
+# install the module (for Lizmap 3.6+)
+make install-module
+
 make import-lizmap-acl
 ```
 

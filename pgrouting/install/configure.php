@@ -1,4 +1,8 @@
 <?php
+
+use Jelix\Installer\Module\API\LocalConfigurationHelpers;
+use Jelix\Installer\Module\API\ConfigurationHelpers;
+
 /**
  * @author    3Liz
  * @copyright 2022 3Liz
@@ -16,13 +20,19 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
         );
     }
 
-    public function configure(Jelix\Installer\Module\API\ConfigurationHelpers $helpers)
+    public function configure(ConfigurationHelpers $helpers)
     {
         $this->parameters['srid'] = $helpers->cli()->askInformation(
             'SRID your are using?',
             $this->parameters['srid']
         );
 
+        $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
+        $helpers->copyDirectoryContent('../www/js', jApp::wwwPath('assets/pgrouting/js'));
+    }
+
+    public function localConfigure(LocalConfigurationHelpers $helpers)
+    {
         $profileSearchPathChanged = false;
         list($profile, $realProfileName) = $helpers->findDbProfile('pgrouting');
         if (!$profile) {
@@ -39,6 +49,9 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
                 );
                 $realProfileName = 'pgrouting';
             } else {
+                if (!isset($profile['port']) || $profile['port'] == '') {
+                    $profile['port'] = 5432;
+                }
                 $realProfileName = $realDefaultProfileName;
             }
         }
@@ -60,8 +73,5 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
             // no change, except the search path we modified
             $helpers->declareDbProfile($realProfileName, $profile, true);
         }
-
-        $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
-        $helpers->copyDirectoryContent('../www/js', jApp::wwwPath('assets/pgrouting/js'));
     }
 }

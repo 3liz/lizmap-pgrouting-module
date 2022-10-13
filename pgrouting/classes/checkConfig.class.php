@@ -17,6 +17,9 @@ class checkConfig
 
     protected $repository;
 
+    /**
+     * @var search
+     */
     protected $search;
 
     public function __construct($repository, $project, $profile)

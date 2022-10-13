@@ -21,7 +21,7 @@ composer require --working-dir=lizmap/my-packages "lizmap/lizmap-pgrouting-modul
 
 * Get the last ZIP archive in the [repository page](https://projects.3liz.org/lizmap-modules/lizmap-pgrouting-module).
 * Extract the archive and copy the `pgrouting` directory in Lizmap Web Client folder `lizmap/lizmap-modules/`
-* Edit the config file `lizmap/var/config/localconfig.ini.php` and add into 
+* With Lizmap 3.5 or lower: edit the config file `lizmap/var/config/localconfig.ini.php` and add into 
   the section `[modules]`:
 
 ```ini
