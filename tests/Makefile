@@ -101,40 +101,48 @@ import-data:
 import-lizmap-acl-3-5:
 	@echo "Set repositories and users rights if needed"
 	@echo "Set view project"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.repositories.view" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.repositories.view" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/cmd.php acl2right add __anonymous "lizmap.repositories.view" pgrouting' \
+		'php lizmap/cmd.php acl2right add users "lizmap.repositories.view" pgrouting' \
+		'php lizmap/cmd.php acl2right add admins "lizmap.repositories.view" pgrouting'
 	@echo "Display WMS links"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" pgrouting' \
+		'php lizmap/cmd.php acl2right add users "lizmap.tools.displayGetCapabilitiesLinks" pgrouting' \
+		'php lizmap/cmd.php acl2right add admins "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
 	@echo "Edition"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.edition.use" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.edition.use" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.edition.use" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.edition.use" pgrouting' \
+		'php lizmap/cmd.php acl2right add users "lizmap.tools.edition.use" pgrouting' \
+		'php lizmap/cmd.php acl2right add admins "lizmap.tools.edition.use" pgrouting'
 	@echo "Export layers"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.layer.export" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add users "lizmap.tools.layer.export" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/cmd.php acl2right add admins "lizmap.tools.layer.export" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/cmd.php acl2right add __anonymous "lizmap.tools.layer.export" pgrouting' \
+		'php lizmap/cmd.php acl2right add users "lizmap.tools.layer.export" pgrouting' \
+		'php lizmap/cmd.php acl2right add admins "lizmap.tools.layer.export" pgrouting'
 
 import-lizmap-acl:
 	@echo "Set repositories and users rights if needed"
 	@echo "Set view project"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add __anonymous "lizmap.repositories.view" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add users "lizmap.repositories.view" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add admins "lizmap.repositories.view" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.repositories.view" pgrouting' \
+		'php lizmap/console.php acl2:add users "lizmap.repositories.view" pgrouting' \
+		'php lizmap/console.php acl2:add admins "lizmap.repositories.view" pgrouting'
 	@echo "Display WMS links"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add users "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add admins "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.displayGetCapabilitiesLinks" pgrouting' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.displayGetCapabilitiesLinks" pgrouting' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.displayGetCapabilitiesLinks" pgrouting'
 	@echo "Edition"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add __anonymous "lizmap.tools.edition.use" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add users "lizmap.tools.edition.use" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add admins "lizmap.tools.edition.use" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.edition.use" pgrouting' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.edition.use" pgrouting' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.edition.use" pgrouting'
 	@echo "Export layers"
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add __anonymous "lizmap.tools.layer.export" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add users "lizmap.tools.layer.export" pgrouting'
-	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c 'php lizmap/console.php acl2:add admins "lizmap.tools.layer.export" pgrouting'
+	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -c \
+		'php lizmap/console.php acl2:add __anonymous "lizmap.tools.layer.export" pgrouting' \
+		'php lizmap/console.php acl2:add users "lizmap.tools.layer.export" pgrouting' \
+		'php lizmap/console.php acl2:add admins "lizmap.tools.layer.export" pgrouting'
 
 
 install-module:
