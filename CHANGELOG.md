@@ -4,23 +4,14 @@
 
 ## 0.3.0 - 2022-10-13
 
-### Added
-
 * Experimental compatibility with Lizmap 3.6
-
-### Fixed
-
 * The module is now compatible with Lizmap 3.5.6
 
 ## 0.2.1 - 2021-10-19
 
-### Fixed
-
 * Drop previous roadmap when no routes were found in the database and display a message
 
 ## 0.2.0 - 2021-10-15
-
-### Added
 
 * Add some checks for SQL query results
 * Add a PHP class to check the configuration (database extension and structure, required QGIS project layers)
