@@ -1,7 +1,7 @@
 <?php
 
-use Jelix\Installer\Module\API\LocalConfigurationHelpers;
 use Jelix\Installer\Module\API\ConfigurationHelpers;
+use Jelix\Installer\Module\API\LocalConfigurationHelpers;
 
 /**
  * @author    3Liz
