@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.3.1 - 2022-12-15
+
 ### Fixed
 
 * Improve compatibility with Lizmap 3.6
