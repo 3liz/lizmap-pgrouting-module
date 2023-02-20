@@ -1,4 +1,5 @@
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.15.1/style.js';
+import GeoJSON from 'https://cdn.jsdelivr.net/npm/ol@6.15.1/format/GeoJSON.js';
 import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@2.0.1/lit-html.min.js';
 
 class pgRouting extends HTMLElement {
@@ -85,16 +86,23 @@ class pgRouting extends HTMLElement {
 
         lizMap.mainEventDispatcher.addListener(() => {
             const features = lizMap.mainLizmap.draw.features;
+            const featuresLength = features.length;
 
             // Add ids to identify origin and destination features for styling
-            if (features.length === 1) {
-                features[0].setId(0);
-            }
-            if (features.length === 2) {
-                features[1].setId(1);
+            features.map((feature, index) => {
+                if(index === 0){
+                    feature.setId('origin')
+                } else if (index === featuresLength - 1){
+                    feature.setId('destination')
+                } else {
+                    feature.setId('');
+                }
+            });
+
+            if (featuresLength > 1) {
                 this._getRoute(
-                    lizMap.mainLizmap.transform(features[0].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(features[1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                    lizMap.mainLizmap.transform(features[featuresLength - 1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                    lizMap.mainLizmap.transform(features[featuresLength - 2].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
                 );
             }
         }, ['draw.addFeature']);
@@ -102,8 +110,8 @@ class pgRouting extends HTMLElement {
         lizMap.mainEventDispatcher.addListener(() => {
             const features = lizMap.mainLizmap.draw.features;
             if (features.length === 2) {
-                const origin = features.find(feature => feature.getId() === 0);
-                const destination = features.find(feature => feature.getId() === 1);
+                const origin = features.find(feature => feature.getId() === 'origin');
+                const destination = features.find(feature => feature.getId() === 'destination');
                 this._getRoute(
                     lizMap.mainLizmap.transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
                     lizMap.mainLizmap.transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
@@ -133,10 +141,12 @@ class pgRouting extends HTMLElement {
         this._POIFeatures = [];
 
         // Init draw with 2 points and hide layer
-        lizMap.mainLizmap.draw.init('Point', 2, true, (feature) => {
-            let fillColor = 'green';
+        lizMap.mainLizmap.draw.init('Point', undefined, true, (feature) => {
+            let fillColor = 'blue';
 
-            if (feature.getId() === 1) {
+            if (feature.getId() === 'origin') {
+                fillColor = 'green';
+            } else if (feature.getId() === 'destination') {
                 fillColor = 'red';
             }
             return new Style({
@@ -170,27 +180,37 @@ class pgRouting extends HTMLElement {
                 this._mergedRoads = [];
                 this._POIFeatures = [];
 
-                if (this._routeLayer) {
-                    lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
-                }
-
                 if (json?.routing?.features) {
+
+                    for (const feature of json.routing.features) {
+                        delete feature.id;
+                    }
+
                     // Display route
                     const width = 8;
-                    this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
-                        new Style({
-                            stroke: new Stroke({
-                                color: 'white',
-                                width: width + 4
+                    if(!this._routeLayer){
+                        this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
+                            new Style({
+                                stroke: new Stroke({
+                                    color: 'white',
+                                    width: width + 4
+                                })
+                            }),
+                            new Style({
+                                stroke: new Stroke({
+                                    color: 'purple',
+                                    width: width
+                                })
                             })
-                        }),
-                        new Style({
-                            stroke: new Stroke({
-                                color: 'purple',
-                                width: width
-                            })
-                        })
-                    ]);
+                        ]);
+                    } else {
+                        const newFeatures = new GeoJSON().readFeatures(json.routing, {
+                            dataProjection: 'EPSG:4326',
+                            featureProjection: lizMap.mainLizmap.projection
+                        });
+                        this._routeLayer.getSource().addFeatures(newFeatures);
+                    }
+
 
                     // Get roadmap
                     // Merge road with same label when sibling
