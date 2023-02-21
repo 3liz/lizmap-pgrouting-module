@@ -1,6 +1,6 @@
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@6.15.1/style.js';
-import GeoJSON from 'https://cdn.jsdelivr.net/npm/ol@6.15.1/format/GeoJSON.js';
-import { html, render } from 'https://cdn.jsdelivr.net/npm/lit-html@2.0.1/lit-html.min.js';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import GeoJSON from 'ol/format/GeoJSON';
+import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
 
