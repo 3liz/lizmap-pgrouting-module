@@ -1,5 +1,8 @@
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON';
+import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
+import { Draw , Modify } from 'ol/interaction.js';
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -66,11 +69,13 @@ class pgRouting extends HTMLElement {
             },
             dockopened: (evt) => {
                 if (evt.id === "pgrouting") {
+                    lizMap.mainLizmap.newOlMap = true;
                     this.toggleDrawVisibility(true);
                 }
             },
             dockclosed: (evt) => {
                 if (evt.id === "pgrouting") {
+                    lizMap.mainLizmap.newOlMap = false;
                     this.toggleDrawVisibility(false);
                 }
             }
@@ -84,41 +89,6 @@ class pgRouting extends HTMLElement {
 
         this.restartDraw();
 
-        lizMap.mainEventDispatcher.addListener(() => {
-            const features = lizMap.mainLizmap.draw.features;
-            const featuresLength = features.length;
-
-            // Add ids to identify origin and destination features for styling
-            features.map((feature, index) => {
-                if(index === 0){
-                    feature.setId('origin')
-                } else if (index === featuresLength - 1){
-                    feature.setId('destination')
-                } else {
-                    feature.setId('');
-                }
-            });
-
-            if (featuresLength > 1) {
-                this._getRoute(
-                    lizMap.mainLizmap.transform(features[featuresLength - 1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(features[featuresLength - 2].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
-                );
-            }
-        }, ['draw.addFeature']);
-
-        lizMap.mainEventDispatcher.addListener(() => {
-            const features = lizMap.mainLizmap.draw.features;
-            if (features.length === 2) {
-                const origin = features.find(feature => feature.getId() === 'origin');
-                const destination = features.find(feature => feature.getId() === 'destination');
-                this._getRoute(
-                    lizMap.mainLizmap.transform(origin.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(destination.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
-                );
-            }
-        }, ['draw.modifyEnd']);
-
         // Show mouse pointer when hovering origin or destination points
         lizMap.mainLizmap.map.on('pointermove', (e) => {
             if (e.dragging) {
@@ -126,44 +96,91 @@ class pgRouting extends HTMLElement {
             }
             const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
             const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
-            const featureHover = featuresAtPixel.some(feature => lizMap.mainLizmap.draw.features.includes(feature));
+            const featureHover = featuresAtPixel.some(feature => this._milestoneLayer.getSource().getFeatures().includes(feature));
 
             lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
         });
     }
 
-    restartDraw(){
+    restartDraw() {
         if (this._routeLayer) {
             lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
+        }
+
+        if (this._milestoneLayer) {
+            lizMap.mainLizmap.layers.removeLayer(this._milestoneLayer);
         }
 
         this._mergedRoads = [];
         this._POIFeatures = [];
 
-        // Init draw with 2 points and hide layer
-        lizMap.mainLizmap.draw.init('Point', undefined, true, (feature) => {
-            let fillColor = 'blue';
-
-            if (feature.getId() === 'origin') {
-                fillColor = 'green';
-            } else if (feature.getId() === 'destination') {
-                fillColor = 'red';
-            }
-            return new Style({
-                image: new CircleStyle({
-                    radius: 10,
-                    fill: new Fill({
-                        color: fillColor,
-                    }),
-                }),
-            });
+        // Init milestones draw
+        this._drawSource = new VectorSource({
+            useSpatialIndex: false
         });
+
+        this._drawSource.on('addfeature', () => {
+            const features = this._drawSource.getFeaturesCollection().getArray();
+            const featuresLength = features.length;
+
+            features.forEach((feature, index) => {
+                if (index === 0) {
+                    feature.set('position', 'origin', true);
+                } else if (index === featuresLength - 1) {
+                    feature.set('position', 'destination', true);
+                } else {
+                    feature.set('position', '', true);
+                }
+            });
+
+            if (featuresLength > 1) {
+                this._getRoute(
+                    lizMap.mainLizmap.transform(features[featuresLength - 2].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
+                    lizMap.mainLizmap.transform(features[featuresLength - 1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                );
+            }
+        });
+
+        this._drawInteraction = new Draw({
+            source: this._drawSource,
+            type: "Point",
+        });
+
+        this._modifyInteraction = new Modify({ source: this._drawSource });
+
+        lizMap.mainLizmap.map.addInteraction(this._drawInteraction);
+        lizMap.mainLizmap.map.addInteraction(this._modifyInteraction);
+        
+        this._milestoneLayer = new VectorLayer({
+            source: this._drawSource,
+            style: (feature) => {
+                let fillColor = 'blue';
+    
+                if (feature.get('position') === 'origin') {
+                    fillColor = 'green';
+                } else if (feature.get('position') === 'destination') {
+                    fillColor = 'red';
+                }
+                return new Style({
+                    image: new CircleStyle({
+                        radius: 10,
+                        fill: new Fill({
+                            color: fillColor,
+                        }),
+                    }),
+                });
+            }
+        });
+
+        lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
 
         render(this._mainTemplate(), this);
     }
 
     toggleDrawVisibility(visible){
-        lizMap.mainLizmap.draw.visible = visible;
+        if (this._milestoneLayer) {
+            this._milestoneLayer.setVisible(visible);
+        }
 
         if (this._routeLayer) {
             this._routeLayer.setVisible(visible);
