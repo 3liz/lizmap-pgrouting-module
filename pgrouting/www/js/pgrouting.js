@@ -115,12 +115,12 @@ class pgRouting extends HTMLElement {
         this._POIFeatures = [];
 
         // Init milestones draw
-        this._drawSource = new VectorSource({
+        this._drawMilestoneSource = new VectorSource({
             useSpatialIndex: false
         });
 
-        this._drawSource.on('addfeature', () => {
-            const features = this._drawSource.getFeaturesCollection().getArray();
+        this._drawMilestoneSource.on('addfeature', () => {
+            const features = this._drawMilestoneSource.getFeaturesCollection().getArray();
             const featuresLength = features.length;
 
             features.forEach((feature, index) => {
@@ -135,24 +135,48 @@ class pgRouting extends HTMLElement {
 
             if (featuresLength > 1) {
                 this._getRoute(
-                    lizMap.mainLizmap.transform(features[featuresLength - 2].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326'),
-                    lizMap.mainLizmap.transform(features[featuresLength - 1].getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326')
+                    features[featuresLength - 2],
+                    features[featuresLength - 1]
                 );
             }
         });
 
         this._drawInteraction = new Draw({
-            source: this._drawSource,
+            source: this._drawMilestoneSource,
             type: "Point",
         });
 
-        this._modifyInteraction = new Modify({ source: this._drawSource });
+        this._modifyInteraction = new Modify({ source: this._drawMilestoneSource });
+        this._modifyInteraction.on('modifyend', event => {
+            const modifiedFeature = event.features.item(0);
+
+            const features = this._drawMilestoneSource.getFeaturesCollection().getArray();
+
+            features.forEach((feature, index) => {
+                if (modifiedFeature === feature) {
+                    // Refresh route from modifiedFeature to previous feature
+                    if (index !== 0){
+                        this._getRoute(
+                            features[index - 1],
+                            modifiedFeature
+                        );
+                    }
+                    // Refresh route from modifiedFeature to next feature
+                    if (index !== features.length - 1){
+                        this._getRoute(
+                            modifiedFeature,
+                            features[index + 1]
+                        );
+                    }
+                }
+            });
+        });
 
         lizMap.mainLizmap.map.addInteraction(this._drawInteraction);
         lizMap.mainLizmap.map.addInteraction(this._modifyInteraction);
         
         this._milestoneLayer = new VectorLayer({
-            source: this._drawSource,
+            source: this._drawMilestoneSource,
             style: (feature) => {
                 let fillColor = 'blue';
     
@@ -174,6 +198,28 @@ class pgRouting extends HTMLElement {
 
         lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
 
+        // Display route
+        const width = 8;
+        this._routeLayer = new VectorLayer({
+            source: new VectorSource(),
+            style: [
+                new Style({
+                    stroke: new Stroke({
+                        color: 'white',
+                        width: width + 4
+                    })
+                }),
+                new Style({
+                    stroke: new Stroke({
+                        color: 'purple',
+                        width: width
+                    })
+                })
+            ],
+        });
+
+        lizMap.mainLizmap.map.addLayer(this._routeLayer);
+
         render(this._mainTemplate(), this);
     }
 
@@ -187,7 +233,11 @@ class pgRouting extends HTMLElement {
         }
     }
 
-    _getRoute(origin, destination) {
+    _getRoute(originFeature, destinationFeature) {
+
+        const origin = lizMap.mainLizmap.transform(originFeature.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326');
+        const destination = lizMap.mainLizmap.transform(destinationFeature.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326');
+
         fetch(`${lizUrls.basepath}index.php/pgrouting/?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&origin=${origin[0]},${origin[1]}&destination=${destination[0]},${destination[1]}&crs=4326&option=get_short_path`)
             .then((response) => {
                 return response.json();
@@ -199,35 +249,16 @@ class pgRouting extends HTMLElement {
 
                 if (json?.routing?.features) {
 
+                    // Remove `id` property as there is collision
                     for (const feature of json.routing.features) {
                         delete feature.id;
                     }
 
-                    // Display route
-                    const width = 8;
-                    if(!this._routeLayer){
-                        this._routeLayer = lizMap.mainLizmap.layers.addLayerFromGeoJSON(json.routing, undefined, [
-                            new Style({
-                                stroke: new Stroke({
-                                    color: 'white',
-                                    width: width + 4
-                                })
-                            }),
-                            new Style({
-                                stroke: new Stroke({
-                                    color: 'purple',
-                                    width: width
-                                })
-                            })
-                        ]);
-                    } else {
-                        const newFeatures = new GeoJSON().readFeatures(json.routing, {
-                            dataProjection: 'EPSG:4326',
-                            featureProjection: lizMap.mainLizmap.projection
-                        });
-                        this._routeLayer.getSource().addFeatures(newFeatures);
-                    }
-
+                    const newFeatures = new GeoJSON().readFeatures(json.routing, {
+                        dataProjection: 'EPSG:4326',
+                        featureProjection: lizMap.mainLizmap.projection
+                    });
+                    this._routeLayer.getSource().addFeatures(newFeatures);
 
                     // Get roadmap
                     // Merge road with same label when sibling
