@@ -87,40 +87,15 @@ class pgRouting extends HTMLElement {
 
     initDraw() {
 
-        this.restartDraw();
-
-        // Show mouse pointer when hovering origin or destination points
-        lizMap.mainLizmap.map.on('pointermove', (e) => {
-            if (e.dragging) {
-                return;
-            }
-            const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
-            const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
-            const featureHover = featuresAtPixel.some(feature => this._milestoneLayer.getSource().getFeatures().includes(feature));
-
-            lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
-        });
-    }
-
-    restartDraw() {
-        if (this._routeLayer) {
-            lizMap.mainLizmap.layers.removeLayer(this._routeLayer);
-        }
-
-        if (this._milestoneLayer) {
-            lizMap.mainLizmap.layers.removeLayer(this._milestoneLayer);
-        }
-
-        this._mergedRoads = [];
-        this._POIFeatures = [];
+        this._milestoneRouteMap = new Map();
 
         // Init milestones draw
-        this._drawMilestoneSource = new VectorSource({
+        const milestoneSource = new VectorSource({
             useSpatialIndex: false
         });
 
-        this._drawMilestoneSource.on('addfeature', () => {
-            const features = this._drawMilestoneSource.getFeaturesCollection().getArray();
+        milestoneSource.on('addfeature', () => {
+            const features = milestoneSource.getFeaturesCollection().getArray();
             const featuresLength = features.length;
 
             features.forEach((feature, index) => {
@@ -142,18 +117,28 @@ class pgRouting extends HTMLElement {
         });
 
         this._drawInteraction = new Draw({
-            source: this._drawMilestoneSource,
+            source: milestoneSource,
             type: "Point",
         });
 
-        this._modifyInteraction = new Modify({ source: this._drawMilestoneSource });
+        this._modifyInteraction = new Modify({ source: milestoneSource });
         this._modifyInteraction.on('modifyend', event => {
             const modifiedFeature = event.features.item(0);
 
-            const features = this._drawMilestoneSource.getFeaturesCollection().getArray();
+            const features = milestoneSource.getFeaturesCollection().getArray();
 
             features.forEach((feature, index) => {
                 if (modifiedFeature === feature) {
+
+                    this._milestoneRouteMap.forEach((routeFeatures, milestoneFeature) => {
+                        if (milestoneFeature === modifiedFeature) {
+                            for (const routeFeature of routeFeatures) {
+                                this._routeLayer.getSource().removeFeature(routeFeature);
+                            }
+                            this._milestoneRouteMap.delete(milestoneFeature);
+                        }
+                    });
+
                     // Refresh route from modifiedFeature to previous feature
                     if (index !== 0){
                         this._getRoute(
@@ -176,7 +161,7 @@ class pgRouting extends HTMLElement {
         lizMap.mainLizmap.map.addInteraction(this._modifyInteraction);
         
         this._milestoneLayer = new VectorLayer({
-            source: this._drawMilestoneSource,
+            source: milestoneSource,
             style: (feature) => {
                 let fillColor = 'blue';
     
@@ -220,6 +205,27 @@ class pgRouting extends HTMLElement {
 
         lizMap.mainLizmap.map.addLayer(this._routeLayer);
 
+        // Show mouse pointer when hovering origin or destination points
+        lizMap.mainLizmap.map.on('pointermove', (e) => {
+            if (e.dragging) {
+                return;
+            }
+            const pixel = lizMap.mainLizmap.map.getEventPixel(e.originalEvent);
+            const featuresAtPixel = lizMap.mainLizmap.map.getFeaturesAtPixel(pixel);
+            const featureHover = featuresAtPixel.some(feature => this._milestoneLayer.getSource().getFeatures().includes(feature));
+
+            lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
+        });
+    }
+
+    restartDraw() {
+        this._milestoneRouteMap.clear();
+        this._routeLayer.getSource().clear();
+        this._milestoneLayer.getSource().clear();
+
+        this._mergedRoads = [];
+        this._POIFeatures = [];
+
         render(this._mainTemplate(), this);
     }
 
@@ -254,11 +260,14 @@ class pgRouting extends HTMLElement {
                         delete feature.id;
                     }
 
-                    const newFeatures = new GeoJSON().readFeatures(json.routing, {
+                    const routeFeatures = new GeoJSON().readFeatures(json.routing, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: lizMap.mainLizmap.projection
                     });
-                    this._routeLayer.getSource().addFeatures(newFeatures);
+                    this._routeLayer.getSource().addFeatures(routeFeatures);
+
+                    this._milestoneRouteMap.set(originFeature, routeFeatures);
+                    this._milestoneRouteMap.set(destinationFeature, routeFeatures);
 
                     // Get roadmap
                     // Merge road with same label when sibling
