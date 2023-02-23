@@ -130,12 +130,12 @@ class pgRouting extends HTMLElement {
             features.forEach((feature, index) => {
                 if (modifiedFeature === feature) {
 
-                    this._milestoneRouteMap.forEach((routeFeatures, milestoneFeature) => {
-                        if (milestoneFeature === modifiedFeature) {
+                    this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                        if (milestoneFeatures.includes(modifiedFeature)) {
                             for (const routeFeature of routeFeatures) {
                                 this._routeLayer.getSource().removeFeature(routeFeature);
                             }
-                            this._milestoneRouteMap.delete(milestoneFeature);
+                            this._milestoneRouteMap.delete(milestoneFeatures);
                         }
                     });
 
@@ -266,8 +266,7 @@ class pgRouting extends HTMLElement {
                     });
                     this._routeLayer.getSource().addFeatures(routeFeatures);
 
-                    this._milestoneRouteMap.set(originFeature, routeFeatures);
-                    this._milestoneRouteMap.set(destinationFeature, routeFeatures);
+                    this._milestoneRouteMap.set([originFeature, destinationFeature], routeFeatures);
 
                     // Get roadmap
                     // Merge road with same label when sibling
