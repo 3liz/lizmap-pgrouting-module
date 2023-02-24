@@ -131,11 +131,14 @@ class pgRouting extends HTMLElement {
         this._milestoneLayer = new VectorLayer({
             source: milestoneSource,
             style: (feature) => {
+                const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
+                const featureIndex = milestoneFeatures.indexOf(feature);
                 let fillColor = 'blue';
     
-                if (feature.get('position') === 'origin') {
+                // Start is green, end is red and intermediates are blue
+                if (featureIndex === 0) {
                     fillColor = 'green';
-                } else if (feature.get('position') === 'destination') {
+                } else if (featureIndex === milestoneFeatures.length - 1) {
                     fillColor = 'red';
                 }
                 return new Style({
@@ -254,14 +257,6 @@ class pgRouting extends HTMLElement {
                             );
                         }
                     }
-                }
-                // Handle milestone style
-                if (index === 0) {
-                    feature.set('position', 'origin', true);
-                } else if (index === featuresLength - 1) {
-                    feature.set('position', 'destination', true);
-                } else {
-                    feature.set('position', '', true);
                 }
             });
         }
