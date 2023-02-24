@@ -1,4 +1,4 @@
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -134,12 +134,15 @@ class pgRouting extends HTMLElement {
                 const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
                 const featureIndex = milestoneFeatures.indexOf(feature);
                 let fillColor = 'blue';
+                let labelText = '';
     
                 // Start is green, end is red and intermediates are blue
                 if (featureIndex === 0) {
                     fillColor = 'green';
                 } else if (featureIndex === milestoneFeatures.length - 1) {
                     fillColor = 'red';
+                } else {
+                    labelText = featureIndex.toString();
                 }
                 return new Style({
                     image: new CircleStyle({
@@ -148,11 +151,16 @@ class pgRouting extends HTMLElement {
                             color: fillColor,
                         }),
                     }),
+                    text: new Text({
+                        text: labelText,
+                        font: 'bold 18px sans-serif',
+                        fill: new Fill({
+                            color: 'white',
+                        })
+                    })
                 });
             }
         });
-
-        lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
 
         // Display route
         const width = 8;
@@ -175,6 +183,7 @@ class pgRouting extends HTMLElement {
         });
 
         lizMap.mainLizmap.map.addLayer(this._routeLayer);
+        lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
 
         // Show mouse pointer when hovering origin or destination points
         lizMap.mainLizmap.map.on('pointermove', (e) => {
@@ -243,14 +252,14 @@ class pgRouting extends HTMLElement {
                             );
                         }
                         // Refresh route from changedFeature to next feature
-                        if (index !== milestoneFeatures.length - 1) {
+                        if (index !== featuresLength - 1) {
                             this._getRoute(
                                 changedFeature,
                                 milestoneFeatures[index + 1]
                             );
                         }
                     } else if (change === 'delete') {
-                        if (index !== 0 && index !== milestoneFeatures.length - 1) {
+                        if (index !== 0 && index !== featuresLength - 1) {
                             this._getRoute(
                                 milestoneFeatures[index - 1],
                                 milestoneFeatures[index + 1]
