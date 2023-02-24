@@ -3,6 +3,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Draw , Modify } from 'ol/interaction.js';
+import { altKeyOnly } from 'ol/events/condition.js';
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -94,26 +95,8 @@ class pgRouting extends HTMLElement {
             useSpatialIndex: false
         });
 
-        milestoneSource.on('addfeature', () => {
-            const features = milestoneSource.getFeaturesCollection().getArray();
-            const featuresLength = features.length;
-
-            features.forEach((feature, index) => {
-                if (index === 0) {
-                    feature.set('position', 'origin', true);
-                } else if (index === featuresLength - 1) {
-                    feature.set('position', 'destination', true);
-                } else {
-                    feature.set('position', '', true);
-                }
-            });
-
-            if (featuresLength > 1) {
-                this._getRoute(
-                    features[featuresLength - 2],
-                    features[featuresLength - 1]
-                );
-            }
+        milestoneSource.on('addfeature', event => {
+            this._refreshRoute(event.feature, 'add');
         });
 
         this._drawInteraction = new Draw({
@@ -121,40 +104,25 @@ class pgRouting extends HTMLElement {
             type: "Point",
         });
 
-        this._modifyInteraction = new Modify({ source: milestoneSource });
-        this._modifyInteraction.on('modifyend', event => {
-            const modifiedFeature = event.features.item(0);
-
-            const features = milestoneSource.getFeaturesCollection().getArray();
-
-            features.forEach((feature, index) => {
-                if (modifiedFeature === feature) {
-
-                    this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
-                        if (milestoneFeatures.includes(modifiedFeature)) {
-                            for (const routeFeature of routeFeatures) {
-                                this._routeLayer.getSource().removeFeature(routeFeature);
-                            }
-                            this._milestoneRouteMap.delete(milestoneFeatures);
-                        }
+        this._modifyInteraction = new Modify({
+            source: milestoneSource,
+            deleteCondition: evt => {
+                if(evt.type === 'singleclick' && altKeyOnly(evt)){
+                    const features = lizMap.mainLizmap.map.getFeaturesAtPixel(evt.pixel, {
+                        layerFilter: layer => {
+                            return layer === this._milestoneLayer;
+                        },
+                        hitTolerance: 8
                     });
-
-                    // Refresh route from modifiedFeature to previous feature
-                    if (index !== 0){
-                        this._getRoute(
-                            features[index - 1],
-                            modifiedFeature
-                        );
-                    }
-                    // Refresh route from modifiedFeature to next feature
-                    if (index !== features.length - 1){
-                        this._getRoute(
-                            modifiedFeature,
-                            features[index + 1]
-                        );
-                    }
+                    this._refreshRoute(features[0], 'delete');
+                    this._milestoneLayer.getSource().removeFeature(features[0]);
                 }
-            });
+                return false;
+            }
+        });
+
+        this._modifyInteraction.on('modifyend', event => {
+            this._refreshRoute(event.features.item(0), 'modify');
         });
 
         lizMap.mainLizmap.map.addInteraction(this._drawInteraction);
@@ -236,6 +204,66 @@ class pgRouting extends HTMLElement {
 
         if (this._routeLayer) {
             this._routeLayer.setVisible(visible);
+        }
+    }
+
+    _refreshRoute(changedFeature, change) {
+        const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
+        const featuresLength = milestoneFeatures.length;
+
+        if (change === 'add') {
+            if (featuresLength > 1) {
+                this._getRoute(
+                    milestoneFeatures[featuresLength - 2],
+                    milestoneFeatures[featuresLength - 1]
+                );
+            }
+        } else {
+            milestoneFeatures.forEach((feature, index) => {
+                if (changedFeature === feature) {
+                    // Remove previous routes mapped to the milestone feature
+                    this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                        if (milestoneFeatures.includes(changedFeature)) {
+                            for (const routeFeature of routeFeatures) {
+                                this._routeLayer.getSource().removeFeature(routeFeature);
+                            }
+                            this._milestoneRouteMap.delete(milestoneFeatures);
+                        }
+                    });
+
+                    if (change === 'modify') {
+                        // Refresh route from changedFeature to previous feature
+                        if (index !== 0) {
+                            this._getRoute(
+                                milestoneFeatures[index - 1],
+                                changedFeature
+                            );
+                        }
+                        // Refresh route from changedFeature to next feature
+                        if (index !== milestoneFeatures.length - 1) {
+                            this._getRoute(
+                                changedFeature,
+                                milestoneFeatures[index + 1]
+                            );
+                        }
+                    } else if (change === 'delete') {
+                        if (index !== 0 && index !== milestoneFeatures.length - 1) {
+                            this._getRoute(
+                                milestoneFeatures[index - 1],
+                                milestoneFeatures[index + 1]
+                            );
+                        }
+                    }
+                }
+                // Handle milestone style
+                if (index === 0) {
+                    feature.set('position', 'origin', true);
+                } else if (index === featuresLength - 1) {
+                    feature.set('position', 'destination', true);
+                } else {
+                    feature.set('position', '', true);
+                }
+            });
         }
     }
 
