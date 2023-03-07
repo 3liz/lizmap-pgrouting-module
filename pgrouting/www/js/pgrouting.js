@@ -4,6 +4,8 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Draw , Modify } from 'ol/interaction.js';
 import { altKeyOnly } from 'ol/events/condition.js';
+import Feature from 'ol/Feature.js';
+import Point from 'ol/geom/Point.js';
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -87,7 +89,6 @@ class pgRouting extends HTMLElement {
     }
 
     initDraw() {
-
         this._milestoneRouteMap = new Map();
 
         // Init milestones draw
@@ -95,8 +96,13 @@ class pgRouting extends HTMLElement {
             useSpatialIndex: false
         });
 
+        // Refresh route only when user add a feature
+        // Not when we programmaticaly add a feature
+        this._userAddFeature = true;
         milestoneSource.on('addfeature', event => {
-            this._refreshRoute(event.feature, 'add');
+            if (this._userAddFeature) {
+                this._refreshRoute(event.feature, 'add');
+            }
         });
 
         this._drawInteraction = new Draw({
@@ -104,7 +110,7 @@ class pgRouting extends HTMLElement {
             type: "Point",
         });
 
-        this._modifyInteraction = new Modify({
+        this._modifyMilestone = new Modify({
             source: milestoneSource,
             deleteCondition: evt => {
                 if(evt.type === 'singleclick' && altKeyOnly(evt)){
@@ -121,13 +127,10 @@ class pgRouting extends HTMLElement {
             }
         });
 
-        this._modifyInteraction.on('modifyend', event => {
+        this._modifyMilestone.on('modifyend', event => {
             this._refreshRoute(event.features.item(0), 'modify');
         });
 
-        lizMap.mainLizmap.map.addInteraction(this._drawInteraction);
-        lizMap.mainLizmap.map.addInteraction(this._modifyInteraction);
-        
         this._milestoneLayer = new VectorLayer({
             source: milestoneSource,
             style: (feature) => {
@@ -163,9 +166,68 @@ class pgRouting extends HTMLElement {
         });
 
         // Display route
+        const routeSource = new VectorSource();
+
+        this._modifyRoute = new Modify({
+            source: routeSource
+        });
+
+        this._modifyRoute.on('modifyend', event => {
+            const modifiedFeature = event.features.item(0);
+            const coords = event.mapBrowserEvent.coordinate;
+
+            this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                for (const routeFeature of routeFeatures) {
+                    if (modifiedFeature === routeFeature) {
+                        // Remove and replace milestone features to add the new one
+                        const oldMilestoneFeatures = this._milestoneLayer.getSource().getFeatures();
+                        this._milestoneLayer.getSource().clear();
+
+                        const newFeature = new Feature({
+                            geometry: new Point(coords)
+                        });
+
+                        // Avoid 'addfeature' callback
+                        this._userAddFeature = false;
+                        const newMilestoneFeatures = Array.from(oldMilestoneFeatures);
+
+                        oldMilestoneFeatures.forEach((oldMilestoneFeature, index) => {
+                            if(oldMilestoneFeature === milestoneFeatures[0]){
+                                newMilestoneFeatures.splice(index + 1, 0, newFeature);
+                                return;
+                            }
+                        });
+
+                        this._milestoneLayer.getSource().addFeatures(newMilestoneFeatures);
+                        this._userAddFeature = true;
+
+                        // Remove previous routes mapped to the milestone feature
+                        const oldRouteFeatures = this._milestoneRouteMap.get(milestoneFeatures);
+
+                        for (const routeFeature of oldRouteFeatures) {
+                            this._routeLayer.getSource().removeFeature(routeFeature);
+                        }
+
+                        this._milestoneRouteMap.delete(milestoneFeatures);
+
+                        this._getRoute(
+                            milestoneFeatures[0],
+                            newFeature
+                        );
+
+                        this._getRoute(
+                            newFeature,
+                            milestoneFeatures[1]
+                        );
+                        return;
+                    }
+                }
+            });
+        });
+
         const width = 8;
         this._routeLayer = new VectorLayer({
-            source: new VectorSource(),
+            source: routeSource,
             style: [
                 new Style({
                     stroke: new Stroke({
@@ -181,6 +243,11 @@ class pgRouting extends HTMLElement {
                 })
             ],
         });
+
+        // Interaction's order matters. We priorize milestones modification
+        lizMap.mainLizmap.map.addInteraction(this._drawInteraction);
+        lizMap.mainLizmap.map.addInteraction(this._modifyRoute);
+        lizMap.mainLizmap.map.addInteraction(this._modifyMilestone);
 
         lizMap.mainLizmap.map.addLayer(this._routeLayer);
         lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
