@@ -343,11 +343,14 @@ class pgRouting extends HTMLElement {
                             );
                         }
                     } else if (change === 'delete') {
+                        // Deletion of intermediate milestones
                         if (index !== 0 && index !== featuresLength - 1) {
                             this._getRoute(
                                 milestoneFeatures[index - 1],
                                 milestoneFeatures[index + 1]
                             );
+                        } else { // Deletion of start or end milestone. No need to query
+                            this._refreshRoadMap();
                         }
                     }
                 }
@@ -366,7 +369,6 @@ class pgRouting extends HTMLElement {
             })
             .then((json) => {
                 // Remove route if any and create new one
-                this._mergedRoads = [];
                 this._POIFeatures = [];
 
                 if (json?.routing?.features) {
@@ -384,14 +386,29 @@ class pgRouting extends HTMLElement {
 
                     this._milestoneRouteMap.set([originFeature, destinationFeature], routeFeatures);
 
+                    this._refreshRoadMap();
+                    // Get POIs    
+                    this._POIFeatures = json?.poi?.features ?? [];
+                } else {
+                    lizMap.addMessage(this._locales['route.error'], 'error', true)
+                }
+            });
+    }
+
+    _refreshRoadMap() {
+        this._mergedRoads = [];
+
+        this._milestoneLayer.getSource().getFeaturesCollection().forEach((milestone, index, milestones) => {
+            this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                if (milestoneFeatures[0] === milestone && milestoneFeatures[1] === milestones[index + 1]) {
                     // Get roadmap
                     // Merge road with same label when sibling
                     let mergedRoads = [];
                     let previousLabel = '';
 
-                    for (const feature of json.routing.features) {
-                        const label = feature.properties.label;
-                        const distance = feature.properties.dist;
+                    for (const feature of routeFeatures) {
+                        const label = feature.get('label');
+                        const distance = feature.get('dist');
 
                         if (label !== previousLabel) {
                             mergedRoads.push({ label: label, distance: distance });
@@ -401,16 +418,12 @@ class pgRouting extends HTMLElement {
                         previousLabel = label;
                     }
 
-                    this._mergedRoads = mergedRoads;
-
-                    // Get POIs    
-                    this._POIFeatures = json?.poi?.features ?? [];
-                } else {
-                    lizMap.addMessage(this._locales['route.error'], 'error', true)
+                    this._mergedRoads = this._mergedRoads.concat(mergedRoads);
+                    return;
                 }
-
-                render(this._mainTemplate(), this);
             });
+        });
+        render(this._mainTemplate(), this);
     }
 }
 
