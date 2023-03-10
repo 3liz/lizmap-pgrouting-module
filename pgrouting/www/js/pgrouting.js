@@ -21,15 +21,10 @@ class pgRouting extends HTMLElement {
         this._mergedRoads = [];
         this._POIFeatures = [];
 
-        this._isRouting = true;
-
         this._mainTemplate = () => html`
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn toggle-routing ${this._isRouting ? 'routing' : ''}" @click=${ () => this.toggleRouting()}>
-                        <div class="icon"></div>
-                    </button>
                     <button class="btn" @click=${ () => this.restartDraw()}>
                         <svg width="18" height="18">
                             <use xlink:href="#refresh" />
@@ -178,10 +173,6 @@ class pgRouting extends HTMLElement {
         });
 
         this._modifyRoute.on('modifyend', event => {
-            if(!this._isRouting){
-                return;
-            }
-
             const modifiedFeature = event.features.item(0);
             const coords = event.mapBrowserEvent.coordinate;
 
@@ -295,15 +286,7 @@ class pgRouting extends HTMLElement {
         }
     }
 
-    toggleRouting(){
-        this._isRouting = !this._isRouting;
-        render(this._mainTemplate(), this);
-    }
-
     _refreshRoute(changedFeature, change) {
-        if(!this._isRouting){
-            return;
-        }
         const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
         const featuresLength = milestoneFeatures.length;
 
