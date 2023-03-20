@@ -438,8 +438,8 @@
   by copying the file <code>composer.json.dist</code>, and install the modules with Composer:</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cp -n lizmap/my-packages/composer.json.dist lizmap/my-packages/composer.json
-composer require --working-dir<span class="o">=</span>lizmap/my-packages <span class="s2">&quot;lizmap/lizmap-pgrouting-module&quot;</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-n<span class="w"> </span>lizmap/my-packages/composer.json.dist<span class="w"> </span>lizmap/my-packages/composer.json
+composer<span class="w"> </span>require<span class="w"> </span>--working-dir<span class="o">=</span>lizmap/my-packages<span class="w"> </span><span class="s2">&quot;lizmap/lizmap-pgrouting-module&quot;</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="manual-installation-of-files-without-composer">Manual installation of files without Composer<a class="headerlink" href="#manual-installation-of-files-without-composer" title="Permanent link">#</a></h3>
 <ul>
@@ -448,11 +448,11 @@ composer require --working-dir<span class="o">=</span>lizmap/my-packages <span c
 <li>With Lizmap 3.5 or lower: edit the config file <code>lizmap/var/config/localconfig.ini.php</code> and add into 
   the section <code>[modules]</code>:</li>
 </ul>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.access</span><span class="o">=</span><span class="s">2</span><span class="w"></span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.access</span><span class="o">=</span><span class="s">2</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="launching-the-installer-with-lizmap-36">Launching the installer with Lizmap 3.6<a class="headerlink" href="#launching-the-installer-with-lizmap-36" title="Permanent link">#</a></h3>
 <p>If you are using Lizmap 3.6 or higher, execute</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>php lizmap/install/configurator.php pgrouting
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>pgrouting
 </code></pre></div></td></tr></table></div>
 <p>It will ask you all parameters for the database access and the SRID you are using.</p>
 <ul>
@@ -460,7 +460,7 @@ composer require --working-dir<span class="o">=</span>lizmap/my-packages <span c
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>php lizmap/install/installer.php
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/installer.php
 ./lizmap/install/clean_vartmp.sh
 ./lizmap/install/set_rights.sh
 </code></pre></div></td></tr></table></div>
@@ -469,7 +469,7 @@ composer require --working-dir<span class="o">=</span>lizmap/my-packages <span c
 <li>If you are using a SRID other than 2154, edit the config file 
   <code>lizmap/var/config/localconfig.ini.php</code> and add into the section <code>[modules]</code>:</li>
 </ul>
-<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154&quot;</span><span class="w"></span>
+<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154&quot;</span>
 </code></pre></div></td></tr></table></div>
 You can replace 2154 by another SRID that you use.</p>
 <ul>
@@ -484,15 +484,15 @@ You can replace 2154 by another SRID that you use.</p>
 <span class="normal">6</span>
 <span class="normal">7</span>
 <span class="normal">8</span>
-<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[jdb:pgrouting]</span><span class="w"></span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[jdb:pgrouting]</span>
 
-<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span><span class="w"></span>
-<span class="na">host</span><span class="o">=</span><span class="s">pgsql</span><span class="w"></span>
-<span class="na">port</span><span class="o">=</span><span class="s">5432</span><span class="w"></span>
-<span class="na">database</span><span class="o">=</span><span class="s">lizmap</span><span class="w"></span>
-<span class="na">user</span><span class="o">=</span><span class="s">lizmap</span><span class="w"></span>
-<span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span><span class="w"></span>
-<span class="na">search_path</span><span class="o">=</span><span class="s">pgrouting,public</span><span class="w"></span>
+<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span>
+<span class="na">host</span><span class="o">=</span><span class="s">pgsql</span>
+<span class="na">port</span><span class="o">=</span><span class="s">5432</span>
+<span class="na">database</span><span class="o">=</span><span class="s">lizmap</span>
+<span class="na">user</span><span class="o">=</span><span class="s">lizmap</span>
+<span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span>
+<span class="na">search_path</span><span class="o">=</span><span class="s">pgrouting,public</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Only replace host, database, user and password values.</strong></p>
 <ul>
@@ -500,7 +500,7 @@ You can replace 2154 by another SRID that you use.</p>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
-<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>php lizmap/install/installer.php
+<span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/installer.php
 ./lizmap/install/clean_vartmp.sh
 ./lizmap/install/set_rights.sh
 </code></pre></div></td></tr></table></div>

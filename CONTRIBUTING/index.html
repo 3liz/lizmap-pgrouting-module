@@ -396,6 +396,21 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-build-js" class="md-nav__link">
+    How to build JS
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -416,6 +431,18 @@
 
 <h1 id="contribution">Contribution<a class="headerlink" href="#contribution" title="Permanent link">#</a></h1>
 <p>You can contribute to the SQL code or the frontend Lizmap interface.</p>
+<h2 id="how-to-build-js">How to build JS<a class="headerlink" href="#how-to-build-js" title="Permanent link">#</a></h2>
+<p>JavaScript source code is in <code>pgrouting/www/js/</code> directory and has to be build with ViteJS.</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="c1"># Build for production</span>
+npm<span class="w"> </span>run<span class="w"> </span>build
+
+<span class="c1"># Build when developping. Sources are built when modified</span>
+npm<span class="w"> </span>run<span class="w"> </span>watch
+</code></pre></div></td></tr></table></div>
 
   <hr>
 <div class="md-source-file">
