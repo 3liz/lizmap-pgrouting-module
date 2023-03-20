@@ -374,6 +374,8 @@ CREATE OR REPLACE FUNCTION pgrouting.routing_alg(
 RETURNS TABLE (
     seq integer,
     path_seq integer,
+    start_vid bigint,
+    end_vid bigint,
     node bigint,
     edge bigint,
     cost double precision,
