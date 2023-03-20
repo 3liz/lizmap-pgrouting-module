@@ -1,0 +1,17 @@
+{
+  "name": "pgrouting",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build --mode prod",
+    "watch": "vite build --watch --mode dev"
+  },
+  "devDependencies": {
+    "vite": "^4.1.0"
+  },
+  "dependencies": {
+    "lit-html": "^2.6.1",
+    "ol": "^7.2.2"
+  }
+}
