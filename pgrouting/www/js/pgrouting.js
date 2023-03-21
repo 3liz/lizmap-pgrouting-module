@@ -6,6 +6,7 @@ import { Draw , Modify } from 'ol/interaction.js';
 import { altKeyOnly } from 'ol/events/condition.js';
 import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
+import LineString from 'ol/geom/LineString.js';
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -25,11 +26,13 @@ class pgRouting extends HTMLElement {
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn" @click=${ () => this.restartDraw()}>
+                    <button class="btn" data-original-title="${this._locales['route.redraw']}" @click=${ () => this.restartDraw()}>
                         <svg width="18" height="18">
                             <use xlink:href="#refresh" />
                         </svg>
                     </button>
+                    ${lizMap.mainLizmap.featureStorage ? html`
+                    <button class="btn copy-route" data-original-title="${this._locales['route.copy']}" @click=${ () => this.copyToFeatureStorage()}></button>` : ''}
                 </div>
                 <div class="pgrouting">
                     ${this._mergedRoads.length > 0 ? html`
@@ -59,11 +62,8 @@ class pgRouting extends HTMLElement {
             .then((json) => {
                 if (json) {
                     this._locales = JSON.parse(json);
-                    render(this._mainTemplate(), this);
                 }
             });
-
-        render(this._mainTemplate(), this);
 
         lizMap.events.on({
             uicreated: () => {
@@ -74,6 +74,11 @@ class pgRouting extends HTMLElement {
                 if (evt.id === "pgrouting") {
                     lizMap.mainLizmap.newOlMap = true;
                     this.toggleDrawVisibility(true);
+                    render(this._mainTemplate(), this);
+                    // Add tooltip on buttons
+                    $('.btn', this).tooltip({
+                        placement: 'top'
+                    });
                 }
             },
             dockclosed: (evt) => {
@@ -265,6 +270,28 @@ class pgRouting extends HTMLElement {
         });
     }
 
+    copyToFeatureStorage() {
+        const coordinates = [];
+        for (const milestoneFeature of this._milestoneLayer.getSource().getFeaturesCollection().getArray()) {
+            this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                if (milestoneFeatures[0] === milestoneFeature) {
+                    for (const routeFeature of routeFeatures) {
+                        for (const coordinate of routeFeature.getGeometry().getCoordinates()) {
+                            coordinates.push(coordinate);
+                        }
+                    }
+                    return;
+                }
+            });
+        }
+
+        lizMap.mainLizmap.featureStorage.set([new Feature({
+            geometry: new LineString(coordinates),
+        })]);
+
+        lizMap.addMessage(this._locales['route.copied'], 'success', true);
+    }
+
     restartDraw() {
         this._milestoneRouteMap.clear();
         this._routeLayer.getSource().clear();
@@ -373,7 +400,7 @@ class pgRouting extends HTMLElement {
                     // Get POIs    
                     this._POIFeatures = json?.poi?.features ?? [];
                 } else {
-                    lizMap.addMessage(this._locales['route.error'], 'error', true)
+                    lizMap.addMessage(this._locales['route.error'], 'error', true);
                 }
             });
     }
