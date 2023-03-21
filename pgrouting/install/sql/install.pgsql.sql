@@ -209,7 +209,7 @@ DECLARE
                 ST_length(ST_lineSubstring(e.geom, 0, locate_a))
                 ELSE -1
             END as reverse_cost,
-            ST_lineSubstring(e.geom, 0, locate_a) as geom,
+            ST_Reverse(ST_lineSubstring(e.geom, 0, locate_a)) as geom,
             edge_id_a as ref_edge_id,
             e.label AS label
         FROM edge_a AS e
@@ -258,7 +258,7 @@ DECLARE
                 ST_length(ST_lineSubstring(e.geom, locate_b, 1))
                 ELSE -1
             END as reverse_cost,
-            ST_lineSubstring(e.geom, locate_b, 1) as geom,
+            ST_Reverse(ST_lineSubstring(e.geom, locate_b, 1)) as geom,
             edge_id_b as ref_edge_id,
             e.label AS label
         FROM edge_b AS e
@@ -269,7 +269,7 @@ DECLARE
             -1 as id, -2 as source, -1 as target,
             st_length(st_makeline(geom_b,ST_endpoint(ST_lineSubstring(e.geom, 0, locate_b)))) as cost,
             -1 as reverse_cost,
-            st_makeline(geom_b,ST_endpoint(ST_lineSubstring(e.geom, 0, locate_b))) as geom,
+            st_makeline(ST_endpoint(ST_lineSubstring(e.geom, 0, locate_b)), geom_b) as geom,
             edge_id_b as ref_edge_id,
             on_the_fly_edge_label AS label
         FROM edge_b AS e
@@ -434,7 +434,12 @@ BEGIN
         -- Edges from the table
         SELECT
             r.seq, r.edge, r.agg_cost,
-            e.id, e.source, e.target, e.cost, e.reverse_cost, e.geom,
+            e.id, e.source, e.target, e.cost, e.reverse_cost,
+            -- adjusting directionality
+            CASE
+                WHEN node = e.source THEN e.geom
+                ELSE ST_Reverse(e.geom)
+            END AS geom,
             e.label, e.length
         FROM pgrouting.edges AS e
         JOIN routing AS r
