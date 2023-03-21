@@ -374,8 +374,6 @@ CREATE OR REPLACE FUNCTION pgrouting.routing_alg(
 RETURNS TABLE (
     seq integer,
     path_seq integer,
-    start_vid bigint,
-    end_vid bigint,
     node bigint,
     edge bigint,
     cost double precision,
@@ -386,15 +384,17 @@ AS $BODY$
 DECLARE
 BEGIN
     IF engine = 'dijkstra' THEN
-        RETURN QUERY SELECT *
+        RETURN QUERY SELECT
+            d.seq, d.path_seq, d.node, d.edge, d.cost, d.agg_cost
         FROM pgr_dijkstra(
             (SELECT pgrouting.route_request(point_a, point_b, crs, engine)), -4, -1, FALSE
-        );
+        ) AS d;
     ELSIF engine = 'astar' THEN
-        RETURN QUERY SELECT *
+        RETURN QUERY SELECT
+            a.seq, a.path_seq, a.node, a.edge, a.cost, a.agg_cost
         FROM pgr_astar(
             (SELECT pgrouting.route_request(point_a, point_b, crs, engine)), -4, -1, FALSE
-        );
+        ) AS a;
     END IF;
 END;
 $BODY$;
