@@ -21,7 +21,7 @@ class pgroutingModuleUpgrader_0_3_1__1_0_0 extends jInstallerModule
             $db = $this->dbConnection();
 
             // Get upgrade SQL template file
-            $sql_file = $this->path.'install/sql/upgrade/upgrade_0.3.1_1.0.0.sql';
+            $sql_file = $this->path . 'install/sql/upgrade/upgrade_0.3.1_1.0.0.sql';
             $sql = jFile::read($sql_file);
 
             // Replace 2154 by given SRID if defined
