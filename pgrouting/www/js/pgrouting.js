@@ -32,7 +32,7 @@ class pgRouting extends HTMLElement {
                         </svg>
                     </button>
                     ${lizMap.mainLizmap.featureStorage ? html`
-                    <button class="btn copy-route" data-original-title="${this._locales['route.copy']}" @click=${ () => this.copyToFeatureStorage()}></button>` : ''}
+                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${ () => this.copyToFeatureStorage()}></button>` : ''}
                 </div>
                 <div class="pgrouting">
                     ${this._mergedRoads.length > 0 ? html`
