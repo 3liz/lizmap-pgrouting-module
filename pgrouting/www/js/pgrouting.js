@@ -230,23 +230,53 @@ class pgRouting extends HTMLElement {
             });
         });
 
-        const width = 8;
         this._routeLayer = new VectorLayer({
             source: routeSource,
-            style: [
-                new Style({
-                    stroke: new Stroke({
-                        color: 'white',
-                        width: width + 4
-                    })
-                }),
-                new Style({
-                    stroke: new Stroke({
-                        color: 'purple',
-                        width: width
-                    })
-                })
-            ],
+            style: (feature) => {
+                const geometry = feature.getGeometry();
+                const styles = [
+                    // linestring
+                    new Style({
+                        stroke: new Stroke({
+                            color: 'black',
+                            width: 11,
+                        }),
+                    }),
+                    new Style({
+                        stroke: new Stroke({
+                            color: 'purple',
+                            width: 9,
+                        }),
+                    }),
+                ];
+        
+                geometry.forEachSegment((start, end) => {
+                    const dx = end[0] - start[0];
+                    const dy = end[1] - start[1];
+                    const rotation = Math.atan2(dy, dx);
+                    // arrows
+                    styles.push(
+                        new Style({
+                            geometry: new Point(end),
+                            text: new Text({
+                                text: '>',
+                                font: 'normal 16px sans-serif',
+                                rotateWithView: true,
+                                rotation: -rotation,
+                                stroke: new Stroke({
+                                    color: 'white',
+                                    width: 2,
+                                }),
+                                fill: new Fill({
+                                    color: 'white',
+                                })
+                            })
+                        })
+                    );
+                });
+        
+                return styles;
+            },
         });
 
         // Interaction's order matters. We priorize milestones modification
