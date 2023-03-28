@@ -97,6 +97,7 @@ install-plugins: dirs
 
 import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9032 -f sql/test_data.sql
+	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9032 -f sql/test_edition_table.sql
 
 import-lizmap-acl-3-5:
 	@echo "Set repositories and users rights if needed"

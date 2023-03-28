@@ -6,6 +6,7 @@ import { Draw , Modify } from 'ol/interaction.js';
 import { altKeyOnly } from 'ol/events/condition.js';
 import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
+import LineString from 'ol/geom/LineString.js';
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -25,11 +26,13 @@ class pgRouting extends HTMLElement {
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn" @click=${ () => this.restartDraw()}>
+                    <button class="btn" data-original-title="${this._locales['route.redraw']}" @click=${ () => this.restartDraw()}>
                         <svg width="18" height="18">
                             <use xlink:href="#refresh" />
                         </svg>
                     </button>
+                    ${lizMap.mainLizmap.featureStorage ? html`
+                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${ () => this.copyToFeatureStorage()}></button>` : ''}
                 </div>
                 <div class="pgrouting">
                     ${this._mergedRoads.length > 0 ? html`
@@ -59,11 +62,8 @@ class pgRouting extends HTMLElement {
             .then((json) => {
                 if (json) {
                     this._locales = JSON.parse(json);
-                    render(this._mainTemplate(), this);
                 }
             });
-
-        render(this._mainTemplate(), this);
 
         lizMap.events.on({
             uicreated: () => {
@@ -74,6 +74,11 @@ class pgRouting extends HTMLElement {
                 if (evt.id === "pgrouting") {
                     lizMap.mainLizmap.newOlMap = true;
                     this.toggleDrawVisibility(true);
+                    render(this._mainTemplate(), this);
+                    // Add tooltip on buttons
+                    $('.btn', this).tooltip({
+                        placement: 'top'
+                    });
                 }
             },
             dockclosed: (evt) => {
@@ -225,23 +230,53 @@ class pgRouting extends HTMLElement {
             });
         });
 
-        const width = 8;
         this._routeLayer = new VectorLayer({
             source: routeSource,
-            style: [
-                new Style({
-                    stroke: new Stroke({
-                        color: 'white',
-                        width: width + 4
-                    })
-                }),
-                new Style({
-                    stroke: new Stroke({
-                        color: 'purple',
-                        width: width
-                    })
-                })
-            ],
+            style: (feature) => {
+                const geometry = feature.getGeometry();
+                const styles = [
+                    // linestring
+                    new Style({
+                        stroke: new Stroke({
+                            color: 'black',
+                            width: 11,
+                        }),
+                    }),
+                    new Style({
+                        stroke: new Stroke({
+                            color: 'purple',
+                            width: 9,
+                        }),
+                    }),
+                ];
+        
+                geometry.forEachSegment((start, end) => {
+                    const dx = end[0] - start[0];
+                    const dy = end[1] - start[1];
+                    const rotation = Math.atan2(dy, dx);
+                    // arrows
+                    styles.push(
+                        new Style({
+                            geometry: new Point(end),
+                            text: new Text({
+                                text: '>',
+                                font: 'normal 16px sans-serif',
+                                rotateWithView: true,
+                                rotation: -rotation,
+                                stroke: new Stroke({
+                                    color: 'white',
+                                    width: 2,
+                                }),
+                                fill: new Fill({
+                                    color: 'white',
+                                })
+                            })
+                        })
+                    );
+                });
+        
+                return styles;
+            },
         });
 
         // Interaction's order matters. We priorize milestones modification
@@ -263,6 +298,35 @@ class pgRouting extends HTMLElement {
 
             lizMap.mainLizmap.map.getViewport().style.cursor = featureHover ? 'pointer' : '';
         });
+    }
+
+    copyToFeatureStorage() {
+        const coordinates = [];
+        let lastPushedCoord;
+        for (const milestoneFeature of this._milestoneLayer.getSource().getFeaturesCollection().getArray()) {
+            this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
+                if (milestoneFeatures[0] === milestoneFeature) {
+                    for (const routeFeature of routeFeatures) {
+                        const beginCoord = routeFeature.getGeometry().getCoordinates()[0];
+                        // Don't push twice consecutive identical coordinates
+                        if(lastPushedCoord === undefined || (beginCoord[0] !== lastPushedCoord[0] && beginCoord[1] !== lastPushedCoord[1])){
+                            lastPushedCoord = routeFeature.getGeometry().getCoordinates()[0];
+                            coordinates.push(lastPushedCoord);
+                        }
+                    }
+                    // Add end coordinate of the last route
+                    lastPushedCoord = routeFeatures[routeFeatures.length - 1].getGeometry().getCoordinates()[1];
+                    coordinates.push(lastPushedCoord);
+                    return;
+                }
+            });
+        }
+
+        lizMap.mainLizmap.featureStorage.set([new Feature({
+            geometry: new LineString(coordinates),
+        })], 'pgrouting');
+
+        lizMap.addMessage(this._locales['route.copied'], 'success', true, 1500);
     }
 
     restartDraw() {
@@ -373,7 +437,7 @@ class pgRouting extends HTMLElement {
                     // Get POIs    
                     this._POIFeatures = json?.poi?.features ?? [];
                 } else {
-                    lizMap.addMessage(this._locales['route.error'], 'error', true)
+                    lizMap.addMessage(this._locales['route.error'], 'error', true);
                 }
             });
     }
