@@ -35,8 +35,11 @@ class checkConfig
         $resultBool = true;
         $message = '';
         $result = $this->search->getData('check_ext', array(), $this->profile);
-        $data = $result['data'];
-        if (count($data) != 2) {
+        if ($result['status'] == 'error') {
+            $resultBool = false;
+            $message = 'PgRouting module error: '.$result['message'];
+        }
+        else if (count($result['data']) != 2) {
             $resultBool = false;
             $message = 'PgRouting module error: Extension missing in database (pgrouting or postgis)';
         }
@@ -52,8 +55,11 @@ class checkConfig
         $resultBool = true;
         $message = '';
         $result = $this->search->getData('check_schema', array(), $this->profile);
-        $data = $result['data'];
-        if (count($data) != 1) {
+        if ($result['status'] == 'error') {
+            $resultBool = false;
+            $message = 'PgRouting module error: '.$result['message'];
+        }
+        else if(count($result['data']) != 1) {
             $resultBool = false;
             $message = 'PgRouting module error: Schema pgrouting missing in database';
         }

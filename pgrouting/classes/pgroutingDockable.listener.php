@@ -30,7 +30,7 @@
                     jLog::log($value, 'error');
                 }
             } else {
-                // Project name must contains 'pgrouting' to enable the module
+                // Project name must contain 'pgrouting' to enable the module
                 if (strpos($event->project, 'pgrouting') !== false) {
                     $bp = jApp::urlBasePath();
                     // dock
