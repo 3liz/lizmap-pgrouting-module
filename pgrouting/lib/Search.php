@@ -1,19 +1,32 @@
 <?php
 /**
  * @author    3Liz
- * @copyright 2021 3Liz
+ * @copyright 2021-2023 3Liz
  *
  * @see       https://3liz.com
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class search
+namespace PgRouting;
+
+
+class Search
 {
     protected $sql = array(
         'get_short_path' => 'SELECT * FROM pgrouting.get_geojson_roadmap($1, $2, $3, $4);',
         'check_ext' => 'SELECT extname FROM pg_extension WHERE extname = \'postgis\' OR extname = \'pgrouting\';',
         'check_schema' => 'SELECT schema_name FROM information_schema.schemata WHERE schema_name = \'pgrouting\'',
     );
+
+    /**
+     * @var string db connection profile
+     */
+    protected $profile;
+
+    public function __construct($profile)
+    {
+        $this->profile = $profile;
+    }
 
     protected function getSql($option)
     {
@@ -24,14 +37,9 @@ class search
         return null;
     }
 
-    public function query($sql, $filterParams, $profile)
+    public function query($sql, $filterParams)
     {
-        if ($profile) {
-            $cnx = jDb::getConnection($profile);
-        } else {
-            // Default connection
-            $cnx = jDb::getConnection();
-        }
+        $cnx = \jDb::getConnection($this->profile);
 
         $resultset = $cnx->prepare($sql);
         if (empty($filterParams)) {
@@ -46,13 +54,12 @@ class search
     /**
      * Get data from the SQL query.
      *
-     * @param mixed $profile
      * @param mixed $filterParams
      * @param mixed $option
      *
      * @return array Result of the query as an array ready for conversion into JSON
      */
-    public function getData($option = 'get_short_path', $filterParams = array(), $profile = null)
+    public function getData($option = 'get_short_path', $filterParams = array())
     {
         // Run query
         $sql = $this->getSql($option);
@@ -64,8 +71,8 @@ class search
         }
 
         try {
-            $result = $this->query($sql, $filterParams, $profile);
-        } catch (Exception $e) {
+            $result = $this->query($sql, $filterParams);
+        } catch (\Exception $e) {
             return array(
                 'status' => 'error',
                 'message' => $e->getMessage(),

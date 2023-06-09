@@ -7,7 +7,9 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-class checkConfig
+namespace PgRouting;
+
+class CheckConfig
 {
     protected $array_ext = array('pgrouting', 'postgis');
 
@@ -18,7 +20,7 @@ class checkConfig
     protected $repository;
 
     /**
-     * @var search
+     * @var Search
      */
     protected $search;
 
@@ -26,7 +28,7 @@ class checkConfig
     {
         $this->project = $project;
         $this->repository = $repository;
-        $this->search = jClasses::getService('pgrouting~search');
+        $this->search = new Search($profile);
         $this->profile = $profile;
     }
 
@@ -34,12 +36,11 @@ class checkConfig
     {
         $resultBool = true;
         $message = '';
-        $result = $this->search->getData('check_ext', array(), $this->profile);
+        $result = $this->search->getData('check_ext');
         if ($result['status'] == 'error') {
             $resultBool = false;
-            $message = 'PgRouting module error: '.$result['message'];
-        }
-        else if (count($result['data']) != 2) {
+            $message = 'PgRouting module error: ' . $result['message'];
+        } else if (count($result['data']) != 2) {
             $resultBool = false;
             $message = 'PgRouting module error: Extension missing in database (pgrouting or postgis)';
         }
@@ -54,12 +55,11 @@ class checkConfig
     {
         $resultBool = true;
         $message = '';
-        $result = $this->search->getData('check_schema', array(), $this->profile);
+        $result = $this->search->getData('check_schema');
         if ($result['status'] == 'error') {
             $resultBool = false;
-            $message = 'PgRouting module error: '.$result['message'];
-        }
-        else if(count($result['data']) != 1) {
+            $message = 'PgRouting module error: ' . $result['message'];
+        } else if (count($result['data']) != 1) {
             $resultBool = false;
             $message = 'PgRouting module error: Schema pgrouting missing in database';
         }
@@ -100,7 +100,7 @@ class checkConfig
     {
         $resultBool = true;
         $message = '';
-        $p = lizmap::getProject($this->repository . '~' . $this->project);
+        $p = \lizmap::getProject($this->repository . '~' . $this->project);
         $edges = $p->findLayerByName('edges');
         $nodes = $p->findLayerByName('nodes');
         if (!$edges || !$nodes) {

@@ -1,6 +1,8 @@
 <?php
 
-    /**
+use PgRouting\CheckConfig;
+
+/**
      * @author    3Liz
      * @copyright 2021 3Liz
      *
@@ -16,11 +18,8 @@
             $repository = $event->repository;
             $project = $event->project;
 
-            // include class to check config
-            jClasses::inc('pgrouting~checkConfig');
-
             // implement new object
-            $checkConfig = new checkConfig($repository, $project, 'pgrouting');
+            $checkConfig = new CheckConfig($repository, $project, 'pgrouting');
 
             // check extension in database
             $checkResult = $checkConfig->allCheck();

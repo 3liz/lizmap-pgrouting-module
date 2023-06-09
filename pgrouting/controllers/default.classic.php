@@ -204,9 +204,9 @@ class defaultCtrl extends jController
         $filterParams[] = $crs;
         $filterParams[] = 'dijkstra';
 
-        $search = jClasses::getService('pgrouting~search');
+        $search = new \PgRouting\Search($profile);
 
-        $result = $search->getData($option, $filterParams, $profile);
+        $result = $search->getData($option, $filterParams);
 
         if ($result['status'] == 'error') {
             $resp->data = $result;
