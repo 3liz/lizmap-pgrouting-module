@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 1.0.0 - 2023-06-09
+
+### Added
+
+* Support of intermediate points when drawing
+* Copy feature
+* Installable into the futur Lizmap 3.7
+
+### Fixed
+
+- Fix Reverse the edges geometry to respect the routing direction
+- Improve robustness
+
 ## 0.3.1 - 2022-12-15
 
 ### Fixed
