@@ -7,6 +7,7 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
+
 namespace PgRouting;
 
 class CheckConfig
@@ -40,7 +41,7 @@ class CheckConfig
         if ($result['status'] == 'error') {
             $resultBool = false;
             $message = 'PgRouting module error: ' . $result['message'];
-        } else if (count($result['data']) != 2) {
+        } elseif (count($result['data']) != 2) {
             $resultBool = false;
             $message = 'PgRouting module error: Extension missing in database (pgrouting or postgis)';
         }
@@ -59,7 +60,7 @@ class CheckConfig
         if ($result['status'] == 'error') {
             $resultBool = false;
             $message = 'PgRouting module error: ' . $result['message'];
-        } else if (count($result['data']) != 1) {
+        } elseif (count($result['data']) != 1) {
             $resultBool = false;
             $message = 'PgRouting module error: Schema pgrouting missing in database';
         }

@@ -232,8 +232,7 @@ class defaultCtrl extends jController
                 'routing' => json_decode($routing),
                 'poi' => json_decode($poi),
             );
-        }
-        else {
+        } else {
             $result = array(
                 'status' => 'success',
                 'routing' => null,

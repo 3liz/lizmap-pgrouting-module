@@ -14,8 +14,6 @@ class translateCtrl extends jController
     /**
      * Get json containing all translation for the dictionary.
      *
-     * @param string $lang Language. Ex: fr_FR (optional)
-     *
      * @return json
      */
     public function index()
