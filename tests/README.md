@@ -11,23 +11,27 @@ make clean
 # Run the different services
 make run
 
-# Import data
-make import-data
 ```
 
 - call these commands if you are using Lizmap <=3.5
 
-```
+```bash
 make import-lizmap-acl-3-5
 ```
 
 - else call these commands if you are using Lizmap >=3.6
 
-```
+```bash
 # install the module (for Lizmap 3.6+)
 make install-module
 
 make import-lizmap-acl
+```
+
+- import data
+
+```bash
+make import-data
 ```
 
 - Open your browser at http://localhost:9090
