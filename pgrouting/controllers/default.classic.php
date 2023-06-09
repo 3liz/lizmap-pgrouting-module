@@ -162,7 +162,7 @@ class defaultCtrl extends jController
 
         $l = $p->findLayerByName('edges');
         if (!$l) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $l->name . ' does not exist');
+            $resp->data = array('status' => 'error', 'message' => 'Layer edges does not exist');
 
             return $resp;
         }
@@ -171,14 +171,14 @@ class defaultCtrl extends jController
 
         // Check if layer is a PostgreSQL layer
         if (!($layer->getProvider() == 'postgres')) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $layername . ' is not a PostgreSQL layer');
+            $resp->data = array('status' => 'error', 'message' => 'Layer edges is not a PostgreSQL layer');
 
             return $resp;
         }
 
         $l = $p->findLayerByName('nodes');
         if (!$l) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $l->name . ' does not exist');
+            $resp->data = array('status' => 'error', 'message' => 'Layer nodes does not exist');
 
             return $resp;
         }
@@ -187,7 +187,7 @@ class defaultCtrl extends jController
 
         // Check if layer is a PostgreSQL layer
         if (!($layer->getProvider() == 'postgres')) {
-            $resp->data = array('status' => 'error', 'message' => 'Layer ' . $layername . ' is not a PostgreSQL layer');
+            $resp->data = array('status' => 'error', 'message' => 'Layer nodes is not a PostgreSQL layer');
 
             return $resp;
         }
@@ -222,17 +222,25 @@ class defaultCtrl extends jController
                 'message' => 'Result request error format',
             );
         }
-        $routing_result = $result['data'][0];
-        $routing = $routing_result->routing;
-        $poi = $routing_result->poi;
-        $routing = json_decode($routing);
-        $poi = json_decode($poi);
 
-        $result = array(
-            'status' => 'success',
-            'routing' => $routing,
-            'poi' => $poi,
-        );
+        if (count($result['data'])) {
+            $routing_result = $result['data'][0];
+            $routing = $routing_result->routing;
+            $poi = $routing_result->poi;
+            $result = array(
+                'status' => 'success',
+                'routing' => json_decode($routing),
+                'poi' => json_decode($poi),
+            );
+        }
+        else {
+            $result = array(
+                'status' => 'success',
+                'routing' => null,
+                'poi' => null,
+            );
+        }
+
         $resp->data = $result;
 
         return $resp;

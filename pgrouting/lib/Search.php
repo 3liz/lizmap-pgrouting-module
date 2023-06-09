@@ -86,21 +86,9 @@ class Search
             );
         }
 
-        // Work for geojson retrieval request
-        // It will probably be necessary to modify if other requests
-        $data = $result->fetchAll();
-        if ($data[0] == null) {
-            jLog::log('Request routing result is Null', 'warning');
-
-            return array(
-                'status' => 'error',
-                'message' => 'Request result is Null',
-            );
-        }
-
         return array(
             'status' => 'success',
-            'data' => $data,
+            'data' => $result->fetchAll(),
         );
     }
 }
