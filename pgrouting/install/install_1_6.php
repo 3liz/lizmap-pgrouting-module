@@ -30,7 +30,7 @@ class pgroutingModuleInstaller extends jInstallerModule
     {
         // Copy CSS and JS assets
         $this->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
-        $this->copyDirectoryContent('../www/js', jApp::wwwPath('assets/pgrouting/js'));
+        $this->copyDirectoryContent('../www/js/dist', jApp::wwwPath('assets/pgrouting/js'));
 
         // SQL
         if ($this->firstDbExec()) {

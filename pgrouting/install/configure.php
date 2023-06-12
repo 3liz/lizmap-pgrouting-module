@@ -28,7 +28,7 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
         );
 
         $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
-        $helpers->copyDirectoryContent('../www/js', jApp::wwwPath('assets/pgrouting/js'));
+        $helpers->copyDirectoryContent('../www/js/dist', jApp::wwwPath('assets/pgrouting/js'));
     }
 
     public function localConfigure(LocalConfigurationHelpers $helpers)
