@@ -10,7 +10,8 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
         entry: resolve(__dirname, 'pgrouting.js'),
         // the proper extensions will be added
         fileName: 'pgrouting',
-        formats: ['es'],
+        formats: ['umd'],
+        name : 'pgrouting'
       },
       outDir: mode === 'prod' ? 'dist' : '../../../tests/lizmap/www/assets/pgrouting/js/',
       sourcemap: true,
