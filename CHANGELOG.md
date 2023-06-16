@@ -6,13 +6,13 @@
 
 ### Added
 
-* Support of intermediate points when drawing
-* Copy feature
-* Installable into the futur Lizmap 3.7
+* Support for intermediate points when drawing
+* Copy the geometry which has been computed, Lizmap Web Client 3.7 only. Useful for pasting geometry when editing
+* Installable into the future Lizmap 3.7
 
 ### Fixed
 
-- Fix Reverse the edges geometry to respect the routing direction
+- Fix the button "Reverse edges" to respect the routing direction
 - Improve robustness
 
 ## 0.3.1 - 2022-12-15
@@ -33,7 +33,7 @@
 
 ## 0.2.1 - 2021-10-19
 
-* Drop previous roadmap when no routes were found in the database and display a message
+* Drop the previous roadmap when no routes were found in the database and display a message
 
 ## 0.2.0 - 2021-10-15
 
