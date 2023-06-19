@@ -1,5 +1,6 @@
 import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import GeoJSON from 'ol/format/GeoJSON';
+import WKT from 'ol/format/WKT.js';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Draw , Modify } from 'ol/interaction.js';
@@ -21,6 +22,9 @@ class pgRouting extends HTMLElement {
 
         this._mergedRoads = [];
         this._POIFeatures = [];
+
+        // Linestring geometry generated from the whole route
+        this._routeGeometry = null;
 
         this._mainTemplate = () => html`
             <div class="menu-content">
@@ -143,7 +147,7 @@ class pgRouting extends HTMLElement {
                 const featureIndex = milestoneFeatures.indexOf(feature);
                 let fillColor = 'blue';
                 let labelText = '';
-    
+
                 // Start is green, end is red and intermediates are blue
                 if (featureIndex === 0) {
                     fillColor = 'green';
@@ -249,7 +253,7 @@ class pgRouting extends HTMLElement {
                         }),
                     }),
                 ];
-        
+
                 geometry.forEachSegment((start, end) => {
                     const dx = end[0] - start[0];
                     const dy = end[1] - start[1];
@@ -274,7 +278,7 @@ class pgRouting extends HTMLElement {
                         })
                     );
                 });
-        
+
                 return styles;
             },
         });
@@ -300,7 +304,9 @@ class pgRouting extends HTMLElement {
         });
     }
 
-    copyToFeatureStorage() {
+    generateFeatureGeometry() {
+        // Generate the ordered coordinates of the whole routing complex linestring
+        this._routeGeometry = null;
         const coordinates = [];
         let lastPushedCoord;
         for (const milestoneFeature of this._milestoneLayer.getSource().getFeaturesCollection().getArray()) {
@@ -322,11 +328,25 @@ class pgRouting extends HTMLElement {
             });
         }
 
-        lizMap.mainLizmap.featureStorage.set([new Feature({
-            geometry: new LineString(coordinates),
-        })], 'pgrouting');
+        // Save these coordinates as an OpenLayer Linestring geometry
+        let olGeometry = new LineString(coordinates);
 
-        lizMap.addMessage(this._locales['route.copied'], 'success', true, 1500);
+        // Set the variable containing the generated geometry
+        this._routeGeometry = olGeometry;
+    }
+
+    copyToFeatureStorage() {
+
+        // Generate the OpenLayers geometry from the route parts
+        this.generateFeatureGeometry();
+
+        // Save this geometry in Lizmap Storage
+        if (this._routeGeometry !== null) {
+            lizMap.mainLizmap.featureStorage.set([new Feature({
+                geometry: this._routeGeometry,
+            })], 'pgrouting');
+            lizMap.addMessage(this._locales['route.copied'], 'success', true, 1500);
+        }
     }
 
     restartDraw() {
@@ -336,6 +356,7 @@ class pgRouting extends HTMLElement {
 
         this._mergedRoads = [];
         this._POIFeatures = [];
+        this._routeGeometry = null;
 
         render(this._mainTemplate(), this);
     }
@@ -398,6 +419,9 @@ class pgRouting extends HTMLElement {
                             );
                         } else { // Deletion of start or end milestone. No need to query
                             this._refreshRoadMap();
+
+                            // Send the Lizmap event with the current route geometry
+                            this._sendRouteGeometryAsWKT();
                         }
                     }
                 }
@@ -433,8 +457,13 @@ class pgRouting extends HTMLElement {
 
                     this._milestoneRouteMap.set([originFeature, destinationFeature], routeFeatures);
 
+                    // Refresh the text roadmap
                     this._refreshRoadMap();
-                    // Get POIs    
+
+                    // Send the Lizmap event with the current route geometry
+                    this._sendRouteGeometryAsWKT();
+
+                    // Get POIs
                     this._POIFeatures = json?.poi?.features ?? [];
                 } else {
                     lizMap.addMessage(this._locales['route.error'], 'error', true);
@@ -471,6 +500,32 @@ class pgRouting extends HTMLElement {
             });
         });
         render(this._mainTemplate(), this);
+    }
+
+    /**
+     * Convert the current route linestring geometry into WKT
+     * and trigger the Lizmap event lizmapPgroutingWktGeometryExported
+     * with the generated WKT
+     */
+    _sendRouteGeometryAsWKT() {
+
+        // Generate the OpenLayers geometry from the route parts
+        this.generateFeatureGeometry();
+
+        // Trigger a Lizmap event with the stored geometry exported as WKT
+        // Useful to get used by LWC <= 3.7 by other JS codes
+        if (this._routeGeometry !== null) {
+            // convert the OpenLayers geometry to WKT
+            var format = new WKT();
+            var wktGeometry = format.writeGeometry(this._routeGeometry);
+
+            // Send the Lizmap event
+            lizMap.events.triggerEvent(
+                'lizmapPgroutingWktGeometryExported',
+                {'wkt': wktGeometry}
+            );
+        }
+
     }
 }
 
