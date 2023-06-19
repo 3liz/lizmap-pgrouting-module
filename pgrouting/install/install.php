@@ -42,5 +42,24 @@ class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
         }
 
         $db->exec($sql);
+
+        // Grant right to the given PostgreSQL group of users
+        $sql_file = $this->getPath() . 'install/sql/grant.pgsql.sql';
+        $template = jFile::read($sql_file);
+        $tpl = new jTpl();
+        $group = $this->getParameter('postgresql_user_group');
+        jLog::log('APPLICATION DES DROITS ' . json_encode($group));
+        $tpl->assign('userGroup', $group);
+        if (!empty($group)) {
+            $sql = $tpl->fetchFromString($template, $group);
+            // Try to grant access
+            try {
+                $db->exec($sql);
+            } catch (Exception $e) {
+                jLog::log('An error occured while grant access on the pgrouting schema to the given group: ' . $group, 'error');
+
+                throw new jException('pgrouting~db.query.grant.bad');
+            }
+        }
     }
 }

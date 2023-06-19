@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+* Trigger a Lizmap event `lizmapPgroutingWktGeometryExported` containing the generated WKT
+  to allow JavaScript scripts for LWC <= 3.6 to use the generated route geometry.
+
+### Changed
+
+* Installation - Grant the write access on the schema `pgrouting` and its content to the
+  given group (use installation parameter `user_group`)
+
 ## 1.0.0 - 2023-06-09
 
 ### Added
