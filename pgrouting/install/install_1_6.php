@@ -48,6 +48,24 @@ class pgroutingModuleInstaller extends jInstallerModule
             }
 
             $db->exec($sql);
+
+            // Grant right to the given PostgreSQL group of users
+            $sql_file = $this->path . 'install/sql/grant.pgsql.sql';
+            $template = jFile::read($sql_file);
+            $tpl = new jTpl();
+            $group = $this->getParameter('admin_group');
+            $tpl->assign('userGroup', $group);
+            if (!empty($group)) {
+                $sql = $tpl->fetchFromString($template, $group);
+                // Try to grant access
+                try {
+                    $db->exec($sql);
+                } catch (Exception $e) {
+                    jLog::log('An error occured while grant access on the pgrouting schema to the given group: ' . $group, 'error');
+
+                    throw new jException('pgrouting~db.query.grant.bad');
+                }
+            }
         }
     }
 }

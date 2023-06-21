@@ -17,14 +17,22 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
     {
         return array(
             'srid' => 2154,
+            'postgresql_user_group' => null,
         );
     }
 
     public function configure(ConfigurationHelpers $helpers)
     {
+        // srid = projection of the target pgrouting tables
         $this->parameters['srid'] = $helpers->cli()->askInformation(
             'SRID your are using?',
             $this->parameters['srid']
+        );
+
+        // user_group : to which group the write access should be granted on the schema pgrouting
+        $this->parameters['postgresql_user_group'] = $helpers->cli()->askInformation(
+            'PostgreSQL group of user to grant access on the schema pgrouting ?',
+            $this->parameters['postgresql_user_group']
         );
 
         $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
