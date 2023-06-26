@@ -48,8 +48,22 @@ DELETE FROM bdtopo.troncon_de_route AS a USING bdtopo.troncon_de_route AS b WHER
 
 ### Import the road data into PgRouting graph (nodes and edges)
 
-Depending on your source layer, you might not have the same field names. Here, `geom` is
-the geometry field, `sens` is the direction field, `nom_1_g` is the road name field.
+Depending on your source layer, you might not have the same field names. Here,
+
+* `fid` is the unique ID,
+* `geom` is the geometry field,
+* `sens_de_circulation` is the field with the road direction,
+* `nom_voie_ban_gauche` is the field containing the road name
+
+We also decide to keep other interesting fields describing the edges :
+
+* `nature`: the category of the road,
+* `importance`: the road level of importance
+* `etat_de_l_objet`: the road state,
+* `largeur_de_chaussee`: the road width
+* `prive`: if the road is private or public
+* `vitesse_moyenne_vl`: the average speed for light vehicles
+* `acces_vehicule_leger`: if the road can be accessed by light vehicles
 
 ```sql
 BEGIN;
@@ -88,10 +102,10 @@ DROP TABLE IF EXISTS temp_nodes;
 CREATE TABLE temp_nodes AS
 WITH
 union_start_end AS (
-    SELECT raw_data->>'id' AS start_of, NULL AS end_of, start_point AS geom
+    SELECT raw_data->>'fid' AS start_of, NULL AS end_of, start_point AS geom
     FROM temp_edges
     UNION ALL
-    SELECT NULL AS start_of, raw_data->>'id' AS end_of, end_point AS geom
+    SELECT NULL AS start_of, raw_data->>'fid' AS end_of, end_point AS geom
     FROM temp_edges
 ),
 distinct_nodes AS (
@@ -120,28 +134,28 @@ TRUNCATE pgrouting.edges RESTART IDENTITY CASCADE;
 INSERT INTO pgrouting.edges (label, length, source, target, cost, reverse_cost, source_data, geom)
 SELECT DISTINCT
     -- label of the edge
-    e.raw_data->>'nom_1_g' AS label,
+    e.raw_data->>'nom_voie_ban_gauche' AS label,
     -- length
     ST_length(e.geom) AS "length",
     -- start and end nodes id
     ns.id, ne.id,
     -- cost based on the length
     CASE
-        WHEN e.raw_data->>'sens' in ('Sans objet', 'Double sens', 'Sens direct')
+        WHEN e.raw_data->>'sens_de_circulation' in ('Sans objet', 'Double sens', 'Sens direct')
             THEN ST_length(e.geom)
         ELSE -1
     END AS cost,
     -- reverse cost based on the length
     CASE
-        WHEN e.raw_data->>'sens' in ('Sans objet', 'Double sens', 'Sens inverse')
+        WHEN e.raw_data->>'sens_de_circulation' in ('Sans objet', 'Double sens', 'Sens inverse')
             THEN ST_length(e.geom)
         ELSE -1
     END AS reverse_cost,
     -- Keep some useful columns from the source table
     jsonb_build_object(
-        'id', e.raw_data->'id', 'nature', e.raw_data->'nature', 'importance', e.raw_data->'importance',
-        'etat', e.raw_data->'etat', 'largeur', e.raw_data->'largeur', 'prive', e.raw_data->'prive',
-        'sens', e.raw_data->'sens', 'vit_moy_vl', e.raw_data->'vit_moy_vl', 'acces_vl', e.raw_data->'acces_vl'
+        'fid', e.raw_data->'fid', 'nature', e.raw_data->'nature', 'importance', e.raw_data->'importance',
+        'etat_de_l_objet', e.raw_data->'etat_de_l_objet', 'largeur_de_chaussee', e.raw_data->'largeur_de_chaussee', 'prive', e.raw_data->'prive',
+        'sens_de_circulation', e.raw_data->'sens_de_circulation', 'vitesse_moyenne_vl', e.raw_data->'vitesse_moyenne_vl', 'acces_vehicule_leger', e.raw_data->'acces_vehicule_leger'
     ) AS source_data,
     -- geometry. Needed for the astar route engine
     e.geom
