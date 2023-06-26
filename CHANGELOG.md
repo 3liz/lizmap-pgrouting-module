@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.0.2 - 2023-06-26
+
+### Added
+
+Missing script to call during the upgrade, to set write access to a group on the pgrouting schema
+
+
 ## 1.0.1 - 2023-06-21
 
 ### Added
@@ -12,7 +19,7 @@
 ### Changed
 
 * Installation - Grant the write access on the schema `pgrouting` and its content to the
-  given group (use installation parameter `user_group`)
+  given group (use installation parameter `postgresql_user_group`)
 
 ## 1.0.0 - 2023-06-09
 
