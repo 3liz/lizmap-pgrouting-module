@@ -144,3 +144,6 @@ install-module:
 
 shell:
 	docker compose exec -u $(LIZMAP_USER_ID) lizmap /bin/sh -l
+
+postgres:
+	docker compose exec -u postgres pgsql psql lizmap
