@@ -8,6 +8,10 @@ import { altKeyOnly } from 'ol/events/condition.js';
 import Feature from 'ol/Feature.js';
 import Point from 'ol/geom/Point.js';
 import LineString from 'ol/geom/LineString.js';
+import { get as getProjection } from 'ol/proj.js';
+import { register } from 'ol/proj/proj4.js';
+import proj4 from 'proj4';
+
 import { html, render } from 'lit-html';
 
 class pgRouting extends HTMLElement {
@@ -17,6 +21,15 @@ class pgRouting extends HTMLElement {
     }
 
     connectedCallback() {
+
+        for (const [ref, def] of Object.entries(lizProj4)) {
+            if (ref !== "" && !getProjection(ref)) {
+                proj4.defs(ref, def);
+            }
+        }
+
+        register(proj4);
+
         // Get locales
         this._locales = '';
 
@@ -453,6 +466,7 @@ class pgRouting extends HTMLElement {
                         dataProjection: 'EPSG:4326',
                         featureProjection: lizMap.mainLizmap.projection
                     });
+
                     this._routeLayer.getSource().addFeatures(routeFeatures);
 
                     this._milestoneRouteMap.set([originFeature, destinationFeature], routeFeatures);
