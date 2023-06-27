@@ -30,7 +30,13 @@ class pgroutingDockableListener extends jEventListener
             }
         } else {
             // Project name must contain 'pgrouting' to enable the module
-            if (strpos($event->project, 'pgrouting') !== false) {
+            // OR the QGIS project variable lizmap_pgrouting_enabled must be yes
+            $p = \lizmap::getProject($repository . '~' . $project);
+            $customVariables = $p->getCustomProjectVariables();
+            if (strpos($project, 'pgrouting') !== false || (
+                array_key_exists('lizmap_pgrouting_enabled', $customVariables)
+                && strtolower(trim($customVariables['lizmap_pgrouting_enabled'])) == 'yes'
+            )) {
                 $bp = jApp::urlBasePath();
                 // dock
                 $content = '<lizmap-pgrouting></lizmap-pgrouting>';

@@ -202,13 +202,14 @@ a **QGIS project**:
 We offer you [here](../tests/lizmap/instances/pgrouting) a basic project which contains
 only the layers required and configured for Lizmap.
 
-If you want create your project or use another existing project to use this module:
+If you want **create your project** or use another existing project to use this module:
 
-* Add the **Edges** and **Nodes** layers
-* The QGIS project must be called `pgrouting.qgs`
+* Add the **edges** and **nodes** layers with these exact names.
+* The QGIS project must be called `pgrouting.qgs` or contain a QGIS **project variable**
+  called `lizmap_pgrouting_enabled` with the value `yes`
 
 ![pgrouting_layers](media/pgrouting_layers.jpg)
 
-* You must then create a configuration for Lizmap with the **Lizmap plugin**. No specific
+* You must then create a **configuration** for Lizmap with the **Lizmap plugin**. No specific
   configuration is needed for the module. You can configure like you want or just click on the
   apply button.

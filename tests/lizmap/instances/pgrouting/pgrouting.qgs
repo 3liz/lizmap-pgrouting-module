@@ -1,4 +1,4 @@
-<qgis projectname="" saveDateTime="2023-03-21T14:01:38" saveUser="nboisteault" saveUserFull="nboisteault" version="3.22.16-Białowieża">
+<qgis projectname="" saveDateTime="2023-06-27T09:05:39" saveUser="mdouchin" saveUserFull="mdouchin" version="3.22.14-Białowieża">
   <homePath path=""></homePath>
   <title></title>
   <autotransaction active="0"></autotransaction>
@@ -44,9 +44,9 @@
   </layer-tree-group>
   <snapping-settings enabled="0" intersection-snapping="0" maxScale="0" minScale="0" mode="2" scaleDependencyMode="0" self-snapping="0" tolerance="12" type="1" unit="1">
     <individual-layer-settings>
-      <layer-setting enabled="0" id="edges_ff04f0d6_b773_4ca4_bacf_448c5698cfb4" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="nodes_867aa31d_c051_47c1_a89b_afed18b39961" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
       <layer-setting enabled="0" id="edition_ef8655f7_2844_4d21_a601_2d13d510a332" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
+      <layer-setting enabled="0" id="edges_ff04f0d6_b773_4ca4_bacf_448c5698cfb4" maxScale="0" minScale="0" tolerance="12" type="1" units="1"></layer-setting>
     </individual-layer-settings>
   </snapping-settings>
   <relations></relations>
@@ -76,111 +76,6 @@
     <rendermaptile>0</rendermaptile>
     <expressionContextScope></expressionContextScope>
   </mapcanvas>
-  <DataPlotly>
-    <Option type="Map">
-      <Option name="dynamic_properties" type="Map">
-        <Option name="name" type="QString" value=""></Option>
-        <Option name="properties"></Option>
-        <Option name="type" type="QString" value="collection"></Option>
-      </Option>
-      <Option name="plot_layout" type="Map">
-        <Option name="additional_info_expression" type="QString" value=""></Option>
-        <Option name="bar_mode" type="QString" value="group"></Option>
-        <Option name="bargaps" type="double" value="0"></Option>
-        <Option name="bins_check" type="bool" value="false"></Option>
-        <Option name="font_title_color" type="QString" value="#000000"></Option>
-        <Option name="font_title_family" type="QString" value="Arial"></Option>
-        <Option name="font_title_size" type="int" value="10"></Option>
-        <Option name="font_xlabel_color" type="QString" value="#000000"></Option>
-        <Option name="font_xlabel_family" type="QString" value="Arial"></Option>
-        <Option name="font_xlabel_size" type="int" value="10"></Option>
-        <Option name="font_xticks_color" type="QString" value="#000000"></Option>
-        <Option name="font_xticks_family" type="QString" value="Arial"></Option>
-        <Option name="font_xticks_size" type="int" value="10"></Option>
-        <Option name="font_ylabel_color" type="QString" value="#000000"></Option>
-        <Option name="font_ylabel_family" type="QString" value="Arial"></Option>
-        <Option name="font_ylabel_size" type="int" value="10"></Option>
-        <Option name="font_yticks_color" type="QString" value="#000000"></Option>
-        <Option name="font_yticks_family" type="QString" value="Arial"></Option>
-        <Option name="font_yticks_size" type="int" value="10"></Option>
-        <Option name="gridcolor" type="QString" value="#bdbfc0"></Option>
-        <Option name="legend" type="bool" value="true"></Option>
-        <Option name="legend_orientation" type="QString" value="v"></Option>
-        <Option name="legend_title" type="invalid"></Option>
-        <Option name="polar" type="Map">
-          <Option name="angularaxis" type="Map">
-            <Option name="direction" type="QString" value="clockwise"></Option>
-          </Option>
-        </Option>
-        <Option name="range_slider" type="Map">
-          <Option name="borderwidth" type="int" value="1"></Option>
-          <Option name="visible" type="bool" value="false"></Option>
-        </Option>
-        <Option name="title" type="QString" value=""></Option>
-        <Option name="x_inv" type="invalid"></Option>
-        <Option name="x_max" type="invalid"></Option>
-        <Option name="x_min" type="invalid"></Option>
-        <Option name="x_title" type="QString" value=""></Option>
-        <Option name="x_type" type="QString" value="linear"></Option>
-        <Option name="xaxis" type="invalid"></Option>
-        <Option name="y_inv" type="invalid"></Option>
-        <Option name="y_max" type="invalid"></Option>
-        <Option name="y_min" type="invalid"></Option>
-        <Option name="y_title" type="QString" value=""></Option>
-        <Option name="y_type" type="QString" value="linear"></Option>
-        <Option name="z_title" type="QString" value=""></Option>
-      </Option>
-      <Option name="plot_properties" type="Map">
-        <Option name="additional_hover_text" type="invalid"></Option>
-        <Option name="bins" type="int" value="10"></Option>
-        <Option name="box_orientation" type="QString" value="v"></Option>
-        <Option name="box_outliers" type="bool" value="false"></Option>
-        <Option name="box_stat" type="bool" value="false"></Option>
-        <Option name="color_scale" type="QString" value="Greys"></Option>
-        <Option name="color_scale_data_defined_in_check" type="bool" value="false"></Option>
-        <Option name="color_scale_data_defined_in_invert_check" type="bool" value="false"></Option>
-        <Option name="cont_type" type="QString" value="fill"></Option>
-        <Option name="contour_type_combo" type="QString" value="Fill"></Option>
-        <Option name="cumulative" type="bool" value="false"></Option>
-        <Option name="custom" type="List">
-          <Option type="QString" value=""></Option>
-        </Option>
-        <Option name="hover_label_position" type="QString" value="auto"></Option>
-        <Option name="hover_label_text" type="invalid"></Option>
-        <Option name="hover_text" type="QString" value="all"></Option>
-        <Option name="in_color" type="QString" value="#8ebad9"></Option>
-        <Option name="invert_color_scale" type="bool" value="false"></Option>
-        <Option name="invert_hist" type="QString" value="increasing"></Option>
-        <Option name="layout_filter_by_atlas" type="bool" value="false"></Option>
-        <Option name="layout_filter_by_map" type="bool" value="false"></Option>
-        <Option name="line_combo" type="QString" value="Solid Line"></Option>
-        <Option name="line_dash" type="QString" value="solid"></Option>
-        <Option name="marker" type="QString" value="markers"></Option>
-        <Option name="marker_size" type="double" value="10"></Option>
-        <Option name="marker_symbol" type="int" value="0"></Option>
-        <Option name="marker_type_combo" type="QString" value="Points"></Option>
-        <Option name="marker_width" type="double" value="1"></Option>
-        <Option name="name" type="QString" value=""></Option>
-        <Option name="normalization" type="QString" value=""></Option>
-        <Option name="opacity" type="double" value="1"></Option>
-        <Option name="out_color" type="QString" value="#1f77b4"></Option>
-        <Option name="point_combo" type="QString" value=""></Option>
-        <Option name="selected_features_only" type="bool" value="false"></Option>
-        <Option name="show_colorscale_legend" type="bool" value="false"></Option>
-        <Option name="show_lines" type="bool" value="true"></Option>
-        <Option name="show_lines_check" type="bool" value="true"></Option>
-        <Option name="show_mean_line" type="bool" value="true"></Option>
-        <Option name="violin_box" type="bool" value="true"></Option>
-        <Option name="violin_side" type="QString" value="both"></Option>
-        <Option name="visible_features_only" type="bool" value="false"></Option>
-        <Option name="x_name" type="QString" value=""></Option>
-        <Option name="y_name" type="QString" value=""></Option>
-        <Option name="z_name" type="QString" value=""></Option>
-      </Option>
-      <Option name="plot_type" type="QString" value="scatter"></Option>
-      <Option name="source_layer_id" type="QString" value="edges_ff04f0d6_b773_4ca4_bacf_448c5698cfb4"></Option>
-    </Option>
-  </DataPlotly>
   <projectModels></projectModels>
   <legend updateDrawingOrder="true">
     <legendlayer checked="Qt::Checked" drawingOrder="-1" name="edition" open="true" showFeatureCount="0">
@@ -431,8 +326,8 @@
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="QString" value="0"></Option>
-          <Option name="variableNames"></Option>
-          <Option name="variableValues"></Option>
+          <Option name="variableNames" type="invalid"></Option>
+          <Option name="variableValues" type="invalid"></Option>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -870,8 +765,8 @@ def my_form_open(dialog, layer, feature):
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="int" value="0"></Option>
-          <Option name="variableNames"></Option>
-          <Option name="variableValues"></Option>
+          <Option name="variableNames" type="invalid"></Option>
+          <Option name="variableValues" type="invalid"></Option>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -880,6 +775,7 @@ def my_form_open(dialog, layer, feature):
       <SingleCategoryDiagramRenderer attributeLegend="1" diagramType="Histogram">
         <DiagramCategory backgroundAlpha="255" backgroundColor="#ffffff" barWidth="5" diagramOrientation="Up" direction="0" enabled="0" height="15" labelPlacementMethod="XHeight" lineSizeScale="3x:0,0,0,0,0,0" lineSizeType="MM" maxScaleDenominator="1e+08" minScaleDenominator="0" minimumSize="0" opacity="1" penAlpha="255" penColor="#000000" penWidth="0" rotationOffset="270" scaleBasedVisibility="0" scaleDependency="Area" showAxis="1" sizeScale="3x:0,0,0,0,0,0" sizeType="MM" spacing="5" spacingUnit="MM" spacingUnitScale="3x:0,0,0,0,0,0" width="15">
           <fontProperties description="Ubuntu,11,-1,5,50,0,0,0,0,0" style=""></fontProperties>
+          <attribute color="#000000" colorOpacity="1" field="" label=""></attribute>
           <axisSymbol>
             <symbol alpha="1" clip_to_extent="1" force_rhr="0" name="" type="line">
               <data_defined_properties>
@@ -1209,8 +1105,8 @@ def my_form_open(dialog, layer, feature):
       <customproperties>
         <Option type="Map">
           <Option name="embeddedWidgets/count" type="QString" value="0"></Option>
-          <Option name="variableNames"></Option>
-          <Option name="variableValues"></Option>
+          <Option name="variableNames" type="invalid"></Option>
+          <Option name="variableValues" type="invalid"></Option>
         </Option>
       </customproperties>
       <blendMode>0</blendMode>
@@ -1423,6 +1319,10 @@ def my_form_open(dialog, layer, feature):
       <AreaUnits type="QString">m2</AreaUnits>
       <DistanceUnits type="QString">meters</DistanceUnits>
     </Measurement>
+    <Mergin>
+      <PhotoQuality type="int">0</PhotoQuality>
+      <Snapping type="int">0</Snapping>
+    </Mergin>
     <PAL>
       <CandidatesLinePerCM type="double">5</CandidatesLinePerCM>
       <CandidatesPolygonPerCM type="double">2.5</CandidatesPolygonPerCM>
@@ -1450,10 +1350,12 @@ def my_form_open(dialog, layer, feature):
     </SpatialRefSys>
     <Variables>
       <variableNames type="QStringList">
+        <value>lizmap_pgrouting_enabled</value>
         <value>lizmap_user</value>
         <value>lizmap_user_groups</value>
       </variableNames>
       <variableValues type="QStringList">
+        <value>yes</value>
         <value></value>
         <value></value>
       </variableValues>
@@ -1573,7 +1475,7 @@ def my_form_open(dialog, layer, feature):
   <Bookmarks></Bookmarks>
   <ProjectViewSettings UseProjectScales="0" rotation="0">
     <Scales></Scales>
-    <DefaultViewExtent xmax="831609.47353652375750244" xmin="828802.98652205220423639" ymax="6289870.35228696744889021" ymin="6286986.530963652767241">
+    <DefaultViewExtent xmax="831694.50918732641730458" xmin="828717.95087124954443425" ymax="6289870.35228696744889021" ymin="6286986.530963652767241">
       <spatialrefsys>
         <wkt>PROJCRS["RGF93 v1 / Lambert-93",BASEGEOGCRS["RGF93 v1",DATUM["Reseau Geodesique Francais 1993 v1",ELLIPSOID["GRS 1980",6378137,298.257222101,LENGTHUNIT["metre",1]]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433]],ID["EPSG",4171]],CONVERSION["Lambert-93",METHOD["Lambert Conic Conformal (2SP)",ID["EPSG",9802]],PARAMETER["Latitude of false origin",46.5,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8821]],PARAMETER["Longitude of false origin",3,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8822]],PARAMETER["Latitude of 1st standard parallel",49,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8823]],PARAMETER["Latitude of 2nd standard parallel",44,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8824]],PARAMETER["Easting at false origin",700000,LENGTHUNIT["metre",1],ID["EPSG",8826]],PARAMETER["Northing at false origin",6600000,LENGTHUNIT["metre",1],ID["EPSG",8827]]],CS[Cartesian,2],AXIS["easting (X)",east,ORDER[1],LENGTHUNIT["metre",1]],AXIS["northing (Y)",north,ORDER[2],LENGTHUNIT["metre",1]],USAGE[SCOPE["Engineering survey, topographic mapping."],AREA["France - onshore and offshore, mainland and Corsica."],BBOX[41.15,-9.86,51.56,10.38]],ID["EPSG",2154]]</wkt>
         <proj4>+proj=lcc +lat_0=46.5 +lon_0=3 +lat_1=49 +lat_2=44 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs</proj4>

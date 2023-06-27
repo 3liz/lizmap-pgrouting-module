@@ -147,7 +147,7 @@ class defaultCtrl extends jController
 
         $p = lizmap::getProject($repository . '~' . $project);
         if (!$p) {
-            $resp->data = array('status' => 'error', 'message' => 'A problem occured while loading project with Lizmap');
+            $resp->data = array('status' => 'error', 'message' => 'A problem occurred while loading project with Lizmap');
 
             return $resp;
         }
