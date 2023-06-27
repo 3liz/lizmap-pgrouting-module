@@ -2,11 +2,21 @@
 
 ## Unreleased
 
+## 1.0.4 - 2023-06-27
+
+### Changed
+
+* QGIS Project - use a **project variable** `lizmap_pgrouting_enabled=yes` to activate the module.
+  Before, the project file name must contain the word `pgrouting` so that the module was activated,
+  which was not very practical.
+* Docs - Improve the installation documentation.
+* Docs - Adapt the SQL import example to the new field names of the BDTOPO road datasource.
+*
 ## 1.0.3 - 2023-06-27
 
 ### Fixed
 
-* Handle other projections than 4326 and 3857
+* Handle other map projections than `4326` and `3857`
 
 ## 1.0.2 - 2023-06-26
 
