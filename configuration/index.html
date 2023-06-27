@@ -601,8 +601,23 @@ You can use this kind of query to remove the duplicates based on the primary key
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="n">bdtopo</span><span class="p">.</span><span class="n">troncon_de_route</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">gid</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">gid</span><span class="w"> </span><span class="k">AND</span><span class="w"> </span><span class="n">a</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="import-the-road-data-into-pgrouting-graph-nodes-and-edges">Import the road data into PgRouting graph (nodes and edges)<a class="headerlink" href="#import-the-road-data-into-pgrouting-graph-nodes-and-edges" title="Permanent link">#</a></h3>
-<p>Depending on your source layer, you might not have the same field names. Here, <code>geom</code> is
-the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</code> is the road name field.</p>
+<p>Depending on your source layer, you might not have the same field names. Here,</p>
+<ul>
+<li><code>fid</code> is the unique ID,</li>
+<li><code>geom</code> is the geometry field,</li>
+<li><code>sens_de_circulation</code> is the field with the road direction,</li>
+<li><code>nom_voie_ban_gauche</code> is the field containing the road name</li>
+</ul>
+<p>We also decide to keep other interesting fields describing the edges :</p>
+<ul>
+<li><code>nature</code>: the category of the road,</li>
+<li><code>importance</code>: the road level of importance</li>
+<li><code>etat_de_l_objet</code>: the road state,</li>
+<li><code>largeur_de_chaussee</code>: the road width</li>
+<li><code>prive</code>: if the road is private or public</li>
+<li><code>vitesse_moyenne_vl</code>: the average speed for light vehicles</li>
+<li><code>acces_vehicule_leger</code>: if the road can be accessed by light vehicles</li>
+</ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -748,10 +763,10 @@ the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</cod
 <span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">temp_nodes</span><span class="w"> </span><span class="k">AS</span>
 <span class="k">WITH</span>
 <span class="n">union_start_end</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">start_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;fid&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">start_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
 <span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">temp_edges</span>
 <span class="w">    </span><span class="k">UNION</span><span class="w"> </span><span class="k">ALL</span>
-<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;id&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">end_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
+<span class="w">    </span><span class="k">SELECT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">start_of</span><span class="p">,</span><span class="w"> </span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;fid&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">end_of</span><span class="p">,</span><span class="w"> </span><span class="n">end_point</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">geom</span>
 <span class="w">    </span><span class="k">FROM</span><span class="w"> </span><span class="n">temp_edges</span>
 <span class="p">),</span>
 <span class="n">distinct_nodes</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="p">(</span>
@@ -780,28 +795,28 @@ the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</cod
 <span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="w"> </span><span class="p">(</span><span class="n">label</span><span class="p">,</span><span class="w"> </span><span class="k">length</span><span class="p">,</span><span class="w"> </span><span class="k">source</span><span class="p">,</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">cost</span><span class="p">,</span><span class="w"> </span><span class="n">reverse_cost</span><span class="p">,</span><span class="w"> </span><span class="n">source_data</span><span class="p">,</span><span class="w"> </span><span class="n">geom</span><span class="p">)</span>
 <span class="k">SELECT</span><span class="w"> </span><span class="k">DISTINCT</span>
 <span class="w">    </span><span class="c1">-- label of the edge</span>
-<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;nom_1_g&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">label</span><span class="p">,</span>
+<span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;nom_voie_ban_gauche&#39;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">label</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- length</span>
 <span class="w">    </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="ss">&quot;length&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- start and end nodes id</span>
 <span class="w">    </span><span class="n">ns</span><span class="p">.</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">ne</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- cost based on the length</span>
 <span class="w">    </span><span class="k">CASE</span>
-<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens_de_circulation&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens direct&#39;</span><span class="p">)</span>
 <span class="w">            </span><span class="k">THEN</span><span class="w"> </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
 <span class="w">        </span><span class="k">ELSE</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
 <span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">cost</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- reverse cost based on the length</span>
 <span class="w">    </span><span class="k">CASE</span>
-<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span>
+<span class="w">        </span><span class="k">WHEN</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;&gt;</span><span class="s1">&#39;sens_de_circulation&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;Sans objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Double sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;Sens inverse&#39;</span><span class="p">)</span>
 <span class="w">            </span><span class="k">THEN</span><span class="w"> </span><span class="n">ST_length</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">geom</span><span class="p">)</span>
 <span class="w">        </span><span class="k">ELSE</span><span class="w"> </span><span class="o">-</span><span class="mi">1</span>
 <span class="w">    </span><span class="k">END</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">reverse_cost</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- Keep some useful columns from the source table</span>
 <span class="w">    </span><span class="n">jsonb_build_object</span><span class="p">(</span>
-<span class="w">        </span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="s1">&#39;etat&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;etat&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;largeur&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;prive&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;prive&#39;</span><span class="p">,</span>
-<span class="w">        </span><span class="s1">&#39;sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;sens&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;vit_moy_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;acces_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;acces_vl&#39;</span>
+<span class="w">        </span><span class="s1">&#39;fid&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;fid&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;nature&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;importance&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;importance&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;etat_de_l_objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;etat_de_l_objet&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;largeur_de_chaussee&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;largeur_de_chaussee&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;prive&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;prive&#39;</span><span class="p">,</span>
+<span class="w">        </span><span class="s1">&#39;sens_de_circulation&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;sens_de_circulation&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;vitesse_moyenne_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;vitesse_moyenne_vl&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;acces_vehicule_leger&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="n">raw_data</span><span class="o">-&gt;</span><span class="s1">&#39;acces_vehicule_leger&#39;</span>
 <span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">source_data</span><span class="p">,</span>
 <span class="w">    </span><span class="c1">-- geometry. Needed for the astar route engine</span>
 <span class="w">    </span><span class="n">e</span><span class="p">.</span><span class="n">geom</span>
@@ -824,7 +839,7 @@ the geometry field, <code>sens</code> is the direction field, <code>nom_1_g</cod
 <span class="k">VACUUM</span><span class="w"> </span><span class="k">ANALYSE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="p">;</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="import-data-in-the-poi-tables-optional">Import data in the POI tables (optional)<a class="headerlink" href="#import-data-in-the-poi-tables-optional" title="Permanent link">#</a></h3>
-<p>Here is an example based on a points of interest layer loaded in a table called <code>your_schema.point_of_interest</code>.</p>
+<p>Here is an example based on a "point of interest" layer loaded in a table called <code>your_schema.point_of_interest</code>.</p>
 <p>This query fill the <code>pgrouting.routing_poi</code> table. In the <code>SELECT</code> you can replace the fields by
 your fields of your point of interest layer.</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
@@ -839,14 +854,15 @@ your fields of your point of interest layer.</p>
 a <strong>QGIS project</strong>:</p>
 <p>We offer you <a href="../tests/lizmap/instances/pgrouting">here</a> a basic project which contains
 only the layers required and configured for Lizmap.</p>
-<p>If you want create your project or use another existing project to use this module:</p>
+<p>If you want <strong>create your project</strong> or use another existing project to use this module:</p>
 <ul>
-<li>Add the <strong>Edges</strong> and <strong>Nodes</strong> layers</li>
-<li>The QGIS project must be called <code>pgrouting.qgs</code></li>
+<li>Add the <strong>edges</strong> and <strong>nodes</strong> layers with these exact names.</li>
+<li>The QGIS project must be called <code>pgrouting.qgs</code> or contain a QGIS <strong>project variable</strong>
+  called <code>lizmap_pgrouting_enabled</code> with the value <code>yes</code></li>
 </ul>
 <p><img alt="pgrouting_layers" src="../media/pgrouting_layers.jpg" /></p>
 <ul>
-<li>You must then create a configuration for Lizmap with the <strong>Lizmap plugin</strong>. No specific
+<li>You must then create a <strong>configuration</strong> for Lizmap with the <strong>Lizmap plugin</strong>. No specific
   configuration is needed for the module. You can configure like you want or just click on the
   apply button.</li>
 </ul>
@@ -856,7 +872,7 @@ only the layers required and configured for Lizmap.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 12, 2021</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
       
     
   </small>

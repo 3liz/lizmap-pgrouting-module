@@ -428,8 +428,8 @@
 
 <h1 id="requirements">requirements<a class="headerlink" href="#requirements" title="Permanent link">#</a></h1>
 <ul>
-<li>a Postgresql database with the pgrouting extension</li>
-<li>Lizmap 3.5 or above</li>
+<li>a PostgreSQL database with the <strong>postgis</strong> and <strong>pgrouting</strong> extensions installed</li>
+<li>Lizmap Web Client 3.5 or above</li>
 </ul>
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">#</a></h1>
 <h3 id="automatic-installation-of-files-with-composer">Automatic installation of files with Composer<a class="headerlink" href="#automatic-installation-of-files-with-composer" title="Permanent link">#</a></h3>
@@ -445,18 +445,27 @@ composer<span class="w"> </span>require<span class="w"> </span>--working-dir<spa
 <ul>
 <li>Get the last ZIP archive in the <a href="https://projects.3liz.org/lizmap-modules/lizmap-pgrouting-module">repository page</a>.</li>
 <li>Extract the archive and copy the <code>pgrouting</code> directory in Lizmap Web Client folder <code>lizmap/lizmap-modules/</code></li>
-<li>With Lizmap 3.5 or lower: edit the config file <code>lizmap/var/config/localconfig.ini.php</code> and add into 
+<li>With Lizmap 3.5 or lower: edit the config file <code>lizmap/var/config/localconfig.ini.php</code> and add into
   the section <code>[modules]</code>:</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.access</span><span class="o">=</span><span class="s">2</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="launching-the-installer-with-lizmap-36">Launching the installer with Lizmap 3.6<a class="headerlink" href="#launching-the-installer-with-lizmap-36" title="Permanent link">#</a></h3>
-<p>If you are using Lizmap 3.6 or higher, execute</p>
+<h3 id="launching-the-installer-with-lizmap-web-client-36">Launching the installer with Lizmap Web Client 3.6<a class="headerlink" href="#launching-the-installer-with-lizmap-web-client-36" title="Permanent link">#</a></h3>
+<p>If you are using Lizmap Web Client <strong>3.6 or higher</strong>, execute</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>pgrouting
 </code></pre></div></td></tr></table></div>
-<p>It will ask you all parameters for the database access and the SRID you are using.</p>
+<p>It will ask you all parameters for the PostgreSQL database access, and also:</p>
 <ul>
-<li>Then, execute Lizmap install scripts into <code>lizmap/install/</code> :</li>
+<li>The <strong>SRID</strong> (code of spatial coordinate system). It must correspond to the projection of your source data
+  and will be used for the tables created by the module. Default is 2154 (French official code)</li>
+<li>
+<p>The name of the <strong>PostgreSQL role</strong> that need to be granted with write access on the tables
+  in the PostgreSQL schema <code>pgrouting</code> (that will be created by the module installation
+  script).</p>
+</li>
+<li>
+<p>Then, execute Lizmap install scripts into <code>lizmap/install/</code> :</p>
+</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
@@ -464,17 +473,26 @@ composer<span class="w"> </span>require<span class="w"> </span>--working-dir<spa
 ./lizmap/install/clean_vartmp.sh
 ./lizmap/install/set_rights.sh
 </code></pre></div></td></tr></table></div>
+<p>Then a new schema <code>pgrouting</code> must be visible in your PostgreSQL database, containing the needed
+tables and functions used by the module.</p>
 <h3 id="launching-the-installer-with-lizmap-35">Launching the installer with Lizmap 3.5<a class="headerlink" href="#launching-the-installer-with-lizmap-35" title="Permanent link">#</a></h3>
-<ul>
-<li>If you are using a SRID other than 2154, edit the config file 
-  <code>lizmap/var/config/localconfig.ini.php</code> and add into the section <code>[modules]</code>:</li>
-</ul>
-<p><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154&quot;</span>
+<p>If you are using Lizmap Web Client <strong>3.6 or higher</strong>, you must manually edit the configuration
+file of your instance to specify some options. Edit the file <code>lizmap/var/config/localconfig.ini.php</code>
+and add the following variable in the section <code>[modules]</code>:</p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154</span><span class="c1">;postgresql_user_group=gis_group&quot;</span>
 </code></pre></div></td></tr></table></div>
-You can replace 2154 by another SRID that you use.</p>
+<p>You can replace:</p>
 <ul>
-<li>You need to configure the database access in your Lizmap configuration.
-  Add in <code>lizmap/var/config/profiles.ini.php</code> the following parameters. </li>
+<li><code>2154</code> by another SRID that you use. It must correspond to the projection of your source data.</li>
+<li>
+<p><code>gis_group</code> must be replaced by the name of the <strong>PostgreSQL role</strong> that need to be granted with write
+  access on the tables in the PostgreSQL schema <code>pgrouting</code> (that will be created by the module installation
+  script).</p>
+</li>
+<li>
+<p>You need to configure the database access in your Lizmap configuration.
+  Add in <code>lizmap/var/config/profiles.ini.php</code> the following parameters.</p>
+</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
@@ -510,7 +528,7 @@ You can replace 2154 by another SRID that you use.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 13, 2022</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
       
     
   </small>
