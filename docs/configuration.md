@@ -181,7 +181,7 @@ VACUUM ANALYSE pgrouting.edges;
 
 ### Import data in the POI tables (optional)
 
-Here is an example based on a points of interest layer loaded in a table called `your_schema.point_of_interest`.
+Here is an example based on a "point of interest" layer loaded in a table called `your_schema.point_of_interest`.
 
 This query fill the `pgrouting.routing_poi` table. In the `SELECT` you can replace the fields by
 your fields of your point of interest layer.

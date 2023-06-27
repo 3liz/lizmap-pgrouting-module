@@ -1,7 +1,7 @@
 # requirements
 
-- a Postgresql database with the pgrouting extension
-- Lizmap 3.5 or above
+* a PostgreSQL database with the **postgis** and **pgrouting** extensions installed
+* Lizmap Web Client 3.5 or above
 
 # Installation
 
@@ -21,7 +21,7 @@ composer require --working-dir=lizmap/my-packages "lizmap/lizmap-pgrouting-modul
 
 * Get the last ZIP archive in the [repository page](https://projects.3liz.org/lizmap-modules/lizmap-pgrouting-module).
 * Extract the archive and copy the `pgrouting` directory in Lizmap Web Client folder `lizmap/lizmap-modules/`
-* With Lizmap 3.5 or lower: edit the config file `lizmap/var/config/localconfig.ini.php` and add into 
+* With Lizmap 3.5 or lower: edit the config file `lizmap/var/config/localconfig.ini.php` and add into
   the section `[modules]`:
 
 ```ini
@@ -29,17 +29,23 @@ pgrouting.access=2
 ```
 
 
-### Launching the installer with Lizmap 3.6
+### Launching the installer with Lizmap Web Client 3.6
 
 
-If you are using Lizmap 3.6 or higher, execute
+If you are using Lizmap Web Client **3.6 or higher**, execute
 
 ```bash
 php lizmap/install/configurator.php pgrouting
 ```
 
-It will ask you all parameters for the database access and the SRID you are using.
+It will ask you all parameters for the PostgreSQL database access, and also:
 
+
+* The **SRID** (code of spatial coordinate system). It must correspond to the projection of your source data
+  and will be used for the tables created by the module. Default is 2154 (French official code)
+* The name of the **PostgreSQL role** that need to be granted with write access on the tables
+  in the PostgreSQL schema `pgrouting` (that will be created by the module installation
+  script).
 
 * Then, execute Lizmap install scripts into `lizmap/install/` :
 
@@ -49,18 +55,28 @@ php lizmap/install/installer.php
 ./lizmap/install/set_rights.sh
 ```
 
+Then a new schema `pgrouting` must be visible in your PostgreSQL database, containing the needed
+tables and functions used by the module.
+
 ### Launching the installer with Lizmap 3.5
 
-* If you are using a SRID other than 2154, edit the config file 
-  `lizmap/var/config/localconfig.ini.php` and add into the section `[modules]`:
+If you are using Lizmap Web Client **3.6 or higher**, you must manually edit the configuration
+file of your instance to specify some options. Edit the file `lizmap/var/config/localconfig.ini.php`
+and add the following variable in the section `[modules]`:
 
 ```ini
-pgrouting.installparam="srid=2154"
+pgrouting.installparam="srid=2154;postgresql_user_group=gis_group"
 ```
-You can replace 2154 by another SRID that you use.
+
+You can replace:
+
+* `2154` by another SRID that you use. It must correspond to the projection of your source data.
+* `gis_group` must be replaced by the name of the **PostgreSQL role** that need to be granted with write
+  access on the tables in the PostgreSQL schema `pgrouting` (that will be created by the module installation
+  script).
 
 * You need to configure the database access in your Lizmap configuration.
-  Add in `lizmap/var/config/profiles.ini.php` the following parameters. 
+  Add in `lizmap/var/config/profiles.ini.php` the following parameters.
 
 ```ini
 [jdb:pgrouting]
