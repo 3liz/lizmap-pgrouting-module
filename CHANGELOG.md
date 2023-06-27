@@ -2,12 +2,17 @@
 
 ## Unreleased
 
+## 1.0.3 - 2023-06-27
+
+### Fixed
+
+* Handle other projections than 4326 and 3857
+
 ## 1.0.2 - 2023-06-26
 
 ### Added
 
-Missing script to call during the upgrade, to set write access to a group on the pgrouting schema
-
+* Missing script to call during the upgrade, to set write access to a group on the pgrouting schema
 
 ## 1.0.1 - 2023-06-21
 
