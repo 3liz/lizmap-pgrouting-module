@@ -11,7 +11,7 @@
   which was not very practical.
 * Docs - Improve the installation documentation.
 * Docs - Adapt the SQL import example to the new field names of the BDTOPO road datasource.
-*
+
 ## 1.0.3 - 2023-06-27
 
 ### Fixed
