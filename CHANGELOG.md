@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.0.5 - 2023-06-29
+
 ### Fixed
 
 * Upgrade method - Overwrite the existing JavaScript and CSS files by the new versions
