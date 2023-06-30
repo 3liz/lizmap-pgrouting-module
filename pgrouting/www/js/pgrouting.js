@@ -36,8 +36,17 @@ class pgRouting extends HTMLElement {
         this._mergedRoads = [];
         this._POIFeatures = [];
 
+        // Styles
+        this._routeLineColor = '#587fc6';
+        this._routePointFillColor = 'white';
+        this._routeIntermediatePointStrokeColor = '#587fc6';
+        this._routeStartPointStrokeColor = 'green';
+        this._routeEndPointStrokeColor = 'red';
+
         // Linestring geometry generated from the whole route
         this._routeGeometry = null;
+
+        this._nodePosition = 0;
 
         this._mainTemplate = () => html`
             <div class="menu-content">
@@ -158,30 +167,43 @@ class pgRouting extends HTMLElement {
             style: (feature) => {
                 const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
                 const featureIndex = milestoneFeatures.indexOf(feature);
-                let fillColor = 'blue';
+                let fillColor = this._routePointFillColor;
+                let strokeColor = this._routeIntermediatePointStrokeColor; // pale blue
+                let strokeWidth = 3;
+                let circleRadius = 12;
                 let labelText = '';
 
                 // Start is green, end is red and intermediates are blue
                 if (featureIndex === 0) {
-                    fillColor = 'green';
+                    strokeColor = this._routeStartPointStrokeColor;
+                    strokeWidth = 6;
+                    circleRadius = 8;
                 } else if (featureIndex === milestoneFeatures.length - 1) {
-                    fillColor = 'red';
+                    strokeColor = this._routeEndPointStrokeColor;
+                    strokeWidth = 6;
+                    circleRadius = 8;
                 } else {
                     labelText = featureIndex.toString();
                 }
                 return new Style({
                     image: new CircleStyle({
-                        radius: 10,
+                        radius: circleRadius,
                         fill: new Fill({
                             color: fillColor,
+                        }),
+                        stroke: new Stroke({
+                            color: strokeColor,
+                            width: strokeWidth,
                         }),
                     }),
                     text: new Text({
                         text: labelText,
-                        font: 'bold 18px sans-serif',
+                        font: 'bold 14px sans-serif',
                         fill: new Fill({
-                            color: 'white',
-                        })
+                            color: strokeColor,
+                        }),
+                        offsetY: 1,
+                        justify: 'center'
                     })
                 });
             }
@@ -255,34 +277,43 @@ class pgRouting extends HTMLElement {
                     // linestring
                     new Style({
                         stroke: new Stroke({
-                            color: 'black',
+                            color: this._routeLineColor,
                             width: 11,
                         }),
                     }),
                     new Style({
                         stroke: new Stroke({
-                            color: 'purple',
+                            color: this._routeLineColor,
                             width: 9,
                         }),
                     }),
                 ];
 
+                let s = 0;
                 geometry.forEachSegment((start, end) => {
+                    let arrowWidth = 0;
+                    let arrowFontSize = 0;
+                    // Only show one arrow at every 7 positions
+                    if (this._nodePosition % 10 == 0) {
+                        arrowWidth = 1;
+                        arrowFontSize = 16;
+                    }
                     const dx = end[0] - start[0];
                     const dy = end[1] - start[1];
                     const rotation = Math.atan2(dy, dx);
+
                     // arrows
                     styles.push(
                         new Style({
                             geometry: new Point(end),
                             text: new Text({
                                 text: '>',
-                                font: 'normal 16px sans-serif',
+                                font: `normal ${arrowFontSize}px sans-serif`,
                                 rotateWithView: true,
                                 rotation: -rotation,
                                 stroke: new Stroke({
                                     color: 'white',
-                                    width: 2,
+                                    width: arrowWidth,
                                 }),
                                 fill: new Fill({
                                     color: 'white',
@@ -290,6 +321,8 @@ class pgRouting extends HTMLElement {
                             })
                         })
                     );
+
+                    this._nodePosition++;
                 });
 
                 return styles;
@@ -435,6 +468,8 @@ class pgRouting extends HTMLElement {
 
                             // Send the Lizmap event with the current route geometry
                             this._sendRouteGeometryAsWKT();
+
+                            this._nodePosition = 0;
                         }
                     }
                 }
@@ -476,6 +511,9 @@ class pgRouting extends HTMLElement {
 
                     // Send the Lizmap event with the current route geometry
                     this._sendRouteGeometryAsWKT();
+
+                    // Set back the node position used for arrow drawing to 0
+                    this._nodePosition = 0;
 
                     // Get POIs
                     this._POIFeatures = json?.poi?.features ?? [];

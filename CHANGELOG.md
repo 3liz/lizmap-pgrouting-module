@@ -2,9 +2,13 @@
 
 ## Unreleased
 
+### Changed
+
+* Improve the style of the route and start, intermediate & end points
+
 ### Fixed
 
-* Geometry saved to localstorage & WKT exported - Export all the missing nodes.
+* Geometry saved to local storage & WKT exported - Export all the missing nodes.
 
 ## 1.0.5 - 2023-06-29
 
