@@ -326,16 +326,16 @@ class pgRouting extends HTMLElement {
             this._milestoneRouteMap.forEach((routeFeatures, milestoneFeatures) => {
                 if (milestoneFeatures[0] === milestoneFeature) {
                     for (const routeFeature of routeFeatures) {
-                        const beginCoord = routeFeature.getGeometry().getCoordinates()[0];
-                        // Don't push twice consecutive identical coordinates
-                        if(lastPushedCoord === undefined || (beginCoord[0] !== lastPushedCoord[0] && beginCoord[1] !== lastPushedCoord[1])){
-                            lastPushedCoord = routeFeature.getGeometry().getCoordinates()[0];
-                            coordinates.push(lastPushedCoord);
+                        for (const coord of routeFeature.getGeometry().getCoordinates()) {
+                            // Do not add the coordinates if they are equal to the previous ones
+                            if (lastPushedCoord && lastPushedCoord[0] == coord[0] && lastPushedCoord[1] == coord[1]) {
+                                continue;
+                            }
+                            lastPushedCoord = coord;
+                            coordinates.push(coord);
                         }
                     }
-                    // Add end coordinate of the last route
-                    lastPushedCoord = routeFeatures[routeFeatures.length - 1].getGeometry().getCoordinates()[1];
-                    coordinates.push(lastPushedCoord);
+
                     return;
                 }
             });

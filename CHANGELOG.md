@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Fixed
+
+* Geometry saved to localstorage & WKT exported - Export all the missing nodes.
+
 ## 1.0.5 - 2023-06-29
 
 ### Fixed
