@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.0.6 - 2023-06-30
+
 ### Changed
 
 * Improve the style of the route and start, intermediate & end points
