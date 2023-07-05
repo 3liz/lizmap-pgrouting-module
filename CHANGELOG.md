@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+* Fix rights on pgrouting schema sequences to allow the user to set or reset
+  the PostgreSQL sequences when re-importing edges and nodes
+
 ## 1.0.6 - 2023-06-30
 
 ### Changed
