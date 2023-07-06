@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.0.7 - 2023-07-06
+
+### Changed
+
+* Rename pgrouting.umd.cjs to pgrouting.umd.js for better web server support
+
 ### Fixed
 
 * Fix rights on pgrouting schema sequences to allow the user to set or reset
