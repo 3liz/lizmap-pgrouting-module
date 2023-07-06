@@ -13,7 +13,7 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
         formats: ['umd'],
         name : 'pgrouting'
       },
-      outDir: mode === 'prod' ? 'dist' : '../../../tests/lizmap/www/assets/pgrouting/js/',
+      outDir: mode === 'prod' ? 'dist' : '../../../tests/lizmap/www/pgrouting/js/',
       sourcemap: true,
       emptyOutDir: true,
     }

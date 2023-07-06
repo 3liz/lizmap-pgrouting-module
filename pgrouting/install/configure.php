@@ -35,8 +35,8 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
             $this->parameters['postgresql_user_group']
         );
 
-        $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'));
-        $helpers->copyDirectoryContent('../www/js/dist', jApp::wwwPath('assets/pgrouting/js'));
+        $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('pgrouting/css'));
+        $helpers->copyDirectoryContent('../www/js/dist', jApp::wwwPath('pgrouting/js'));
     }
 
     public function localConfigure(LocalConfigurationHelpers $helpers)

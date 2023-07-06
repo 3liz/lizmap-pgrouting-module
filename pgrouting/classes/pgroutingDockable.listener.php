@@ -45,8 +45,8 @@ class pgroutingDockableListener extends jEventListener
                     'pgRouting',
                     $content,
                     99,
-                    $bp . 'assets/pgrouting/css/pgrouting.css',
-                    $bp . 'assets/pgrouting/js/pgrouting.umd.js'
+                    $bp . 'pgrouting/css/pgrouting.css',
+                    $bp . 'pgrouting/js/pgrouting.umd.js'
                 );
                 $event->add($dock);
             }

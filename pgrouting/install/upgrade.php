@@ -13,7 +13,7 @@ class pgroutingModuleUpgrader extends jInstallerModule
     {
         // Copy CSS and JS assets
         $overwrite = true;
-        $this->copyDirectoryContent('../www/css', jApp::wwwPath('assets/pgrouting/css'), $overwrite);
-        $this->copyDirectoryContent('../www/js/dist', jApp::wwwPath('assets/pgrouting/js'), $overwrite);
+        $this->copyDirectoryContent('../www/css', jApp::wwwPath('pgrouting/css'), $overwrite);
+        $this->copyDirectoryContent('../www/js/dist', jApp::wwwPath('pgrouting/js'), $overwrite);
     }
 }
