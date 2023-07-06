@@ -9,18 +9,21 @@
  */
 require_once (__DIR__.'/PgRoutingDBInstallTrait.php');
 
-class pgroutingModuleUpgrader_1_0_1__1_0_2 extends jInstallerModule
+class pgroutingModuleUpgrader_1_0_7__1_0_8 extends jInstallerModule
 {
     use PgRoutingDBInstallTrait;
 
     public $targetVersions = array(
-        '1.0.2',
+        '1.0.8',
     );
-    public $date = '2023-06-22';
+    public $date = '2023-07-06';
 
     public function install()
     {
+        echo "pgroutingModuleUpgrader_1_0_7__1_0_8 start ".$this->entryPoint->getEpId()."\n";
+
         if ($this->firstDbExec()) {
+            echo "pgroutingModuleUpgrader_1_0_7__1_0_8 firstDbExec\n";
             $this->useDbProfile('pgrouting');
             $db = $this->dbConnection();
             $this->launchGrantIntoDb($db);

@@ -7,11 +7,15 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
+require_once (__DIR__.'/PgRoutingDBInstallTrait.php');
+
 class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
 {
+    use PgRoutingDBInstallTrait;
+
     public function preinstall(Jelix\Installer\Module\API\PreInstallHelpers $helpers)
     {
-        // Check if all extensions was install
+        // Check if all extensions are installed
         $helpers->database()->useDbProfile('pgrouting');
         $db = $helpers->database()->dbConnection();
 
@@ -43,24 +47,6 @@ class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
 
         $db->exec($sql);
 
-        $group = $this->getParameter('postgresql_user_group');
-        if ($group) {
-            // Grant right to the given PostgreSQL group of users
-            $sql_file = $this->getPath() . 'install/sql/grant.pgsql.sql';
-            $template = jFile::read($sql_file);
-            $tpl = new jTpl();
-            $tpl->assign('userGroup', $group);
-            if (!empty($group)) {
-                $sql = $tpl->fetchFromString($template, $group);
-                // Try to grant access
-                try {
-                    $db->exec($sql);
-                } catch (Exception $e) {
-                    jLog::log('An error occured while grant access on the pgrouting schema to the given group: ' . $group, 'error');
-
-                    throw new jException('pgrouting~db.query.grant.bad');
-                }
-            }
-        }
+        $this->launchGrantIntoDb($db);
     }
 }
