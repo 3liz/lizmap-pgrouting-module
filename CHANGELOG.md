@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.0.8 - 2023-07-11
+
+### Fixed
+
+* Fix: correct built JS
+* Install assets outside the assets/ directory, as it is reserved to Lizmap.
+
 ## 1.0.7 - 2023-07-06
 
 ### Changed

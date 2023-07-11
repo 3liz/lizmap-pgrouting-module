@@ -20,10 +20,7 @@ class pgroutingModuleUpgrader_1_0_7__1_0_8 extends jInstallerModule
 
     public function install()
     {
-        echo "pgroutingModuleUpgrader_1_0_7__1_0_8 start ".$this->entryPoint->getEpId()."\n";
-
         if ($this->firstDbExec()) {
-            echo "pgroutingModuleUpgrader_1_0_7__1_0_8 firstDbExec\n";
             $this->useDbProfile('pgrouting');
             $db = $this->dbConnection();
             $this->launchGrantIntoDb($db);
