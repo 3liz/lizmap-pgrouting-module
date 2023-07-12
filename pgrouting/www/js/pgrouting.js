@@ -128,7 +128,7 @@ class pgRouting extends HTMLElement {
         });
 
         // Refresh route only when user add a feature
-        // Not when we programmaticaly add a feature
+        // Not when we programmatically add a feature
         this._userAddFeature = true;
         milestoneSource.on('addfeature', event => {
             if (this._userAddFeature) {

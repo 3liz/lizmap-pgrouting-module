@@ -42,7 +42,7 @@ class pgroutingDockableListener extends jEventListener
                 $content = '<lizmap-pgrouting></lizmap-pgrouting>';
                 $dock = new lizmapMapDockItem(
                     'pgrouting',
-                    'pgRouting',
+                    \jLocale::get('pgrouting~dictionary.dock.title'),
                     $content,
                     99,
                     $bp . 'pgrouting/css/pgrouting.css',
