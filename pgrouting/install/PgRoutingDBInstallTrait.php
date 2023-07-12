@@ -7,7 +7,6 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-
 trait PgRoutingDBInstallTrait
 {
     protected function launchGrantIntoDb(jDbConnection $db)
@@ -16,9 +15,8 @@ trait PgRoutingDBInstallTrait
         if ($group) {
             // Grant right to the given PostgreSQL group of users
             if (method_exists($this, 'getPath')) {
-                $sql_file = $this->getPath()  . 'install/sql/grant.pgsql.sql';
-            }
-            else {
+                $sql_file = $this->getPath() . 'install/sql/grant.pgsql.sql';
+            } else {
                 $sql_file = $this->path . 'install/sql/grant.pgsql.sql';
             }
             $template = jFile::read($sql_file);
