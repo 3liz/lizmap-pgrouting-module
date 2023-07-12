@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Changed
+
+* Add a localized string for the dock title instead of `pgRouting`
+* Fix some typo
+
 ## 1.0.8 - 2023-07-11
 
 ### Fixed

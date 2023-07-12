@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS pgrouting.nodes(
     id serial primary key,
     geom geometry('POINT', 2154)
 );
-COMMENT ON TABLE pgrouting.nodes IS 'PgRouging graph nodes';
+COMMENT ON TABLE pgrouting.nodes IS 'PgRouting graph nodes';
 
 -- edges
 CREATE TABLE IF NOT EXISTS pgrouting.edges(
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS pgrouting.edges(
     source_data jsonb,
     geom geometry('LINESTRING', 2154)
 );
-COMMENT ON TABLE pgrouting.nodes IS 'PgRouging graph edges, with costs';
+COMMENT ON TABLE pgrouting.nodes IS 'PgRouting graph edges, with costs';
 
 -- routing optional POI
 CREATE TABLE IF NOT EXISTS pgrouting.routing_poi(
