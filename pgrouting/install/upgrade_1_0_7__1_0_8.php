@@ -7,7 +7,7 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-require_once (__DIR__.'/PgRoutingDBInstallTrait.php');
+require_once __DIR__ . '/PgRoutingDBInstallTrait.php';
 
 class pgroutingModuleUpgrader_1_0_7__1_0_8 extends jInstallerModule
 {

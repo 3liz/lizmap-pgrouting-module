@@ -7,7 +7,7 @@
  *
  * @license   Mozilla Public License : http://www.mozilla.org/MPL/
  */
-require_once (__DIR__.'/PgRoutingDBInstallTrait.php');
+require_once __DIR__ . '/PgRoutingDBInstallTrait.php';
 
 class pgroutingModuleInstaller extends \Jelix\Installer\Module\Installer
 {
