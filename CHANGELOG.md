@@ -2,8 +2,15 @@
 
 ## Unreleased
 
+## 1.0.9 - 2024-01-18
+
+### Fixed
+
+* Fix: `copy-route` button not visible when active with Lizmap 3.7
+
 ### Changed
 
+* Update QGIS test project to 3.28 for Lizmap 3.7
 * Add a localized string for the dock title instead of `pgRouting`
 * Fix some typo
 
