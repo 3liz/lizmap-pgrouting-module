@@ -444,39 +444,57 @@ composer<span class="w"> </span>require<span class="w"> </span>--working-dir<spa
 <h3 id="manual-installation-of-files-without-composer">Manual installation of files without Composer<a class="headerlink" href="#manual-installation-of-files-without-composer" title="Permanent link">#</a></h3>
 <ul>
 <li>Get the last ZIP archive in the <a href="https://projects.3liz.org/lizmap-modules/lizmap-pgrouting-module">repository page</a>.</li>
-<li>Extract the archive and copy the <code>pgrouting</code> directory in Lizmap Web Client folder <code>lizmap/lizmap-modules/</code></li>
-<li>With Lizmap 3.5 or lower: edit the config file <code>lizmap/var/config/localconfig.ini.php</code> and add into
+<li>Extract the archive and copy the <code>pgrouting</code> directory (the one containing the <code>module.xml</code> file) into the Lizmap Web Client folder <code>lizmap/lizmap-modules/</code></li>
+<li>With <strong>Lizmap 3.5</strong> or lower: edit the config file <code>lizmap/var/config/localconfig.ini.php</code> and add into
   the section <code>[modules]</code>:</li>
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.access</span><span class="o">=</span><span class="s">2</span>
 </code></pre></div></td></tr></table></div>
-<h3 id="launching-the-installer-with-lizmap-web-client-36">Launching the installer with Lizmap Web Client 3.6<a class="headerlink" href="#launching-the-installer-with-lizmap-web-client-36" title="Permanent link">#</a></h3>
-<p>If you are using Lizmap Web Client <strong>3.6 or higher</strong>, execute</p>
+<h3 id="launching-the-installer-with-lizmap-web-client-3637">Launching the installer with Lizmap Web Client 3.6/3.7<a class="headerlink" href="#launching-the-installer-with-lizmap-web-client-3637" title="Permanent link">#</a></h3>
+<p>Use following instructions if you are using Lizmap Web Client <strong>3.6 or higher</strong>.</p>
+<p>First you need to configure the database access in your Lizmap configuration.
+Add in <code>lizmap/var/config/profiles.ini.php</code> the following parameters, by replacing values with your own credentials.
+<strong>Only replace host, database, user and password values.</strong></p>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
+<span class="normal">2</span>
+<span class="normal">3</span>
+<span class="normal">4</span>
+<span class="normal">5</span>
+<span class="normal">6</span>
+<span class="normal">7</span>
+<span class="normal">8</span>
+<span class="normal">9</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">[jdb:pgrouting]</span>
+
+<span class="na">driver</span><span class="o">=</span><span class="s">pgsql</span>
+<span class="na">host</span><span class="o">=</span><span class="s">pgsql</span>
+<span class="na">port</span><span class="o">=</span><span class="s">5432</span>
+<span class="na">database</span><span class="o">=</span><span class="s">lizmap</span>
+<span class="na">user</span><span class="o">=</span><span class="s">lizmap</span>
+<span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span>
+<span class="na">search_path</span><span class="o">=</span><span class="s">pgrouting,public</span>
+</code></pre></div></td></tr></table></div>
+<p>Then execute:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/configurator.php<span class="w"> </span>pgrouting
 </code></pre></div></td></tr></table></div>
-<p>It will ask you all parameters for the PostgreSQL database access, and also:</p>
+<p>It will install some files, and ask you some parameters:</p>
 <ul>
 <li>The <strong>SRID</strong> (code of spatial coordinate system). It must correspond to the projection of your source data
   and will be used for the tables created by the module. Default is 2154 (French official code)</li>
-<li>
-<p>The name of the <strong>PostgreSQL role</strong> that need to be granted with write access on the tables
+<li>The name of the <strong>PostgreSQL role</strong> that need to be granted with write access on the tables
   in the PostgreSQL schema <code>pgrouting</code> (that will be created by the module installation
-  script).</p>
-</li>
-<li>
-<p>Then, execute Lizmap install scripts into <code>lizmap/install/</code> :</p>
-</li>
+  script).</li>
 </ul>
+<p>Then, execute Lizmap install scripts into <code>lizmap/install/</code> :</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span>
 <span class="normal">3</span></pre></div></td><td class="code"><div><pre><span></span><code>php<span class="w"> </span>lizmap/install/installer.php
 ./lizmap/install/clean_vartmp.sh
 ./lizmap/install/set_rights.sh
 </code></pre></div></td></tr></table></div>
-<p>Then a new schema <code>pgrouting</code> must be visible in your PostgreSQL database, containing the needed
+<p>A new schema <code>pgrouting</code> must be visible in your PostgreSQL database, containing the needed
 tables and functions used by the module.</p>
 <h3 id="launching-the-installer-with-lizmap-35">Launching the installer with Lizmap 3.5<a class="headerlink" href="#launching-the-installer-with-lizmap-35" title="Permanent link">#</a></h3>
-<p>If you are using Lizmap Web Client <strong>3.6 or higher</strong>, you must manually edit the configuration
+<p>If you are using Lizmap Web Client <strong>3.5</strong>, you must manually edit the configuration
 file of your instance to specify some options. Edit the file <code>lizmap/var/config/localconfig.ini.php</code>
 and add the following variable in the section <code>[modules]</code>:</p>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154</span><span class="c1">;postgresql_user_group=gis_group&quot;</span>
@@ -528,7 +546,7 @@ and add the following variable in the section <code>[modules]</code>:</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 8, 2024</span>
       
     
   </small>
