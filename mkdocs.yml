@@ -11,7 +11,7 @@ site_dir: build
 nav:
     - docs.3liz.org: '../'
     - Home: index.md
-    - Configuraton: configuration.md
+    - Configuration: configuration.md
     - Installation: installation.md
     - Changelog: changelog.md
     - Contribution: contributing.md
