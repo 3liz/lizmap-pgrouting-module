@@ -618,6 +618,8 @@ You can use this kind of query to remove the duplicates based on the primary key
 <li><code>vitesse_moyenne_vl</code>: the average speed for light vehicles</li>
 <li><code>acces_vehicule_leger</code>: if the road can be accessed by light vehicles</li>
 </ul>
+<details>
+<summary>Display the SQL</summary>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">  1</span>
 <span class="normal">  2</span>
 <span class="normal">  3</span>
@@ -838,6 +840,7 @@ You can use this kind of query to remove the duplicates based on the primary key
 <span class="k">VACUUM</span><span class="w"> </span><span class="k">ANALYSE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">nodes</span><span class="p">;</span>
 <span class="k">VACUUM</span><span class="w"> </span><span class="k">ANALYSE</span><span class="w"> </span><span class="n">pgrouting</span><span class="p">.</span><span class="n">edges</span><span class="p">;</span>
 </code></pre></div></td></tr></table></div>
+</details>
 <h3 id="import-data-in-the-poi-tables-optional">Import data in the POI tables (optional)<a class="headerlink" href="#import-data-in-the-poi-tables-optional" title="Permanent link">#</a></h3>
 <p>Here is an example based on a "point of interest" layer loaded in a table called <code>your_schema.point_of_interest</code>.</p>
 <p>This query fill the <code>pgrouting.routing_poi</code> table. In the <code>SELECT</code> you can replace the fields by
@@ -852,11 +855,11 @@ your fields of your point of interest layer.</p>
 <h3 id="configure-the-qgis-project">Configure the QGIS project<a class="headerlink" href="#configure-the-qgis-project" title="Permanent link">#</a></h3>
 <p>To use the pgrouting module in <strong>Lizmap Web Client</strong> you must first configure
 a <strong>QGIS project</strong>:</p>
-<p>We offer you <a href="../tests/lizmap/instances/pgrouting">here</a> a basic project which contains
-only the layers required and configured for Lizmap.</p>
-<p>If you want <strong>create your project</strong> or use another existing project to use this module:</p>
+<p>You can download <a href="https://demo.lizmap.com/lizmap/">the PgRouting demo, in the "Modules" section</a> which contains a basic
+project with only the layers required and configured for Lizmap.</p>
+<p>If you want to <strong>create your project</strong> or use another existing project to use this module:</p>
 <ul>
-<li>Add the <strong>edges</strong> and <strong>nodes</strong> layers with these exact names.</li>
+<li>Add the <strong>edges</strong> and <strong>nodes</strong> layers with these exact names. You can rename them in the plugin.</li>
 <li>The QGIS project must be called <code>pgrouting.qgs</code> or contain a QGIS <strong>project variable</strong>
   called <code>lizmap_pgrouting_enabled</code> with the value <code>yes</code></li>
 </ul>
@@ -872,7 +875,7 @@ only the layers required and configured for Lizmap.</p>
   <small>
     
       Last update:
-      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
+      <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">February 13, 2024</span>
       
     
   </small>
