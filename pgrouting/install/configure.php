@@ -21,6 +21,14 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
         );
     }
 
+    public function getFilesToCopy()
+    {
+        return array(
+            '../www/css' => 'www:pgrouting/css',
+            '../www/js/dist' => 'www:pgrouting/js',
+        );
+    }
+
     public function configure(ConfigurationHelpers $helpers)
     {
         // srid = projection of the target pgrouting tables
@@ -34,9 +42,6 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
             'PostgreSQL group of user to grant access on the schema pgrouting ?',
             $this->parameters['postgresql_user_group']
         );
-
-        $helpers->copyDirectoryContent('../www/css', jApp::wwwPath('pgrouting/css'));
-        $helpers->copyDirectoryContent('../www/js/dist', jApp::wwwPath('pgrouting/js'));
     }
 
     public function localConfigure(LocalConfigurationHelpers $helpers)
