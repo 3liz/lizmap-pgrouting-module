@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.1.0 - 2024-06-17
+
+### Changed
+
+* Compatibility with Lizmap 3.8
+* Update JavaScript to use OpenLayers and lit-html exposed APIs from Lizmap
+
 ## 1.0.9 - 2024-01-18
 
 ### Fixed
