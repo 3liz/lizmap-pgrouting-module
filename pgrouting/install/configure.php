@@ -25,7 +25,7 @@ class pgroutingModuleConfigurator extends \Jelix\Installer\Module\Configurator
     {
         return array(
             '../www/css' => 'www:pgrouting/css',
-            '../www/js/dist' => 'www:pgrouting/js',
+            '../www/js' => 'www:pgrouting/js',
         );
     }
 

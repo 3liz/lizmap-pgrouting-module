@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.1.1 - 2024-06-18
+
+### Fixed
+
+* Fix path to JS being copied
+* Put minimum version of Lizmap to 3.8.*
+
 ## 1.1.0 - 2024-06-17
 
 ### Changed
