@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 1.1.2 - 2024-07-24
+
+### Fixed
+
+* JS: Using addToolLayer
+* Tests: environnement for LWC 3.8
+
 ## 1.1.1 - 2024-06-18
 
 ### Fixed
