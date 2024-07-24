@@ -10,7 +10,7 @@
         <homepageURL>https://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <module name="lizmap" minversion="3.8.0" maxversion="3.8.*"/>
+        <module name="lizmap" minversion="3.8.0-rc.3" maxversion="3.8.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="PgRouting" dir="lib/"/>
