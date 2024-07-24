@@ -315,8 +315,8 @@ class pgRouting extends HTMLElement {
         lizMap.mainLizmap.map.addInteraction(this._modifyRoute);
         lizMap.mainLizmap.map.addInteraction(this._modifyMilestone);
 
-        lizMap.mainLizmap.map.addLayer(this._routeLayer);
-        lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
+        lizMap.mainLizmap.map.addToolLayer(this._routeLayer);
+        lizMap.mainLizmap.map.addToolLayer(this._milestoneLayer);
 
         // Show mouse pointer when hovering origin or destination points
         lizMap.mainLizmap.map.on('pointermove', (e) => {
