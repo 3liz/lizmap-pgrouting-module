@@ -2,8 +2,36 @@
 
 ## Unreleased
 
+## 1.1.2 - 2024-07-24
+
+### Fixed
+
+* JS: Using addToolLayer
+* Tests: environnement for LWC 3.8
+
+## 1.1.1 - 2024-06-18
+
+### Fixed
+
+* Fix path to JS being copied
+* Put minimum version of Lizmap to 3.8.*
+
+## 1.1.0 - 2024-06-17
+
 ### Changed
 
+* Compatibility with Lizmap 3.8
+* Update JavaScript to use OpenLayers and lit-html exposed APIs from Lizmap
+
+## 1.0.9 - 2024-01-18
+
+### Fixed
+
+* Fix: `copy-route` button not visible when active with Lizmap 3.7
+
+### Changed
+
+* Update QGIS test project to 3.28 for Lizmap 3.7
 * Add a localized string for the dock title instead of `pgRouting`
 * Fix some typo
 

@@ -13,18 +13,13 @@ make run
 
 ```
 
-- call these commands if you are using Lizmap <=3.5
+- Install the module and default rights
 
 ```bash
-make import-lizmap-acl-3-5
-```
-
-- else call these commands if you are using Lizmap >=3.6
-
-```bash
-# install the module (for Lizmap 3.6+)
+# install the module
 make install-module
 
+# Set default rights
 make import-lizmap-acl
 ```
 

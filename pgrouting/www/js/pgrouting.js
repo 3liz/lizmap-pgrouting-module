@@ -1,19 +1,3 @@
-import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
-import GeoJSON from 'ol/format/GeoJSON';
-import WKT from 'ol/format/WKT.js';
-import { Vector as VectorSource } from 'ol/source';
-import { Vector as VectorLayer } from 'ol/layer';
-import { Draw , Modify } from 'ol/interaction.js';
-import { altKeyOnly } from 'ol/events/condition.js';
-import Feature from 'ol/Feature.js';
-import Point from 'ol/geom/Point.js';
-import LineString from 'ol/geom/LineString.js';
-import { get as getProjection } from 'ol/proj.js';
-import { register } from 'ol/proj/proj4.js';
-import proj4 from 'proj4';
-
-import { html, render } from 'lit-html';
-
 class pgRouting extends HTMLElement {
 
     constructor() {
@@ -21,15 +5,36 @@ class pgRouting extends HTMLElement {
     }
 
     connectedCallback() {
-
-        for (const [ref, def] of Object.entries(lizProj4)) {
-            if (ref !== "" && !getProjection(ref)) {
-                proj4.defs(ref, def);
+        lizMap.events.on({
+            uicreated: () => {
+                this.init();
+                this.initDraw();
+                this.toggleDrawVisibility(false);
+            },
+            dockopened: (evt) => {
+                if (evt.id === "pgrouting") {
+                    lizMap.mainLizmap.popup.active = false;
+                    this.toggleDrawVisibility(true);
+                    lizMap.litHTML.render(this._mainTemplate(), this);
+                    // Add tooltip on buttons
+                    $('.btn', this).tooltip({
+                        placement: 'top'
+                    });
+                }
+            },
+            dockclosed: (evt) => {
+                if (evt.id === "pgrouting") {
+                    lizMap.mainLizmap.popup.active = true;
+                    this.toggleDrawVisibility(false);
+                }
             }
-        }
+        });
+    }
 
-        register(proj4);
+    disconnectedCallback() {
+    }
 
+    init() {
         // Get locales
         this._locales = '';
 
@@ -48,35 +53,35 @@ class pgRouting extends HTMLElement {
 
         this._nodePosition = 0;
 
-        this._mainTemplate = () => html`
+        this._mainTemplate = () => lizMap.litHTML.html`
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn" data-original-title="${this._locales['route.redraw']}" @click=${ () => this.restartDraw()}>
+                    <button class="btn" data-original-title="${this._locales['route.redraw']}" @click=${() => this.restartDraw()}>
                         <svg width="18" height="18">
                             <use xlink:href="#refresh" />
                         </svg>
                     </button>
-                    ${lizMap.mainLizmap.featureStorage ? html`
-                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${ () => this.copyToFeatureStorage()}></button>` : ''}
+                    ${lizMap.mainLizmap.featureStorage ? lizMap.litHTML.html`
+                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${() => this.copyToFeatureStorage()}></button>` : ''}
                 </div>
                 <div class="pgrouting">
-                    ${this._mergedRoads.length > 0 ? html`
+                    ${this._mergedRoads.length > 0 ? lizMap.litHTML.html`
                     <div class="roadmap">
                         <h4>${this._locales['roadmap.title']}</h4>
                         <dl>
-                            ${this._mergedRoads.map((road) => html`<dt>${road.label ? road.label : this._locales['road.label.missing']}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`)}
+                            ${this._mergedRoads.map((road) => lizMap.litHTML.html`<dt>${road.label ? road.label : this._locales['road.label.missing']}</dt><dd>${road.distance < 1 ? 1 : Math.round(road.distance)}m</dd>`)}
                         </dl>
                     </div>`: ''
-                    }
-                    ${this._POIFeatures.length > 0 ? html`
+            }
+                    ${this._POIFeatures.length > 0 ? lizMap.litHTML.html`
                     <div class="poi">
                         <h4>${this._locales['poi.title']}</h4>
                         <dl>
-                            ${this._POIFeatures.map((feature) => html`<dt>${feature.properties.label}</dt><dd>${feature.properties.description}</dd><dd>${feature.properties.type}</dd>`)}
+                            ${this._POIFeatures.map((feature) => lizMap.litHTML.html`<dt>${feature.properties.label}</dt><dd>${feature.properties.description}</dd><dd>${feature.properties.type}</dd>`)}
                         </dl>
                     </div>`: ''
-                    }
+            }
                 </div>
             </div>`;
 
@@ -90,40 +95,13 @@ class pgRouting extends HTMLElement {
                     this._locales = JSON.parse(json);
                 }
             });
-
-        lizMap.events.on({
-            uicreated: () => {
-                this.initDraw();
-                this.toggleDrawVisibility(false);
-            },
-            dockopened: (evt) => {
-                if (evt.id === "pgrouting") {
-                    lizMap.mainLizmap.newOlMap = true;
-                    this.toggleDrawVisibility(true);
-                    render(this._mainTemplate(), this);
-                    // Add tooltip on buttons
-                    $('.btn', this).tooltip({
-                        placement: 'top'
-                    });
-                }
-            },
-            dockclosed: (evt) => {
-                if (evt.id === "pgrouting") {
-                    lizMap.mainLizmap.newOlMap = false;
-                    this.toggleDrawVisibility(false);
-                }
-            }
-        });
-    }
-
-    disconnectedCallback() {
     }
 
     initDraw() {
         this._milestoneRouteMap = new Map();
 
         // Init milestones draw
-        const milestoneSource = new VectorSource({
+        const milestoneSource = new lizMap.ol.source.Vector({
             useSpatialIndex: false
         });
 
@@ -136,15 +114,17 @@ class pgRouting extends HTMLElement {
             }
         });
 
-        this._drawInteraction = new Draw({
+        this._drawInteraction = new lizMap.ol.interaction.Draw({
             source: milestoneSource,
             type: "Point",
         });
 
-        this._modifyMilestone = new Modify({
+        this._drawInteraction.setActive(false);
+
+        this._modifyMilestone = new lizMap.ol.interaction.Modify({
             source: milestoneSource,
             deleteCondition: evt => {
-                if(evt.type === 'singleclick' && altKeyOnly(evt)){
+                if(evt.type === 'singleclick' && lizMap.ol.events.condition.altKeyOnly(evt)){
                     const features = lizMap.mainLizmap.map.getFeaturesAtPixel(evt.pixel, {
                         layerFilter: layer => {
                             return layer === this._milestoneLayer;
@@ -162,7 +142,8 @@ class pgRouting extends HTMLElement {
             this._refreshRoute(event.features.item(0), 'modify');
         });
 
-        this._milestoneLayer = new VectorLayer({
+        this._milestoneLayer = new lizMap.ol.layer.Vector({
+            visible: false,
             source: milestoneSource,
             style: (feature) => {
                 const milestoneFeatures = this._milestoneLayer.getSource().getFeaturesCollection().getArray();
@@ -185,21 +166,21 @@ class pgRouting extends HTMLElement {
                 } else {
                     labelText = featureIndex.toString();
                 }
-                return new Style({
-                    image: new CircleStyle({
+                return new lizMap.ol.style.Style({
+                    image: new lizMap.ol.style.Circle({
                         radius: circleRadius,
-                        fill: new Fill({
+                        fill: new lizMap.ol.style.Fill({
                             color: fillColor,
                         }),
-                        stroke: new Stroke({
+                        stroke: new lizMap.ol.style.Stroke({
                             color: strokeColor,
                             width: strokeWidth,
                         }),
                     }),
-                    text: new Text({
+                    text: new lizMap.ol.style.Text({
                         text: labelText,
                         font: 'bold 14px sans-serif',
-                        fill: new Fill({
+                        fill: new lizMap.ol.style.Fill({
                             color: strokeColor,
                         }),
                         offsetY: 1,
@@ -210,9 +191,9 @@ class pgRouting extends HTMLElement {
         });
 
         // Display route
-        const routeSource = new VectorSource();
+        const routeSource = new lizMap.ol.source.Vector();
 
-        this._modifyRoute = new Modify({
+        this._modifyRoute = new lizMap.ol.interaction.Modify({
             source: routeSource
         });
 
@@ -227,8 +208,8 @@ class pgRouting extends HTMLElement {
                         const oldMilestoneFeatures = this._milestoneLayer.getSource().getFeatures();
                         this._milestoneLayer.getSource().clear();
 
-                        const newFeature = new Feature({
-                            geometry: new Point(coords)
+                        const newFeature = new lizMap.ol.Feature({
+                            geometry: new lizMap.ol.geom.Point(coords)
                         });
 
                         // Avoid 'addfeature' callback
@@ -269,27 +250,27 @@ class pgRouting extends HTMLElement {
             });
         });
 
-        this._routeLayer = new VectorLayer({
+        this._routeLayer = new lizMap.ol.layer.Vector({
+            visible: false,
             source: routeSource,
             style: (feature) => {
                 const geometry = feature.getGeometry();
                 const styles = [
                     // linestring
-                    new Style({
-                        stroke: new Stroke({
+                    new lizMap.ol.style.Style({
+                        stroke: new lizMap.ol.style.Stroke({
                             color: this._routeLineColor,
                             width: 11,
                         }),
                     }),
-                    new Style({
-                        stroke: new Stroke({
+                    new lizMap.ol.style.Style({
+                        stroke: new lizMap.ol.style.Stroke({
                             color: this._routeLineColor,
                             width: 9,
                         }),
                     }),
                 ];
 
-                let s = 0;
                 geometry.forEachSegment((start, end) => {
                     let arrowWidth = 0;
                     let arrowFontSize = 0;
@@ -304,18 +285,18 @@ class pgRouting extends HTMLElement {
 
                     // arrows
                     styles.push(
-                        new Style({
-                            geometry: new Point(end),
-                            text: new Text({
+                        new lizMap.ol.style.Style({
+                            geometry: new lizMap.ol.geom.Point(end),
+                            text: new lizMap.ol.style.Text({
                                 text: '>',
                                 font: `normal ${arrowFontSize}px sans-serif`,
                                 rotateWithView: true,
                                 rotation: -rotation,
-                                stroke: new Stroke({
+                                stroke: new lizMap.ol.style.Stroke({
                                     color: 'white',
                                     width: arrowWidth,
                                 }),
-                                fill: new Fill({
+                                fill: new lizMap.ol.style.Fill({
                                     color: 'white',
                                 })
                             })
@@ -334,8 +315,8 @@ class pgRouting extends HTMLElement {
         lizMap.mainLizmap.map.addInteraction(this._modifyRoute);
         lizMap.mainLizmap.map.addInteraction(this._modifyMilestone);
 
-        lizMap.mainLizmap.map.addLayer(this._routeLayer);
-        lizMap.mainLizmap.map.addLayer(this._milestoneLayer);
+        lizMap.mainLizmap.map.addToolLayer(this._routeLayer);
+        lizMap.mainLizmap.map.addToolLayer(this._milestoneLayer);
 
         // Show mouse pointer when hovering origin or destination points
         lizMap.mainLizmap.map.on('pointermove', (e) => {
@@ -375,7 +356,7 @@ class pgRouting extends HTMLElement {
         }
 
         // Save these coordinates as an OpenLayer Linestring geometry
-        let olGeometry = new LineString(coordinates);
+        let olGeometry = new lizMap.ol.geom.LineString(coordinates);
 
         // Set the variable containing the generated geometry
         this._routeGeometry = olGeometry;
@@ -388,7 +369,7 @@ class pgRouting extends HTMLElement {
 
         // Save this geometry in Lizmap Storage
         if (this._routeGeometry !== null) {
-            lizMap.mainLizmap.featureStorage.set([new Feature({
+            lizMap.mainLizmap.featureStorage.set([new lizMap.ol.Feature({
                 geometry: this._routeGeometry,
             })], 'pgrouting');
             lizMap.addMessage(this._locales['route.copied'], 'success', true, 1500);
@@ -404,10 +385,12 @@ class pgRouting extends HTMLElement {
         this._POIFeatures = [];
         this._routeGeometry = null;
 
-        render(this._mainTemplate(), this);
+        lizMap.litHTML.render(this._mainTemplate(), this);
     }
 
     toggleDrawVisibility(visible){
+        this._drawInteraction.setActive(visible);
+
         if (this._milestoneLayer) {
             this._milestoneLayer.setVisible(visible);
         }
@@ -497,7 +480,7 @@ class pgRouting extends HTMLElement {
                         delete feature.id;
                     }
 
-                    const routeFeatures = new GeoJSON().readFeatures(json.routing, {
+                    const routeFeatures = new lizMap.ol.format.GeoJSON().readFeatures(json.routing, {
                         dataProjection: 'EPSG:4326',
                         featureProjection: lizMap.mainLizmap.projection
                     });
@@ -551,7 +534,7 @@ class pgRouting extends HTMLElement {
                 }
             });
         });
-        render(this._mainTemplate(), this);
+        lizMap.litHTML.render(this._mainTemplate(), this);
     }
 
     /**
@@ -568,7 +551,7 @@ class pgRouting extends HTMLElement {
         // Useful to get used by LWC <= 3.7 by other JS codes
         if (this._routeGeometry !== null) {
             // convert the OpenLayers geometry to WKT
-            var format = new WKT();
+            var format = new lizMap.ol.format.WKT();
             var wktGeometry = format.writeGeometry(this._routeGeometry);
 
             // Send the Lizmap event

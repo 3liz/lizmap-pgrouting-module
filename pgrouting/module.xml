@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module xmlns="http://jelix.org/ns/module/1.0">
     <info id="pgrouting3liz.com" name="pgrouting" createdate="2021-04-29">
-        <version date="2023-07-11">1.0.8</version>
+        <version date="2024-07-24">1.1.2</version>
         <label lang="en_US">pgrouting</label>
         <description lang="en_US" />
         <license URL="">Mozilla Public License : http://www.mozilla.org/MPL/</license>
-        <copyright>2021-2023 3Liz</copyright>
+        <copyright>2021-2024 3Liz</copyright>
         <creator name="3Liz" email="info@3liz.com" />
         <homepageURL>https://3liz.com</homepageURL>
     </info>
     <dependencies>
-        <module name="lizmap" minversion="3.5.6" maxversion="3.7.*"/>
+        <module name="lizmap" minversion="3.8.0-rc.3" maxversion="3.8.*"/>
     </dependencies>
     <autoload>
         <namespacePathMap name="PgRouting" dir="lib/"/>
