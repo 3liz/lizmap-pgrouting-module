@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 1.1.3 - 2025-06-23
+
+### Added
+
+* Compatibility for LWC 3.9
+
 ## 1.1.2 - 2024-07-24
 
 ### Fixed
