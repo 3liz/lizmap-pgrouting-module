@@ -545,7 +545,7 @@ BEGIN
             FROM pgrouting.routing_poi As lg
             JOIN source as s
                 ON ST_DWithin(ST_Transform(s.geom, 2154), lg.geom, 1)
-            GROUP BY s.seq, lg.id, lg.label, lg.type, lg.description
+            GROUP BY s.seq, lg.id, lg.geom, lg.label, lg.type, lg.description
             ORDER BY s.seq
         ) AS f
     )
