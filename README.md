@@ -10,6 +10,11 @@
 * Documentation (installation, usage..) : https://docs.3liz.org/lizmap-pgrouting-module or see the docs/ directory
 * Funded by [CRIGE PACA](https://www.crige-paca.org/) in France
 
+**CRIGE PACA Updates (May 29, 2026):**
+
+- Added a route download feature on May 6, 2026
+- Stabilized icons on May 29, 2026: removed the copy-paste block (CSS) + added SVG links in the JavaScript.
+
 ![pgrouting](docs/media/pgrouting.gif)
 
 ## Getting help

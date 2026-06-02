@@ -1,0 +1,273 @@
+* [33m3944d31[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mcrige[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m GitLab - Add release script
+* [33mdce22e5[m Release of 1.1.3
+* [33m4126e32[m Update default versions, mainly LWC 3.9
+* [33m1d6eb3a[m 1.1.3-pre max lizmap version 3.9.*
+* [33m6b50ac6[m Update docker-compose.yml about deprecated 'version' parameter
+* [33me0fc539[m Update Makefile about PG version
+* [33mdbf99e9[m Update Makefile to use latest 3.8.X
+* [33m058065a[m Release 1.1.2
+* [33meb6a663[m Tests: environnement for LWC 3.8
+* [33m6e23fd4[m JS: Using addToolLayer
+* [33m571992d[m Set minimum version to 3.8.0 not 3.8.x
+* [33m265535b[m add romanian locale
+* [33m62a3463[m Release 1.1.1
+* [33m90bdace[m Release 1.1.0
+* [33mc1d0669[m Remove build tools
+* [33m72ddec2[m Update pgrouting.js to use exposed ol and lit-html APIs
+* [33m0ab1085[m Fix configuration script: use the getFilesToCopy method
+* [33m8f997c9[m Docs - Review the configuration about a 404 link
+* [33macd928d[m Update mkdocs.yml
+* [33mec8f3b4[m Update documentation about installation
+* [33m5ddca6d[m Release 1.0.9
+* [33m6684c43[m Update php-lint action for Github Use same Lizmap setup
+* [33m3939938[m Fix: `copy-route` button not visible when active
+* [33m7a513a6[m Update makefile and test project for  Lizmap 3.7
+* [33m688451e[m [package] Exclude some files from the Composer package
+* [33m131e4dc[m Fix some typo and rename the dock title
+* [33mf796a80[m Apply php-cs-fixer
+* [33mc874070[m Release 1.0.8
+* [33m8302974[m Upgrader for the GRANT change in 1.0.7
+* [33md77df10[m Don't install assets into assets/
+* [33m6f1d7c9[m Fix: correct built JS
+* [33m73c8401[m Release 1.0.7
+* [33mf9d20c4[m Rename umd.cjs to umd.js Ref: https://vitejs.dev/guide/build.html#library-mode If the package.json does not contain "type": "module", Vite will generate different file extensions for Node.js compatibility. .js will become .mjs and .cjs will become .js
+* [33ma606ca4[m PostgreSQL structure - Fix rights on pgrouting schema sequences
+* [33m6be1893[m Version 1.0.6
+* [33mcd0981d[m Improve the style of the route and the start, intermediate & end points
+* [33mcc289e0[m Route geometry export - Fix some nodes not exported (oversimplified geometry)
+* [33md75376d[m Release 1.0.5
+* [33ma4fc907[m Upgrade - Correctly overwrite the CSS and JS files when upgrading
+* [33m725d6b4[m Update CHANGELOG.md
+* [33m7259fa7[m Version 1.0.4
+* [33m9e04e12[m QGIS Project - use a project variable to activate the module
+* [33md4689e1[m Docs - Improve the installation file
+* [33mfe3b1d7[m Docs - Adapt SQL import example to the new field names
+* [33mf4f0559[m Release 1.0.3
+* [33m59e1fcb[m Handle projections others than already known by OL
+* [33m6138395[m Release 1.0.2
+* [33m3e8ce55[m [tests] disable mailer, and new make postgres
+* [33m1f5c83c[m Add missing script to call during the upgrade, to set write access to a group
+* [33m96c77cd[m Version 1.0.1
+*   [33m4a18948[m Merge pull request #39 from mdouchin/grant-write-access-to-postgresql-group
+[32m|[m[33m\[m  
+[32m|[m * [33m92be3a7[m Installation - Grant write access to the pgrouting schema tables to a given PostgreSQL user group
+[32m|[m[32m/[m  
+*   [33m42a9c29[m Merge pull request #38 from mdouchin/add-geometry-generation-event
+[34m|[m[35m\[m  
+[34m|[m * [33mf8575b0[m Trigger an event with the route geometry as WKT
+[34m|[m[34m/[m  
+* [33m4359b48[m Docs - update changelog about new features
+* [33m4483902[m Tests - Change the default LWC version from 3.5 to 3.6
+* [33m4756403[m Publish built pgrouting.js + mapfile
+* [33m8ed82ed[m Fix paths to JS in install
+* [33m5caf4e1[m Change JS format from 'es' to 'umd' This allows better minification
+* [33m251fe28[m Update lit-html + vitejs
+* [33m99773ab[m Release 1.0.0
+* [33m76b97ca[m Fix coding style
+* [33m6b08109[m Fix some PHP notices/warnings
+* [33m464d4ff[m CheckConfig and Search are now autoloadable
+* [33m2544499[m [tests] Update README.md: import-data should be done after the module install
+* [33mefc39d6[m checkConfig should take care of bad sql connection
+*   [33m62d930a[m Merge pull request #35 from 3liz/copy-feature
+[36m|[m[1;31m\[m  
+[36m|[m * [33m6002040[m Avoid duplicate coords when copying
+[36m|[m * [33mabf1339[m Disable copy-route btn when there is no route
+[36m|[m * [33m03ac01c[m Fix PHP lint
+[36m|[m * [33m28d96c9[m Arrow style to visualize direction
+[36m|[m * [33m87d5607[m Add button to copy route Needs `lizMap.mainLizmap.featureStorage` to be displayed
+[36m|[m * [33me54441d[m test: add edition layer
+[36m|[m[36m/[m  
+* [33me1f2215[m SQL - Use the explicit names of the returned columns when using pgr_dijkstra or pgr_aStar
+* [33m93773f0[m Reverse the edges geometry to respect the routing direction
+*   [33m4388560[m Merge pull request #34 from 3liz/intermediate-points
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33m8f480d9[m Update SQL tests. Postgis 3 mini
+[1;32m|[m * [33m8b125f2[m Fix `pgr_dijkstra` signature `pgr_dijkstra` outputs have changed in pgrouting 3.5.0 Ref: https://docs.pgrouting.org/latest/en/migration.html#migration-of-pgr-dijkstra
+[1;32m|[m * [33m4a1003c[m vitejs: use different paths for dev and prod - `dist` path is used for prod - the path to js in Lizmap instance is used for dev
+[1;32m|[m * [33mff7aeeb[m Partially revert 2fff7b17b05b81cb2a728fe845e3ec99742a6810
+[1;32m|[m * [33mb0ef0ff[m Refresh road map
+[1;32m|[m * [33m2fff7b1[m Add button to toggle routing
+[1;32m|[m * [33mfeaffcf[m Create intermediate point when dragging route
+[1;32m|[m * [33meb0da27[m Add number labels to intermediate points
+[1;32m|[m * [33m3d542c8[m Improve milestone layer style
+[1;32m|[m * [33m3ad551b[m Handle milestone deletion
+[1;32m|[m * [33mf375184[m Refresh route when intermediate point changes Set `this._milestoneRouteMap` index as an array of origin feature and destination feature
+[1;32m|[m * [33m49e95cd[m Keep milestone and route features map + refacto
+[1;32m|[m * [33m272fa30[m Listen milestone modification + refactoring
+[1;32m|[m * [33mda990e8[m Handle getFeatures returning features in random order Set `useSpatialIndex` to `false` to keep features in the order they have  been added
+[1;32m|[m * [33mb5b4456[m Build JS with ViteJS
+[1;32m|[m * [33mee831a4[m Allow drawing of intermediate points
+* [1;33m|[m [33mbdee007[m Increase required lizmap max version to 3.7
+[1;33m|[m[1;33m/[m  
+* [33m035edbf[m Release 0.3.1
+* [33ma6710fe[m [tests] Fix Makefile to launch lizmap command
+* [33m9cb9002[m Delete .php_cs.dist
+* [33m9455fb8[m Docs - Update changelog
+* [33mf4ed3d0[m CI - Switch to qgis-plugin-ci to GH Action image for the changelog
+* [33mf183f1b[m Makefile - Write less docker compose exec by chaining commands
+* [33m190a23c[m Docs - The changelog reader can not read subsections for now
+* [33m1c1f696[m PHP - Fix lint
+* [33m0dc113f[m Fix configurator of the pgrouting module for Lizmap 3.6
+* [33m9af2a6b[m Release 0.3.0
+* [33m4bb14cf[m Update OL to 6.15.1
+* [33mffe51ba[m Tests - Integrate pytest inside the docker compose project
+* [33ma024284[m PHP-Cs-Fixer - Upgrade to 3.12.0 and run it
+* [33m5a69dd8[m GH - Update workflows : cache, Python version, dependabot
+* [33mb96d941[m Tests - Review the docker stack
+* [33m9d0bddd[m Bump actions/checkout from 2 to 3
+* [33m8d30f02[m Bump ncipollo/release-action from 1.9.0 to 1.11.1
+* [33mc462c25[m Bump actions/setup-node from 2.5.1 to 3.5.0
+* [33m7d58573[m Bump actions/cache from 2.1.6 to 3.0.10
+* [33m12aa38b[m Bump actions/setup-python from 2.3.1 to 4.3.0
+* [33m6adaa85[m GH Action - Use native cache for Python
+* [33m5610d6f[m CI - Enable dependabot temporary
+* [33m4b708a2[m FIx install doc for Lizmap 3.6
+* [33m4ffb630[m CI - Refactor the gitlab-ci file
+* [33m826e6f8[m Update test stack - Update QGIS and PostGIS - Use docker compose instead of docker-compose
+* [33mcf84259[m Experimental compatibility with Lizmap 3.6
+* [33m8ddf398[m Docs - Bump to mkdocs minimum to 8.1.0
+* [33ma252ff9[m CI - Update dependabot and qgis-plugin-ci
+* [33m29eaf52[m Bump actions/setup-node from 2.5.0 to 2.5.1
+* [33m12f5e92[m Fix lint php-cs-fixer
+* [33m9464326[m Adding php-cs-fixer into git actions
+* [33m8311e19[m Bump actions/setup-python from 2.2.2 to 2.3.1
+* [33mba225dd[m Bump ncipollo/release-action from 1.8.10 to 1.9.0
+* [33m90d20e8[m Bump actions/setup-node from 2.4.1 to 2.5.0
+* [33m32d8144[m Bump actions/setup-python from 1 to 2.2.2
+* [33mead04c3[m Bump ncipollo/release-action from 1.8.9 to 1.8.10
+* [33m5f46fb7[m Add COMPOSE_PROJECT_NAME=pgrouting
+* [33m6d7510b[m Update changelog to keepachangelog format
+* [33m0b69768[m Release 0.2.1
+* [33m81658f9[m Fix: Drop previous roadmap when no routes found and display a message Fix #19
+* [33m9ac241d[m Release 0.2.0
+* [33med5b223[m Update changelog
+* [33mc049299[m Add a button to reset start and end point Fix #10
+* [33mb23ee10[m Use lit-html to cleanly display UI
+* [33m582a895[m Keep route visible on map when closing dock
+*   [33m32acb25[m Merge pull request #18 from mdouchin/import_improvements
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [33m2eb1874[m Upgrade version
+[1;34m|[m * [33m8289339[m Improve documentation and add unit tests
+[1;34m|[m * [33mf49749f[m Tests - Improve README with a note on PostgreSQL docker service
+[1;34m|[m * [33m9aa3cb1[m Add default label 'unnamed road' in the pgRouting dock when the edge has no label
+[1;34m|[m * [33madf94c3[m Fix bug in controller preventing from getting the route in expected format
+[1;34m|[m * [33mf48b391[m Improve the performances of the routing functions and of the IGN french road script
+[1;34m|[m[1;34m/[m  
+* [33m2932bc8[m Gitlab - change to factory-ci-base:python-3.9
+* [33m3ff1c2b[m CI - Add path to ~/.local/bin
+* [33md64917b[m Fix tag gitlab-ci
+* [33m77811d5[m Use Python 3.9 on gitlab
+* [33mb405274[m Tests - Use te binary package
+* [33m065224f[m Docs - Update readme about tests
+* [33m55f220d[m Docs - Update readme.md
+* [33mb5da6d5[m Tests - Switch to psycopg3 instead of 2, review cursor in tests
+* [33m42324ff[m Tests - Add framework on GH Action
+* [33mad5e457[m Tests - Add pytest support
+* [33ma3b117c[m Update .gitignore about phpdoc
+* [33m25c3ab3[m Update changelog
+* [33mb1a9247[m class to check projetc and database configuration
+* [33m1186da0[m Check data result in search class
+* [33m71a9b6b[m Bump ncipollo/release-action from 1.8.8 to 1.8.9
+* [33m8ad4de9[m Bump actions/setup-node from 2.4.0 to 2.4.1
+* [33m8f53b21[m Update mkdocs-material requirement in /requirements
+* [33m16012b3[m Use transform method from Lizmap not jsdelivr Needed projections are registered in Lizmap yet
+* [33m482de33[m Tests: set Lizmap minimum version to 3.5
+* [33m0bb1234[m Small typo in readme
+* [33mb44cda6[m Adding help note
+* [33mea318dd[m Dependabot - Assign myself
+* [33m4fceec6[m Bump ncipollo/release-action from 1.8.6 to 1.8.8
+* [33m688a593[m Bump actions/setup-node from 2.3.0 to 2.4.0
+* [33m59a5f66[m Bump actions/setup-node from 2.2.0 to 2.3.0
+* [33m82a5342[m Update mkdocs-material requirement in /requirements
+*   [33m3c5be52[m Merge pull request #4 from drillinP/doc_update
+[1;36m|[m[31m\[m  
+[1;36m|[m * [33m390a473[m adding project name required for the module
+[1;36m|[m[1;36m/[m  
+* [33m76371b2[m Change one word, cadastre to pgrouting
+* [33m414c5af[m Bump actions/setup-node from 2.1.5 to 2.2.0
+*   [33m59462f5[m Merge pull request #2 from lhirlimann/fixdoc
+[32m|[m[33m\[m  
+[32m|[m * [33m6fbfba7[m Add requirements add sql port to the doc
+[32m|[m[32m/[m  
+* [33m6b5bd0a[m Docs - Remove files which are not needed
+* [33mb124c60[m Bump actions/cache from 2.1.5 to 2.1.6
+* [33mce82b48[m Docs - Add mkdocs documentation
+* [33me96e0d3[m Docs - Update changelog
+* [33m2a2cc9c[m Release 0.1.0
+*   [33m3d76133[m Merge branch 'composer_json' into 'master'
+[34m|[m[35m\[m  
+[34m|[m * [33m593f1fc[m Adding composer.json
+* [35m|[m [33m14aacbe[m GitLab - Update the configuration for the release
+[35m|[m[35m/[m  
+* [33mf7fd67f[m translate into english
+* [33m0d802c6[m CI - Prepare the creation of tickets for deployments
+* [33maefe703[m Docs - Add empty changelog file
+* [33m62510b8[m Review headers in PHP files and PHP-CS-Fixer
+* [33mc3e8350[m Fix typo dictionnary -> dictionary
+* [33me31bf10[m Gitignore - Ignore python venv
+* [33m2c686db[m Docs - Include the GIF as well
+*   [33m5ab655d[m Merge branch 'locales' into 'master'
+[36m|[m[1;31m\[m  
+[36m|[m * [33m7158613[m Handle locales
+[36m|[m[36m/[m  
+* [33m73180f4[m Update locale en_EN to en_US
+* [33m9583873[m fix install sql
+* [33m9c25293[m fix checking ext
+* [33m18f0919[m Update lizmap max version in module.xml
+* [33m0a77840[m adding docs and the installation instructions
+* [33mf268509[m Improve UI
+* [33m365e313[m Changement titre de la roadmap
+* [33m146c3a3[m Toggle route visibility on dock open/close
+* [33me4c94ea[m Display POI
+* [33m00d49e2[m Fix transform geom
+* [33m977490a[m Fix: origin/destination in correct order Drawn features are returned randomly so we have to use their id to get origin and destination
+* [33m1298603[m fix  drop index in sql
+* [33ma804df6[m Adding check postgres extension
+*   [33m749b2f4[m Merge branch 'lint-php' into 'master'
+[1;32m|[m[1;33m\[m  
+[1;32m|[m * [33mee69642[m Lint PHP
+* [1;33m|[m [33m55775dd[m Show mouse pointer when hovering origin/destination points
+[1;33m|[m[1;33m/[m  
+* [33m7222aa6[m Add eslint configuration
+* [33meafbfcf[m Display roadmap
+* [33m022a99d[m Project name must contains 'pgrouting' to enable the module
+* [33m647e097[m Update pgrouting.js
+* [33mb94b35a[m Add metadata table
+* [33m1761d3a[m Update function get_geojson_roadmap
+* [33m6dde351[m Move pgrouting QGIS project in its repository
+* [33m1afc28b[m Add pgrouting.js as a JS module
+* [33m079e4c8[m Add order into poi result with sequance number
+* [33md7157e7[m Add qgis prject
+* [33m5e5a120[m Use function to choose between dijkstra and astar routing alg
+*   [33mc38000c[m Merge branch 'cdn-module' into 'master'
+[1;34m|[m[1;35m\[m  
+[1;34m|[m * [33m04d066f[m Use cdn for modules instead of local
+* [1;35m|[m [33mdfe6803[m Add table routing_poi
+[1;35m|[m[1;35m/[m  
+* [33m4b42792[m Install and load assets
+* [33me7adf5b[m Adding specific test for origin and destinatiion parameters and some changes in php
+* [33m81b0da1[m Add function to create geojson roadmap
+* [33m1cdf351[m Add pgrouting.js
+* [33m67819d7[m Change type intger to bigint in create_roadmap function for a returned column
+* [33mc4825c6[m Adding parameters types to drop function
+* [33m42ea0d2[m Update controller
+*   [33m327de7e[m Merge branch 'test-dropin' into 'master'
+[1;36m|[m[31m\[m  
+[1;36m|[m * [33m7676cc6[m Test dropin of configuration files
+* [31m|[m [33m0cf564e[m Make FUNCTION creation indempotent
+[31m|[m[31m/[m  
+* [33mbda0a6e[m Adding sql function to calcul short path between 2 points
+* [33mb6a6c72[m Update sql remove if exists to one constarint
+* [33m1d68f2b[m Ajout de edges_info
+* [33mf3f594b[m CI - Simplify the gitlab-ci base image
+* [33m85b4234[m Use 'pgrouting' schema at installation
+* [33m3903cb4[m Create database + postgis, and pgrouting extension
+* [33mbdffef8[m CI - Run some SQL tests
+* [33m0ed8886[m Ajout du sql
+* [33m79945d0[m Add profile in README for tests
+* [33m4728abb[m Add Postgis to docker-compose
+* [33m68ff1bf[m Add pgrouting in Lizmap dock
+* [33m4afe3a7[m Add simple Lizmap project
+* [33mdda64b1[m Add Lizmap w/ docker for developers
+* [33m3bb76c3[m Init empty Jelix module
+* [33m6a2fde0[m Initial commit

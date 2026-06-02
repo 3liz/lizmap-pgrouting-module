@@ -63,8 +63,12 @@ class pgRouting extends HTMLElement {
                         </svg>
                     </button>
                     ${lizMap.mainLizmap.featureStorage ? lizMap.litHTML.html`
-                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${() => this.copyToFeatureStorage()}></button>` : ''}
-                </div>
+                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${() => this.copyToFeatureStorage()}><svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 100 100' ><path fill='black' d='M66 0a4 4 0 0 0-1 0c-7 0-12 6-12 13l-21 7c-2-3-5-6-10-6a4 4 0 0 0-1 0c-7 0-12 6-12 13 0 5 3 9 8 11l-5 17C5 55 0 61 0 68c0 6 6 12 13 12 3 0 7-2 9-5l21 11v2c0 6 6 12 13 12a13 13 0 0 0 12-14h1l2-4-6-2c-2-3-5-5-9-5a4 4 0 0 0-1 0l-2-1-1 2-6 3-21-10a12 12 0 0 0-6-12l5-18c5-1 10-6 10-12l21-7a13 13 0 0 0 23-7c0-7-5-13-12-13zm0 7c3 0 5 2 5 6 0 3-2 5-5 5-4 0-6-2-6-5 0-4 2-6 6-6zm32 9-6 2 1 4 7-2-2-4zm-10 3-7 3 1 4 8-3-2-4zm-66 2c3 0 5 2 5 6 0 3-2 5-5 5-4 0-6-2-6-5 0-4 2-6 6-6zm55 2-8 3 1 3 8-2-1-4zm-12 4-7 2 1 4 8-2-2-4zm-12 6-2 7 4 1 2-7-4-1zm-3 11-2 8 4 1 2-8-4-1zm-3 12-2 8 4 1 2-8-4-1zm-34 6c3 0 5 2 5 6 0 3-2 5-5 5-4 0-6-2-6-5 0-4 2-6 6-6zm31 5-1 5a2 2 0 0 0 1 2l3 2 2-4-2-1 1-3-4-1zm12 15c3 0 5 2 5 6 0 3-2 5-5 5-4 0-6-2-6-5 0-4 2-6 6-6zm18 2-1 4 7 3 1-3-7-4zm11 5-2 4 4 2 2-4-4-2z' color='#000' font-family='sans-serif' font-weight='400' overflow='visible' style='line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1'/></svg></svg></button>` : ''}
+					<button class="btn route-download" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.download'] || 'Télécharger'}" @click=${() => this.downloadRoute()}>
+						<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 100 100' ><path fill='black' d='M 41.339844 5 L 41.339844 25.705078 L 24.636719 25.705078 L 50 51.173828 L 75.363281 25.705078 L 58.660156 25.705078 L 58.660156 5 L 41.339844 5 z M 72.251953 37.324219 C 69.934661 39.652097 67.619758 41.982188 65.300781 44.308594 L 70.300781 44.308594 L 88.941406 66.265625 L 11.068359 66.318359 L 29.753906 44.308594 L 34.701172 44.308594 C 32.384352 41.980347 30.06359 39.657561 27.746094 37.330078 A 3.50035 3.50035 0 0 0 25.466797 38.542969 L 0.83203125 67.558594 A 3.50035 3.50035 0 0 0 3.5019531 73.324219 L 96.501953 73.259766 A 3.50035 3.50035 0 0 0 99.167969 67.494141 L 74.589844 38.542969 A 3.50035 3.50035 0 0 0 72.251953 37.324219 z ' color='#000' font-family='sans-serif' font-weight='400' overflow='visible' style='line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1'/></svg>
+						</svg>
+					</button>
+			   </div>
                 <div class="pgrouting">
                     ${this._mergedRoads.length > 0 ? lizMap.litHTML.html`
                     <div class="roadmap">
@@ -461,7 +465,9 @@ class pgRouting extends HTMLElement {
     }
 
     _getRoute(originFeature, destinationFeature) {
-
+		
+		this._lastOriginFeature = originFeature;
+		this._lastDestinationFeature = destinationFeature;
         const origin = lizMap.mainLizmap.transform(originFeature.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326');
         const destination = lizMap.mainLizmap.transform(destinationFeature.getGeometry().getCoordinates(), lizMap.mainLizmap.projection, 'EPSG:4326');
 
@@ -505,6 +511,48 @@ class pgRouting extends HTMLElement {
                 }
             });
     }
+	
+	downloadRoute() {
+    if (!this._lastOriginFeature || !this._lastDestinationFeature) {
+        lizMap.addMessage('Aucune route calculée. Veuillez d\'abord calculer une route.', 'error', true);
+        return;
+    }
+
+    // Utilise les features stockées
+    const origin = lizMap.mainLizmap.transform(
+        this._lastOriginFeature.getGeometry().getCoordinates(),
+        lizMap.mainLizmap.projection,
+        'EPSG:4326'
+    );
+    const destination = lizMap.mainLizmap.transform(
+        this._lastDestinationFeature.getGeometry().getCoordinates(),
+        lizMap.mainLizmap.projection,
+        'EPSG:4326'
+    );
+
+    const url = `${lizUrls.basepath}index.php/pgrouting/?repository=${lizUrls.params.repository}&project=${lizUrls.params.project}&origin=${origin[0]},${origin[1]}&destination=${destination[0]},${destination[1]}&crs=4326&option=get_short_path`;
+
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const filename = `route_${origin[0].toFixed(6)}_${origin[1].toFixed(6)}_to_${destination[0].toFixed(6)}_${destination[1].toFixed(6)}_${date}.geojson`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+            return response.blob();
+        })
+        .then(blob => {
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(downloadUrl);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            lizMap.addMessage('Échec du téléchargement.', 'error', true);
+        });
+}
 
     _refreshRoadMap() {
         this._mergedRoads = [];
