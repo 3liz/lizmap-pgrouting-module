@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.2.0 - 2026-11-25
+
 ### Added
 
 * Compatibility for LWC 3.10
