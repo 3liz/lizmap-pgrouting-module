@@ -91,9 +91,10 @@ install-plugins: dirs
 		--entrypoint /bin/bash \
 		3liz/qgis-map-server:$(QGIS_VERSION_TAG) \
 		-c "\
-		    echo "https://packages.3liz.org/pub/server-plugins-repository/unstable/plugins.[VERSION].xml" > /tmp/sources-plugin-manager.list; \
+		    echo 'https://plugins.qgis.org/plugins/plugins.xml?qgis=[VERSION]' > /tmp/sources-plugin-manager.list; \
 		    qgis-plugin-manager update; \
-		    qgis-plugin-manager install 'Lizmap server'"
+		    qgis-plugin-manager install 'Lizmap server'; \
+		    qgis-plugin-manager upgrade"
 
 import-data:
 	export PGPASSWORD=lizmap1234!; psql -h localhost -U lizmap -d lizmap -p 9032 -f sql/test_data.sql

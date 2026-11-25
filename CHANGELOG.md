@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Added
+
+* Compatibility for LWC 3.10
+
+### Fixed
+
+* Icon of the button to redraw the route
+* LWC 3.10: tooltips of the buttons, icon of the dock title and size of the roadmap title
+* Tests: QGIS Server plugins installed from plugins.qgis.org and upgraded
+
 ## 1.1.3 - 2025-06-23
 
 ### Added

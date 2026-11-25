@@ -16,7 +16,8 @@ class pgRouting extends HTMLElement {
                     lizMap.mainLizmap.popup.active = false;
                     this.toggleDrawVisibility(true);
                     lizMap.litHTML.render(this._mainTemplate(), this);
-                    // Add tooltip on buttons
+                    // Add tooltip on buttons, from their title attribute:
+                    // Bootstrap 2 (Lizmap 3.9) and Bootstrap 5 (Lizmap 3.10) both read it
                     $('.btn', this).tooltip({
                         placement: 'top'
                     });
@@ -57,13 +58,11 @@ class pgRouting extends HTMLElement {
             <div class="menu-content">
                 <p>${this._locales['draw.message']}</p>
                 <div class="commands">
-                    <button class="btn" data-original-title="${this._locales['route.redraw']}" @click=${() => this.restartDraw()}>
-                        <svg width="18" height="18">
-                            <use xlink:href="#refresh" />
-                        </svg>
+                    <button class="btn" title="${this._locales['route.redraw']}" @click=${() => this.restartDraw()}>
+                        <i class="icon-refresh"></i>
                     </button>
                     ${lizMap.mainLizmap.featureStorage ? lizMap.litHTML.html`
-                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} data-original-title="${this._locales['route.copy']}" @click=${() => this.copyToFeatureStorage()}></button>` : ''}
+                    <button class="btn copy-route" ?disabled=${!this._routeLayer.getSource().getFeatures().length} title="${this._locales['route.copy']}" @click=${() => this.copyToFeatureStorage()}></button>` : ''}
                 </div>
                 <div class="pgrouting">
                     ${this._mergedRoads.length > 0 ? lizMap.litHTML.html`
