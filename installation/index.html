@@ -439,7 +439,7 @@
 </ul>
 <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span>
 <span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><code>cp<span class="w"> </span>-n<span class="w"> </span>lizmap/my-packages/composer.json.dist<span class="w"> </span>lizmap/my-packages/composer.json
-composer<span class="w"> </span>require<span class="w"> </span>--working-dir<span class="o">=</span>lizmap/my-packages<span class="w"> </span><span class="s2">&quot;lizmap/lizmap-pgrouting-module&quot;</span>
+composer<span class="w"> </span>require<span class="w"> </span>--working-dir<span class="o">=</span>lizmap/my-packages<span class="w"> </span><span class="s2">"lizmap/lizmap-pgrouting-module"</span>
 </code></pre></div></td></tr></table></div>
 <h3 id="manual-installation-of-files-without-composer">Manual installation of files without Composer<a class="headerlink" href="#manual-installation-of-files-without-composer" title="Permanent link">#</a></h3>
 <ul>
@@ -470,7 +470,7 @@ Add in <code>lizmap/var/config/profiles.ini.php</code> the following parameters,
 <span class="na">port</span><span class="o">=</span><span class="s">5432</span>
 <span class="na">database</span><span class="o">=</span><span class="s">lizmap</span>
 <span class="na">user</span><span class="o">=</span><span class="s">lizmap</span>
-<span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span>
+<span class="na">password</span><span class="o">=</span><span class="s">"yourpassword"</span>
 <span class="na">search_path</span><span class="o">=</span><span class="s">pgrouting,public</span>
 </code></pre></div></td></tr></table></div>
 <p>Then execute:</p>
@@ -497,7 +497,7 @@ tables and functions used by the module.</p>
 <p>If you are using Lizmap Web Client <strong>3.5</strong>, you must manually edit the configuration
 file of your instance to specify some options. Edit the file <code>lizmap/var/config/localconfig.ini.php</code>
 and add the following variable in the section <code>[modules]</code>:</p>
-<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">&quot;srid=2154;postgresql_user_group=gis_group&quot;</span>
+<div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">1</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="na">pgrouting.installparam</span><span class="o">=</span><span class="s">"srid=2154;postgresql_user_group=gis_group"</span>
 </code></pre></div></td></tr></table></div>
 <p>You can replace:</p>
 <ul>
@@ -527,7 +527,7 @@ and add the following variable in the section <code>[modules]</code>:</p>
 <span class="na">port</span><span class="o">=</span><span class="s">5432</span>
 <span class="na">database</span><span class="o">=</span><span class="s">lizmap</span>
 <span class="na">user</span><span class="o">=</span><span class="s">lizmap</span>
-<span class="na">password</span><span class="o">=</span><span class="s">&quot;yourpassword&quot;</span>
+<span class="na">password</span><span class="o">=</span><span class="s">"yourpassword"</span>
 <span class="na">search_path</span><span class="o">=</span><span class="s">pgrouting,public</span>
 </code></pre></div></td></tr></table></div>
 <p><strong>Only replace host, database, user and password values.</strong></p>
