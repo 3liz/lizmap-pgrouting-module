@@ -14,7 +14,7 @@ sql:
   stage: Tests 🎳
   parallel:
     matrix:
-      - PG_VERSION: [11-2.5, 13-3]
+      - PG_VERSION: ["17-3"]
   services:
     - name: $REGISTRY_URI/postgis:${PG_VERSION}
       alias: db
